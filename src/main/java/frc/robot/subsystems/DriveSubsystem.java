@@ -15,6 +15,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void set(double value) {
+        System.out.println("******************************************MOTOR***********");
         motor.set(ControlMode.PercentOutput, value);
     }
 

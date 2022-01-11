@@ -6,9 +6,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class DriveCommand extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final DriveSubsystem driveSubsystem;
-
-    public DriveCommand(DriveSubsystem subsystem) {
+    private double driveValue;
+    public DriveCommand(DriveSubsystem subsystem, double value) {
         driveSubsystem = subsystem;
+        this.driveValue = value;
         addRequirements(subsystem);
     }
 
@@ -17,7 +18,7 @@ public class DriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        driveSubsystem.set(0.2);
+        driveSubsystem.set(driveValue);
     }
 
     @Override

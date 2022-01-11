@@ -2,7 +2,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -11,7 +10,11 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureButtonBindings();
-        CommandScheduler.getInstance().schedule(new DriveCommand(driveSubsystem));
+        initCommands();
+    }
+
+    private void initCommands() {
+        driveSubsystem.setDefaultCommand(new DriveCommand(driveSubsystem, 0.4));
     }
 
     private void configureButtonBindings() {}
