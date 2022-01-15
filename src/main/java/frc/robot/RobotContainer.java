@@ -2,17 +2,17 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.DriveCommand;
 import frc.robot.commands.DriveTeleopCommand;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Swerve;
+import frc.robot.util.ControllerWrapper;
 
 public class RobotContainer {
 
     private final Swerve swerve = new Swerve();
 
-    private final PS4Controller driverController = new PS4Controller(0);
+    private final ControllerWrapper controllerWrapper = new ControllerWrapper(0);
 
     public RobotContainer() {
         configureButtonBindings();
@@ -22,9 +22,9 @@ public class RobotContainer {
     private void configureDefaultCommands() {
         swerve.setDefaultCommand(
                 new DriveTeleopCommand(
-                        driverController::getLeftX,
-                        driverController::getLeftY,
-                        () -> -driverController.getRightX(),
+                        controllerWrapper::getLeftJoystickX,
+                        controllerWrapper::getLeftJoystickY,
+                        () -> -controllerWrapper.getRightJoystickX(),
                         true,
                         swerve));
     }
