@@ -22,8 +22,8 @@ public class RobotContainer {
     private void configureDefaultCommands() {
         swerve.setDefaultCommand(
                 new DriveTeleopCommand(
-                        controllerWrapper::getLeftJoystickX,
-                        controllerWrapper::getLeftJoystickY,
+                        () -> -controllerWrapper.getLeftJoystickX(),
+                        () -> -controllerWrapper.getLeftJoystickY(),
                         () -> -controllerWrapper.getRightJoystickX(),
                         true,
                         swerve));

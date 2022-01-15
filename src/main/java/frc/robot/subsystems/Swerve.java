@@ -50,7 +50,7 @@ public class Swerve extends SubsystemBase {
     private static final double blAngleOffset = 173.8311;
     private static final double brAngleOffset = -195.0347;
 
-    private static final int gyroID = 1;
+    private static final int gyroID = 2;
 
     public static final SwerveDriveKinematics kinematics =
             new SwerveDriveKinematics(
