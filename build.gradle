@@ -74,6 +74,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     annotationProcessor "com.github.Oblarg:Oblog:4.0.9"
+
 }
 
 // Simulation configuration (e.g. environment variables).
