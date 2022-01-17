@@ -158,5 +158,10 @@ gradle-app.setting
 .settings/
 bin/
 
+gradle
+.idea
+.vscode
+
 # Simulation GUI and other tools window save file
 *-window.json
+/gradle/

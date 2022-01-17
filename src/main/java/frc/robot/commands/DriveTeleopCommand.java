@@ -58,7 +58,7 @@ public class DriveTeleopCommand extends CommandBase {
      * @param driverX Left joystick x, which acts as desired x translation of the swerve drive
      * @param driverY Left joystick y, which acts as desired y translation of the swerve drive
      * @param driverRotation Right joystick x, which acts as desired rotation of the swerve drive
-     * @param fieldOriented Whether or not driving is field oriented
+     * @param fieldOriented Whether driving is field oriented
      * @param swerve Instance of Swerve
      */
     public DriveTeleopCommand(
@@ -93,7 +93,6 @@ public class DriveTeleopCommand extends CommandBase {
         final double translationX = deadband(vxSupplier.get());
         final double translationY = deadband(vySupplier.get());
         final double rotationX = deadband(vrxSupplier.get());
-        System.out.println(vrxSupplier.get());
     /*
     if (vrySupplier.isPresent()) {
       final double rotationY = deadband(vrySupplier.get().get());

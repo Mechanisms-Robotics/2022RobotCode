@@ -3,11 +3,12 @@ package frc.robot.commands;
 import frc.robot.subsystems.SingleMotorTestSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class DriveCommand extends CommandBase {
-    @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+public class SingleMotorTestCommand extends CommandBase {
+
     private final SingleMotorTestSubsystem driveSubsystem;
     private double driveValue;
-    public DriveCommand(SingleMotorTestSubsystem subsystem, double value) {
+
+    public SingleMotorTestCommand(SingleMotorTestSubsystem subsystem, double value) {
         driveSubsystem = subsystem;
         this.driveValue = value;
         addRequirements(subsystem);
