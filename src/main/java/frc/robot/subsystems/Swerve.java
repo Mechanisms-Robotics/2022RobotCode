@@ -105,10 +105,8 @@ public class Swerve extends SubsystemBase {
         brModule.getState());
 
     // If we are currently cunning a tarjecto
-    if (trajectoryController.isFinished())
-      headingController.update(desiredSpeeds, getHeading());
-    else
-      desiredSpeeds = trajectoryController.calculate(getPose());
+    if (trajectoryController.isFinished()) headingController.update(desiredSpeeds, getHeading());
+    else desiredSpeeds = trajectoryController.calculate(getPose());
     setSwerveStates(desiredSpeeds);
   }
 
@@ -117,8 +115,7 @@ public class Swerve extends SubsystemBase {
 
     headingController.stabiliseHeading();
 
-    if (!trajectoryController.isFinished())
-      trajectoryController.stop();
+    if (!trajectoryController.isFinished()) trajectoryController.stop();
 
     if (fieldRelative) {
       desiredSpeeds =
@@ -130,8 +127,7 @@ public class Swerve extends SubsystemBase {
   }
 
   public void drive(double xVelocity, double yVelocity, Rotation2d rotation) {
-    if (!trajectoryController.isFinished())
-      trajectoryController.stop();
+    if (!trajectoryController.isFinished()) trajectoryController.stop();
     headingController.lockHeading(rotation);
     // We don't set the rotation speeds as the heading controller will take care of that.
     desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, 0.0, getHeading());
