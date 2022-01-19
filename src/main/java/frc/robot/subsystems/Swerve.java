@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -129,6 +130,8 @@ public class Swerve extends SubsystemBase {
   }
 
   public void drive(double xVelocity, double yVelocity, Rotation2d rotation) {
+    if (!trajectoryController.isFinished())
+      trajectoryController.stop();
     headingController.lockHeading(rotation);
     // We don't set the rotation speeds as the heading controller will take care of that.
     desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, 0.0, getHeading());
@@ -216,5 +219,24 @@ public class Swerve extends SubsystemBase {
   public void setHeading(Rotation2d rotation) {
     gyro.setYaw(rotation.getDegrees());
     poseEstimator.resetPosition(poseEstimator.getPoseMeters(), rotation);
+  }
+
+  /**
+   * Start following a trajectory.
+   *
+   * @param trajectory The trajectory to follow.
+   */
+  public void followTrajectory(PathPlannerTrajectory trajectory) {
+    trajectoryController.startTrajectory(trajectory);
+  }
+
+  /**
+   * Returns if the trajectory controller is finished.
+   *
+   * @return True if the trajectory is finished. False otherwise.
+   * @see TrajectoryController
+   */
+  public boolean isTrajectoryFinished() {
+    return trajectoryController.isFinished();
   }
 }
