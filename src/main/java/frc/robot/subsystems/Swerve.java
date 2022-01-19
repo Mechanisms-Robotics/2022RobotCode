@@ -10,8 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.HeadingController;
-// import io.github.oblarg.oblog.Loggable;
-// import io.github.oblarg.oblog.annotations.Log;
+import frc.robot.util.TrajectoryController;
 
 /** The base swerve drive class, controls all swerve modules in coordination. */
 public class Swerve extends SubsystemBase {
@@ -73,7 +72,7 @@ public class Swerve extends SubsystemBase {
 
   public final PigeonIMU gyro = new PigeonIMU(gyroID);
 
-  private HeadingController headingController =
+  private final HeadingController headingController =
       new HeadingController(
           0.005, // Stabilization kP
           0.0, // Stabilization kD
@@ -84,6 +83,7 @@ public class Swerve extends SubsystemBase {
           0.0, // Turn in place kI
           0.0 // Turn in place kD
           );
+  private final TrajectoryController trajectoryController = new TrajectoryController(kinematics);
   private ChassisSpeeds desiredSpeeds = new ChassisSpeeds();
 
   /** Constructs the Swerve subsystem. */
@@ -103,7 +103,11 @@ public class Swerve extends SubsystemBase {
         blModule.getState(),
         brModule.getState());
 
-    headingController.update(desiredSpeeds, getHeading());
+    // If we are currently cunning a tarjecto
+    if (trajectoryController.isFinished())
+      headingController.update(desiredSpeeds, getHeading());
+    else
+      desiredSpeeds = trajectoryController.calculate(getPose());
     setSwerveStates(desiredSpeeds);
   }
 
@@ -111,6 +115,9 @@ public class Swerve extends SubsystemBase {
       double xVelocity, double yVelocity, double rotationVelocity, boolean fieldRelative) {
 
     headingController.stabiliseHeading();
+
+    if (!trajectoryController.isFinished())
+      trajectoryController.stop();
 
     if (fieldRelative) {
       desiredSpeeds =
