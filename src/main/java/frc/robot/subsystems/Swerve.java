@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -10,8 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.HeadingController;
-// import io.github.oblarg.oblog.Loggable;
-// import io.github.oblarg.oblog.annotations.Log;
+import frc.robot.util.TrajectoryController;
 
 /** The base swerve drive class, controls all swerve modules in coordination. */
 public class Swerve extends SubsystemBase {
@@ -73,7 +73,7 @@ public class Swerve extends SubsystemBase {
 
   public final PigeonIMU gyro = new PigeonIMU(gyroID);
 
-  private HeadingController headingController =
+  private final HeadingController headingController =
       new HeadingController(
           0.005, // Stabilization kP
           0.0, // Stabilization kD
@@ -84,6 +84,7 @@ public class Swerve extends SubsystemBase {
           0.0, // Turn in place kI
           0.0 // Turn in place kD
           );
+  private final TrajectoryController trajectoryController = new TrajectoryController(kinematics);
   private ChassisSpeeds desiredSpeeds = new ChassisSpeeds();
 
   /** Constructs the Swerve subsystem. */
@@ -103,7 +104,9 @@ public class Swerve extends SubsystemBase {
         blModule.getState(),
         brModule.getState());
 
-    headingController.update(desiredSpeeds, getHeading());
+    // If we are currently cunning a tarjecto
+    if (trajectoryController.isFinished()) headingController.update(desiredSpeeds, getHeading());
+    else desiredSpeeds = trajectoryController.calculate(getPose());
     setSwerveStates(desiredSpeeds);
   }
 
@@ -111,6 +114,8 @@ public class Swerve extends SubsystemBase {
       double xVelocity, double yVelocity, double rotationVelocity, boolean fieldRelative) {
 
     headingController.stabiliseHeading();
+
+    if (!trajectoryController.isFinished()) trajectoryController.stop();
 
     if (fieldRelative) {
       desiredSpeeds =
@@ -122,6 +127,7 @@ public class Swerve extends SubsystemBase {
   }
 
   public void drive(double xVelocity, double yVelocity, Rotation2d rotation) {
+    if (!trajectoryController.isFinished()) trajectoryController.stop();
     headingController.lockHeading(rotation);
     // We don't set the rotation speeds as the heading controller will take care of that.
     desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, 0.0, getHeading());
@@ -209,5 +215,24 @@ public class Swerve extends SubsystemBase {
   public void setHeading(Rotation2d rotation) {
     gyro.setYaw(rotation.getDegrees());
     poseEstimator.resetPosition(poseEstimator.getPoseMeters(), rotation);
+  }
+
+  /**
+   * Start following a trajectory.
+   *
+   * @param trajectory The trajectory to follow.
+   */
+  public void followTrajectory(PathPlannerTrajectory trajectory) {
+    trajectoryController.startTrajectory(trajectory);
+  }
+
+  /**
+   * Returns if the trajectory controller is finished.
+   *
+   * @return True if the trajectory is finished. False otherwise.
+   * @see TrajectoryController
+   */
+  public boolean isTrajectoryFinished() {
+    return trajectoryController.isFinished();
   }
 }
