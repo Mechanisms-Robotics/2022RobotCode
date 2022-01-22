@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.AimCommand;
 import frc.robot.commands.DriveTeleopCommand;
+import frc.robot.commands.auto.Basic1Ball;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.ControllerWrapper;
@@ -21,9 +22,9 @@ public class RobotContainer {
 
   private final Button aimButton = new Button(controllerWrapper::getRightBumperButton);
 
-  Supplier<Double> inputX = () -> -controllerWrapper.getLeftJoystickX(),
-      inputY = () -> -controllerWrapper.getLeftJoystickY(),
-      rotation = () -> -controllerWrapper.getRightJoystickX();
+  Supplier<Double> inputX   = () -> -controllerWrapper.getLeftJoystickX(),
+                   inputY   = () -> -controllerWrapper.getLeftJoystickY(),
+                   rotation = () -> -controllerWrapper.getRightJoystickX();
 
   public RobotContainer() {
     configureButtonBindings();
@@ -39,6 +40,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return null;
+    return new Basic1Ball(swerve);
   }
 }
