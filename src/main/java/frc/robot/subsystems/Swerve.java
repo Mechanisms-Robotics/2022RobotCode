@@ -105,8 +105,11 @@ public class Swerve extends SubsystemBase {
         brModule.getState());
 
     // If we are currently cunning a tarjecto
-    if (trajectoryController.isFinished()) headingController.update(desiredSpeeds, getHeading());
-    else desiredSpeeds = trajectoryController.calculate(getPose());
+    if (trajectoryController.isFinished()) {
+      headingController.update(desiredSpeeds, getHeading());
+    } else {
+      desiredSpeeds = trajectoryController.calculate(getPose());
+    }
     setSwerveStates(desiredSpeeds);
   }
 

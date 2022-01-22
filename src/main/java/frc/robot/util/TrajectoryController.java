@@ -84,6 +84,9 @@ public class TrajectoryController {
    * @return True if the trajectory is finish
    */
   public boolean isFinished() {
+    if (trajectory == null) {
+      return true;
+    }
     if (timer.hasElapsed(trajectory.getTotalTimeSeconds())) {
       isFinished = true;
     }
