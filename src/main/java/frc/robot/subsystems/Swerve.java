@@ -9,6 +9,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.HeadingController;
 import frc.robot.util.TrajectoryController;
@@ -111,6 +113,9 @@ public class Swerve extends SubsystemBase {
       desiredSpeeds = trajectoryController.calculate(getPose());
     }
     setSwerveStates(desiredSpeeds);
+    SmartDashboard.putNumber("Robot X", getPose().getX());
+    SmartDashboard.putNumber("Robot Y", getPose().getY());
+    SmartDashboard.putNumber("Robot Heading", getHeading().getDegrees());
   }
 
   public void drive(
@@ -186,7 +191,7 @@ public class Swerve extends SubsystemBase {
   public Rotation2d getHeading() {
     double[] ypr = new double[3];
     gyro.getYawPitchRoll(ypr);
-    return Rotation2d.fromDegrees(ypr[0]);
+    return Rotation2d.fromDegrees(ypr[0]).rotateBy(Rotation2d.fromDegrees(180));
   }
 
   public ChassisSpeeds getSpeeds() {

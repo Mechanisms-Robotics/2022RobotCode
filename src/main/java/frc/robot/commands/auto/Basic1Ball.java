@@ -9,7 +9,7 @@ import frc.robot.subsystems.Swerve;
 public class Basic1Ball extends SequentialCommandGroup {
 
     private static final double MAX_VEL = 0.6;
-    private static final double MAX_ACCEL = 2.0;
+    private static final double MAX_ACCEL = 1.0;
 
     // TODO: find maxVel and maxAccel
     private static final PathPlannerTrajectory trajectory =

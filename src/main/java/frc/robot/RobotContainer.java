@@ -27,6 +27,7 @@ public class RobotContainer {
                    rotation = () -> -controllerWrapper.getRightJoystickX();
 
   public RobotContainer() {
+    swerve.zeroHeading();
     configureButtonBindings();
     configureDefaultCommands();
   }
