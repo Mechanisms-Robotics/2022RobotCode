@@ -9,7 +9,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.HeadingController;
@@ -88,6 +87,8 @@ public class Swerve extends SubsystemBase {
           );
   private final TrajectoryController trajectoryController = new TrajectoryController(kinematics);
   private ChassisSpeeds desiredSpeeds = new ChassisSpeeds();
+
+  private final Rotation2d gyroAngleAdjustment = Rotation2d.fromDegrees(180.0);
 
   /** Constructs the Swerve subsystem. */
   public Swerve() {
@@ -191,7 +192,7 @@ public class Swerve extends SubsystemBase {
   public Rotation2d getHeading() {
     double[] ypr = new double[3];
     gyro.getYawPitchRoll(ypr);
-    return Rotation2d.fromDegrees(ypr[0]).rotateBy(Rotation2d.fromDegrees(180));
+    return gyroAngleAdjustment.rotateBy(Rotation2d.fromDegrees(ypr[0]));
   }
 
   public ChassisSpeeds getSpeeds() {
