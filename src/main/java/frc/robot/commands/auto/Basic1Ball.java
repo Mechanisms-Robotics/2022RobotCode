@@ -16,7 +16,7 @@ public class Basic1Ball extends SequentialCommandGroup {
             PathPlanner.loadPath("Basic1Ball", MAX_VEL, MAX_ACCEL);
 
     public Basic1Ball(Swerve swerve) {
-        swerve.zeroHeading();
+        swerve.resetSensors();
         addCommands(new FunctionalCommand(() -> swerve.followTrajectory(trajectory),
                 () -> {}, interrupted -> {}, () -> false , swerve));
     }
