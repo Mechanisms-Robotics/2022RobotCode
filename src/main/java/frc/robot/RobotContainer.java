@@ -22,9 +22,9 @@ public class RobotContainer {
 
   private final Button aimButton = new Button(controllerWrapper::getRightBumperButton);
 
-  Supplier<Double> inputX   = () -> -controllerWrapper.getLeftJoystickX(),
-                   inputY   = () -> -controllerWrapper.getLeftJoystickY(),
-                   rotation = () -> -controllerWrapper.getRightJoystickX();
+  Supplier<Double> inputX = () -> -controllerWrapper.getLeftJoystickX(),
+      inputY = () -> -controllerWrapper.getLeftJoystickY(),
+      rotation = () -> -controllerWrapper.getRightJoystickX();
 
   public RobotContainer() {
     swerve.zeroHeading();

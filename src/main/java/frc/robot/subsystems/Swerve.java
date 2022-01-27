@@ -88,7 +88,7 @@ public class Swerve extends SubsystemBase {
   private final TrajectoryController trajectoryController = new TrajectoryController(kinematics);
   private ChassisSpeeds desiredSpeeds = new ChassisSpeeds();
 
-  private final Rotation2d gyroAngleAdjustment = Rotation2d.fromDegrees(180.0);
+  private Rotation2d gyroAngleAdjustment = Rotation2d.fromDegrees(0.0);
 
   /** Constructs the Swerve subsystem. */
   public Swerve() {
@@ -180,6 +180,16 @@ public class Swerve extends SubsystemBase {
     gyro.setYaw(0.0);
   }
 
+  private void setHeading(Rotation2d heading) {
+    gyroAngleAdjustment = heading.rotateBy(getRawHeading().unaryMinus());
+  }
+
+  private Rotation2d getRawHeading() {
+    double[] ypr = new double[3];
+    gyro.getYawPitchRoll(ypr);
+    return Rotation2d.fromDegrees(ypr[0]);
+  }
+
   public SwerveDriveKinematics getKinematics() {
     return kinematics;
   }
@@ -190,9 +200,7 @@ public class Swerve extends SubsystemBase {
    * @return A Rotation2d representing the swerve drive's heading
    */
   public Rotation2d getHeading() {
-    double[] ypr = new double[3];
-    gyro.getYawPitchRoll(ypr);
-    return gyroAngleAdjustment.rotateBy(Rotation2d.fromDegrees(ypr[0]));
+    return gyroAngleAdjustment.rotateBy(getRawHeading());
   }
 
   public ChassisSpeeds getSpeeds() {
@@ -208,6 +216,11 @@ public class Swerve extends SubsystemBase {
     return poseEstimator.getPoseMeters();
   }
 
+  public void setPose(Pose2d pose, Rotation2d heading) {
+    setHeading(heading);
+    poseEstimator.resetPosition(pose, getHeading());
+  }
+
   /** Stop all motors on the drive train */
   public void stop() {
     flModule.stop();
@@ -219,11 +232,6 @@ public class Swerve extends SubsystemBase {
   public void resetSensors() {
     zeroHeading();
     poseEstimator.resetPosition(new Pose2d(), new Rotation2d());
-  }
-
-  public void setHeading(Rotation2d rotation) {
-    gyro.setYaw(rotation.getDegrees());
-    poseEstimator.resetPosition(poseEstimator.getPoseMeters(), rotation);
   }
 
   /**
