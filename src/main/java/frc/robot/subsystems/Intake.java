@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
 
+  // TODO: Update IDs, if possible
   private static final int INTAKE_MOTOR_ID = 20;
   private static final int INTAKE_SOLENOID_FORWARD_ID = 5;
   private static final int INTAKE_SOLENOID_REVERSE_ID = 2;
