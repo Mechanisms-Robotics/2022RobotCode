@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -9,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.HeadingController;
 import frc.robot.util.TrajectoryController;
@@ -87,6 +89,8 @@ public class Swerve extends SubsystemBase {
   private final TrajectoryController trajectoryController = new TrajectoryController(kinematics);
   private ChassisSpeeds desiredSpeeds = new ChassisSpeeds();
 
+  private Rotation2d gyroAngleAdjustment = Rotation2d.fromDegrees(0.0);
+
   /** Constructs the Swerve subsystem. */
   public Swerve() {
     poseEstimator = new SwerveDriveOdometry(kinematics, getHeading(), new Pose2d());
@@ -105,9 +109,15 @@ public class Swerve extends SubsystemBase {
         brModule.getState());
 
     // If we are currently cunning a tarjecto
-    if (trajectoryController.isFinished()) headingController.update(desiredSpeeds, getHeading());
-    else desiredSpeeds = trajectoryController.calculate(getPose());
+    if (trajectoryController.isFinished()) {
+      headingController.update(desiredSpeeds, getHeading());
+    } else {
+      desiredSpeeds = trajectoryController.calculate(getPose());
+    }
     setSwerveStates(desiredSpeeds);
+    SmartDashboard.putNumber("Robot X", getPose().getX());
+    SmartDashboard.putNumber("Robot Y", getPose().getY());
+    SmartDashboard.putNumber("Robot Heading", getHeading().getDegrees());
   }
 
   public void drive(
@@ -171,6 +181,16 @@ public class Swerve extends SubsystemBase {
     gyro.setYaw(0.0);
   }
 
+  private void setHeading(Rotation2d heading) {
+    gyroAngleAdjustment = heading.rotateBy(getRawHeading().unaryMinus());
+  }
+
+  private Rotation2d getRawHeading() {
+    double[] ypr = new double[3];
+    gyro.getYawPitchRoll(ypr);
+    return Rotation2d.fromDegrees(ypr[0]);
+  }
+
   public SwerveDriveKinematics getKinematics() {
     return kinematics;
   }
@@ -181,9 +201,7 @@ public class Swerve extends SubsystemBase {
    * @return A Rotation2d representing the swerve drive's heading
    */
   public Rotation2d getHeading() {
-    double[] ypr = new double[3];
-    gyro.getYawPitchRoll(ypr);
-    return Rotation2d.fromDegrees(ypr[0]);
+    return gyroAngleAdjustment.rotateBy(getRawHeading());
   }
 
   public ChassisSpeeds getSpeeds() {
@@ -199,6 +217,11 @@ public class Swerve extends SubsystemBase {
     return poseEstimator.getPoseMeters();
   }
 
+  public void setPose(Pose2d pose, Rotation2d heading) {
+    setHeading(heading);
+    poseEstimator.resetPosition(pose, getHeading());
+  }
+
   /** Stop all motors on the drive train */
   public void stop() {
     flModule.stop();
@@ -210,11 +233,6 @@ public class Swerve extends SubsystemBase {
   public void resetSensors() {
     zeroHeading();
     poseEstimator.resetPosition(new Pose2d(), new Rotation2d());
-  }
-
-  public void setHeading(Rotation2d rotation) {
-    gyro.setYaw(rotation.getDegrees());
-    poseEstimator.resetPosition(poseEstimator.getPoseMeters(), rotation);
   }
 
   /**

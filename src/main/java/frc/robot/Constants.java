@@ -11,4 +11,5 @@ public final class Constants {
   public static final double loopTime = 0.02; // s
   public static final int talonPrimaryPid = 0;
   public static final int falconCPR = 2048; // counts per revolution
+  public static final double intakeSpeed = 0.50;
 }
