@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.AimCommand;
 import frc.robot.commands.DriveTeleopCommand;
@@ -25,6 +26,7 @@ public class RobotContainer {
 
   private final Button aimButton = new Button(controllerWrapper::getRightBumperButton);
   private final Button intakeButton = new Button(controllerWrapper::getLeftTriggerButton);
+  private final Button stopIntakeButton = new Button(controllerWrapper::getRightTriggerButton);
 
   Supplier<Double> inputX = () -> -controllerWrapper.getLeftJoystickX(),
       inputY = () -> -controllerWrapper.getLeftJoystickY(),
@@ -42,7 +44,8 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
     aimButton.toggleWhenPressed(new AimCommand(inputX, inputY, rotation, hood, swerve, camera));
-    intakeButton.toggleWhenPressed(new IntakeCommand(intake));
+    intakeButton.toggleWhenPressed(new IntakeCommand(controllerWrapper::getLeftTriggerButton, intake));
+    stopIntakeButton.toggleWhenPressed(new InstantCommand(intake::stop));
   }
 
   public Command getAutonomousCommand() {
