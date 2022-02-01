@@ -2,7 +2,6 @@ package frc.robot.commands.auto;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Swerve;
@@ -22,13 +21,13 @@ public class Basic1Ball extends SequentialCommandGroup {
             () ->
                 swerve.setPose(
                     trajectory.getInitialPose(), trajectory.getInitialState().holonomicRotation))
-//            ,
-//        new FunctionalCommand(
-//            () -> swerve.followTrajectory(trajectory),
-//            () -> {},
-//            interrupted -> {},
-//            () -> false,
-//            swerve)
-    );
+        //            ,
+        //        new FunctionalCommand(
+        //            () -> swerve.followTrajectory(trajectory),
+        //            () -> {},
+        //            interrupted -> {},
+        //            () -> false,
+        //            swerve)
+        );
   }
 }

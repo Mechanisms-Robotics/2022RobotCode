@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.debug;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.SingleMotorTestSubsystem;
@@ -6,7 +6,7 @@ import frc.robot.subsystems.SingleMotorTestSubsystem;
 public class SingleMotorTestCommand extends CommandBase {
 
   private final SingleMotorTestSubsystem driveSubsystem;
-  private double driveValue;
+  private final double driveValue;
 
   public SingleMotorTestCommand(SingleMotorTestSubsystem subsystem, double value) {
     driveSubsystem = subsystem;

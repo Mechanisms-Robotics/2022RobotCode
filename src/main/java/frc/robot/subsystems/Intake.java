@@ -11,8 +11,6 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import io.github.oblarg.oblog.Loggable;
 
@@ -20,10 +18,6 @@ public class Intake extends SubsystemBase {
 
   // TODO: Update IDs, if possible
   private static final int INTAKE_MOTOR_ID = 20;
-  private static final int INTAKE_SOLENOID_FORWARD_ID = 5;
-  private static final int INTAKE_SOLENOID_REVERSE_ID = 2;
-  private static final DoubleSolenoid.Value INTAKE_DEPLOYED = DoubleSolenoid.Value.kForward;
-  private static final DoubleSolenoid.Value INTAKE_RETRACTED = DoubleSolenoid.Value.kReverse;
   private static final double INTAKE_GEAR_RATIO = 1.0;
 
   private static final TalonFXConfiguration INTAKE_MOTOR_CONFIG = new TalonFXConfiguration();
@@ -47,9 +41,6 @@ public class Intake extends SubsystemBase {
   }
 
   private final WPI_TalonFX intakeMotor = new WPI_TalonFX(INTAKE_MOTOR_ID);
-  private final DoubleSolenoid intakeSolenoid =
-      new DoubleSolenoid(
-          PneumaticsModuleType.REVPH, INTAKE_SOLENOID_FORWARD_ID, INTAKE_SOLENOID_REVERSE_ID);
 
   public Intake() {
     intakeMotor.configAllSettings(INTAKE_MOTOR_CONFIG, startupCanTimeout);
@@ -64,19 +55,6 @@ public class Intake extends SubsystemBase {
 
   public void setVelocity(double rpm) {
     intakeMotor.set(ControlMode.Velocity, RPMToFalcon(rpm, INTAKE_GEAR_RATIO));
-  }
-
-  public void deploy() {
-    intakeSolenoid.set(INTAKE_DEPLOYED);
-  }
-
-  public void retract() {
-    stop();
-    intakeSolenoid.set(INTAKE_RETRACTED);
-  }
-
-  public boolean isDeployed() {
-    return intakeSolenoid.get() == INTAKE_DEPLOYED;
   }
 
   public double getVelocity() {

@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.aiming;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
@@ -51,8 +51,8 @@ public class AimHoodCommand extends CommandBase {
      */
   }
 
-  private Hood hood;
-  private PhotonCamera camera;
+  private final Hood hood;
+  private final PhotonCamera camera;
   private double targetHoodPosition = 0.0;
 
   private final NetworkTable photonNetworkTable;

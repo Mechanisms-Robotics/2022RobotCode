@@ -12,4 +12,7 @@ public final class Constants {
   public static final int talonPrimaryPid = 0;
   public static final int falconCPR = 2048; // counts per revolution
   public static final double intakeSpeed = 0.50;
+  public static final double feederSpeed = 0.50;
+  public static final double acceleratorSpeed = 0.50;
+  public static final double flywheelSpeed = 0.50;
 }
