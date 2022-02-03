@@ -37,12 +37,12 @@ public class Accelerator extends SubsystemBase {
   public Accelerator() {
     acceleratorMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, startupCanTimeout);
     acceleratorMotor.setInverted(TalonFXInvertType.Clockwise);
-    acceleratorMotor.setNeutralMode(NeutralMode.Coast);
+    acceleratorMotor.setNeutralMode(NeutralMode.Brake);
 
     acceleratorFollowerMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, startupCanTimeout);
     acceleratorFollowerMotor.follow(acceleratorMotor);
     acceleratorFollowerMotor.setInverted(InvertType.OpposeMaster);
-    acceleratorFollowerMotor.setNeutralMode(NeutralMode.Coast);
+    acceleratorFollowerMotor.setNeutralMode(NeutralMode.Brake);
 
     // CAN Bus Usage Optimisation.
     acceleratorFollowerMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
