@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ID.INTAKE_MOTOR_ID;
 import static frc.robot.Constants.startupCanTimeout;
 import static frc.robot.util.Units.RPMToFalcon;
 import static frc.robot.util.Units.falconToRPM;
@@ -16,8 +17,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
 
-  // TODO: Update IDs, if possible
-  private static final int INTAKE_MOTOR_ID = 20;
   private static final double INTAKE_GEAR_RATIO = 1.0;
 
   private static final TalonFXConfiguration INTAKE_MOTOR_CONFIG = new TalonFXConfiguration();

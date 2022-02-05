@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ID.SHOOTER_FOLLOWER_MOTOR_ID;
+import static frc.robot.Constants.ID.SHOOTER_MOTOR_ID;
 import static frc.robot.Constants.startupCanTimeout;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -13,9 +15,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-  // TODO: Update IDs, if possible
-  private static final int SHOOTER_MOTOR_ID = 50;
-  private static final int SHOOTER_FOLLOWER_MOTOR_ID = 51;
 
   private static final TalonFXConfiguration SHOOTER_MOTOR_CONFIG = new TalonFXConfiguration();
 

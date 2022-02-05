@@ -15,4 +15,15 @@ public final class Constants {
   public static final double feederSpeed = 0.50;
   public static final double acceleratorSpeed = 0.20;
   public static final double flywheelSpeed = 0.50;
+
+  public static final class ID {
+    public static final int
+    ACCELERATOR_MOTOR_ID = 40,
+    ACCELERATOR_FOLLOWER_MOTOR_ID = 41,
+    FEEDER_MOTOR_ID = 30,
+    INTAKE_MOTOR_ID = 20,
+    SHOOTER_MOTOR_ID = 50,
+    SHOOTER_FOLLOWER_MOTOR_ID = 51,
+    HOOD_SERVO_PWM_PORT_ID = 0;
+  }
 }

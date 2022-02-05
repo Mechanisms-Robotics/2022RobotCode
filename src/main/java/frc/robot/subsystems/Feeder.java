@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ID.FEEDER_MOTOR_ID;
 import static frc.robot.Constants.startupCanTimeout;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -11,9 +12,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Feeder extends SubsystemBase {
-
-  // TODO: Update IDs, if possible
-  private static final int FEEDER_MOTOR_ID = 30;
 
   private static final TalonFXConfiguration FEEDER_MOTOR_CONFIG = new TalonFXConfiguration();
 

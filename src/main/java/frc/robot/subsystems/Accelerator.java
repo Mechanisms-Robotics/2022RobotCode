@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ID.ACCELERATOR_FOLLOWER_MOTOR_ID;
+import static frc.robot.Constants.ID.ACCELERATOR_MOTOR_ID;
 import static frc.robot.Constants.startupCanTimeout;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -13,10 +15,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Accelerator extends SubsystemBase {
-
-  // TODO: Update IDs, if possible
-  private static final int ACCELERATOR_MOTOR_ID = 40;
-  private static final int ACCELERATOR_FOLLOWER_MOTOR_ID = 41;
 
   private static final TalonFXConfiguration ACCELERATOR_MOTOR_CONFIG = new TalonFXConfiguration();
 
