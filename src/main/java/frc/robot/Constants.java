@@ -24,6 +24,7 @@ public final class Constants {
     INTAKE_MOTOR_ID = 20,
     SHOOTER_MOTOR_ID = 50,
     SHOOTER_FOLLOWER_MOTOR_ID = 51,
+    TURRET_MOTOR_ID = 60,
     HOOD_SERVO_PWM_PORT_ID = 0;
   }
 }
