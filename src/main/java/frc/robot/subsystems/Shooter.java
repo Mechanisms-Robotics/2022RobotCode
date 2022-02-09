@@ -20,14 +20,16 @@ public class Shooter extends SubsystemBase {
 
   private static final TalonFXConfiguration SHOOTER_MOTOR_CONFIG = new TalonFXConfiguration();
 
-  private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> RANGE_TO_RPM = new InterpolatingTreeMap<>();
+  private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> RANGE_TO_RPM =
+      new InterpolatingTreeMap<>();
   private static final double DEFAULT_SHOOTER_VEL = 3000.0;
 
-  private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
-      0.0, // ks
-      0.0, // kv
-      0.0 // ka
-  );
+  private final SimpleMotorFeedforward feedforward =
+      new SimpleMotorFeedforward(
+          0.0, // ks
+          0.0, // kv
+          0.0 // ka
+          );
 
   static {
     final var shooterCurrentLimit = new SupplyCurrentLimitConfiguration();
@@ -65,11 +67,19 @@ public class Shooter extends SubsystemBase {
 
   public void shoot(double range) {
     final double velocity = RANGE_TO_RPM.getInterpolated(new InterpolatingDouble(range)).value;
-    shooterMotor.set(ControlMode.Velocity, velocity, DemandType.ArbitraryFeedForward, feedforward.calculate(velocity));
+    shooterMotor.set(
+        ControlMode.Velocity,
+        velocity,
+        DemandType.ArbitraryFeedForward,
+        feedforward.calculate(velocity));
   }
 
   public void shoot() {
-    shooterMotor.set(ControlMode.Velocity, DEFAULT_SHOOTER_VEL, DemandType.ArbitraryFeedForward, feedforward.calculate(DEFAULT_SHOOTER_VEL));
+    shooterMotor.set(
+        ControlMode.Velocity,
+        DEFAULT_SHOOTER_VEL,
+        DemandType.ArbitraryFeedForward,
+        feedforward.calculate(DEFAULT_SHOOTER_VEL));
   }
 
   public void stop() {

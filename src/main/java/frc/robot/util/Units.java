@@ -5,19 +5,19 @@ public class Units {
   /**
    * @param counts Falcon Counts
    * @param gearRatio Gear Ratio between Falcon and Mechanism
-   * @return Degrees of Rotation of Mechanism
+   * @return Rotation in radians
    */
-  public static double falconToDegrees(double counts, double gearRatio) {
-    return counts * (360.0 / (gearRatio * 2048.0));
+  public static double falconToRads(double counts, double gearRatio) {
+    return counts * ((2.0 * Math.PI) / (gearRatio * 2048.0));
   }
 
   /**
-   * @param degrees Degrees of rotation of Mechanism
+   * @param rads Radians of rotation of Mechanism
    * @param gearRatio Gear Ratio between Falcon and Mechanism
    * @return Falcon Counts
    */
-  public static double degreesToFalcon(double degrees, double gearRatio) {
-    double ticks = degrees / (360.0 / (gearRatio * 2048.0));
+  public static double radsToFalcon(double rads, double gearRatio) {
+    double ticks = rads / ((2 * Math.PI) / (gearRatio * 2048.0));
     return ticks;
   }
 

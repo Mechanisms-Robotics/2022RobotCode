@@ -1,9 +1,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.SwerveCalibrationCommand;
 import frc.robot.commands.auto.Basic1Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
@@ -13,7 +14,6 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.ControllerWrapper;
-import frc.robot.util.ControllerWrapper.Direction;
 import java.util.function.Supplier;
 
 public class RobotContainer {
@@ -53,11 +53,16 @@ public class RobotContainer {
     shootButton.toggleWhenPressed(new ShootCommand(feeder, shooter, accelerator));
 
     feederButton.toggleWhenPressed(new StartEndCommand(feeder::feed, feeder::stop, feeder));
-    acceleratorButton.toggleWhenPressed(new StartEndCommand(accelerator::spinup, accelerator::stop));
-    flywheelButton.toggleWhenPressed(new StartEndCommand(shooter::shoot, shooter::stop);
+    acceleratorButton.toggleWhenPressed(
+        new StartEndCommand(accelerator::spinup, accelerator::stop));
+    flywheelButton.toggleWhenPressed(new StartEndCommand(shooter::shoot, shooter::stop));
   }
 
   public Command getAutonomousCommand() {
     return new Basic1Ball(swerve);
+  }
+
+  public void runDisabledCalibration() {
+    CommandScheduler.getInstance().schedule(new SwerveCalibrationCommand(swerve));
   }
 }

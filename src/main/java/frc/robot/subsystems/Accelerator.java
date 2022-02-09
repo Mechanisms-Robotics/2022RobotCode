@@ -29,15 +29,15 @@ public class Accelerator extends SubsystemBase {
   }
 
   private final WPI_TalonFX acceleratorMotor = new WPI_TalonFX(40);
-  private final WPI_TalonFX acceleratorFollowerMotor =
-      new WPI_TalonFX(41);
+  private final WPI_TalonFX acceleratorFollowerMotor = new WPI_TalonFX(41);
 
   public Accelerator() {
     acceleratorMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
     acceleratorMotor.setInverted(TalonFXInvertType.Clockwise);
     acceleratorMotor.setNeutralMode(NeutralMode.Brake);
 
-    acceleratorFollowerMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
+    acceleratorFollowerMotor.configAllSettings(
+        ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
     acceleratorFollowerMotor.follow(acceleratorMotor);
     acceleratorFollowerMotor.setInverted(InvertType.OpposeMaster);
     acceleratorFollowerMotor.setNeutralMode(NeutralMode.Brake);
