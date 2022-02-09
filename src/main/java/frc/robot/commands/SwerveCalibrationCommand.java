@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Swerve;
@@ -32,6 +33,9 @@ public class SwerveCalibrationCommand extends CommandBase {
     // Only reset the modules if this command wasn't interrupted (i.e. the timer ran out)
     if (!interrupted) {
       swerve.calibrateModules();
+      System.out.println("Recalibrating Swerve Modules");
+    } else {
+      DriverStation.reportWarning("Swerve calibration canceled.", false);
     }
   }
 
