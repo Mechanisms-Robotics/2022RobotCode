@@ -1,7 +1,6 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.accelerator.AcceleratorCommand;
 import frc.robot.commands.feeder.FeederCommand;
 import frc.robot.subsystems.Accelerator;

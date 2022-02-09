@@ -5,24 +5,23 @@ import frc.robot.subsystems.Turret;
 
 public class TurretSetCommand extends CommandBase {
 
-    private final Turret turret;
-    private final double degrees;
+  private final Turret turret;
+  private final double degrees;
 
-    public TurretSetCommand(Turret turret, double degrees) {
-        this.turret = turret;
-        this.degrees = degrees;
+  public TurretSetCommand(Turret turret, double degrees) {
+    this.turret = turret;
+    this.degrees = degrees;
 
-        addRequirements(turret);
-    }
+    addRequirements(turret);
+  }
 
-    @Override
-    public void initialize() {
-        turret.setPosition(degrees);
-    }
+  @Override
+  public void initialize() {
+    turret.setPosition(degrees);
+  }
 
-    @Override
-    public void end(boolean interrupted) {
-        turret.stop();
-    }
-
+  @Override
+  public void end(boolean interrupted) {
+    turret.stop();
+  }
 }
