@@ -50,10 +50,7 @@ public class SwerveModule {
     WHEEL_MOTOR_CONFIG.voltageCompSaturation = 12.0; // Volts
 
     var wheelPID = new SlotConfiguration();
-    wheelPID.kP = 0.08; // 0.012
-
-    // TODO: Remove once velocity feedforward is calculated
-    wheelPID.kF = 0.05;
+    wheelPID.kP = 0.00; // TODO: Tune
 
     WHEEL_MOTOR_CONFIG.slot0 = wheelPID;
 
@@ -206,14 +203,13 @@ public class SwerveModule {
     double angle =
         (Math.abs(desiredState.speedMetersPerSecond) <= (Swerve.maxVelocity * 0.01))
             ? lastAngle
-            : desiredState.angle
-                .getDegrees();
+            : desiredState.angle.getDegrees();
     steerMotor.set(ControlMode.Position, Units.radsToFalcon(angle, STEER_GEAR_RATIO));
     lastAngle = angle;
   }
 
   /** Resets the steering motor's internal encoder to the value of the absolute encoder. * */
-  private void resetToAbsolute() {
+  public void resetToAbsolute() {
     double absolutePosition = falconToRads(getSteeringAngle().getRadians(), STEER_GEAR_RATIO);
     steerMotor.setSelectedSensorPosition(absolutePosition);
   }
