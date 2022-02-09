@@ -1,7 +1,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.SwerveCalibrationCommand;
 import frc.robot.commands.accelerator.AcceleratorCommand;
 import frc.robot.commands.auto.Basic1Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
@@ -53,15 +55,15 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
-    //hood.setDefaultCommand(new ContinuousJogHoodCommand(hood, true));
+    // hood.setDefaultCommand(new ContinuousJogHoodCommand(hood, true));
   }
 
   private void configureButtonBindings() {
     intakeButton.toggleWhenPressed(new IntakeCommand(intake));
     shootButton.toggleWhenPressed(new ShootCommand(feeder, accelerator, shooter));
 
-//    jogHoodUpButton.toggleWhenPressed(new ContinuousJogHoodCommand(hood, false));
-//    jogHoodDownButton.toggleWhenPressed(new ContinuousJogHoodCommand(hood, true));
+    //    jogHoodUpButton.toggleWhenPressed(new ContinuousJogHoodCommand(hood, false));
+    //    jogHoodDownButton.toggleWhenPressed(new ContinuousJogHoodCommand(hood, true));
     jogHoodUpButton.whenPressed(() -> hood.setHoodRawPosition(1.0));
     jogHoodDownButton.whenPressed(() -> hood.setHoodRawPosition(-1.0));
     feederButton.toggleWhenPressed(new FeederCommand(feeder));
@@ -71,5 +73,9 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return new Basic1Ball(swerve);
+  }
+
+  public void runDisabledCalibration() {
+    CommandScheduler.getInstance().schedule(new SwerveCalibrationCommand(swerve));
   }
 }
