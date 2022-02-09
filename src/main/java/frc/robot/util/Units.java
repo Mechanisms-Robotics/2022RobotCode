@@ -5,10 +5,10 @@ public class Units {
   /**
    * @param counts Falcon Counts
    * @param gearRatio Gear Ratio between Falcon and Mechanism
-   * @return  Rotation in radians
+   * @return Rotation in radians
    */
   public static double falconToRads(double counts, double gearRatio) {
-    return counts * ((2.0 * Math.PI)/ (gearRatio * 2048.0));
+    return counts * ((2.0 * Math.PI) / (gearRatio * 2048.0));
   }
 
   /**

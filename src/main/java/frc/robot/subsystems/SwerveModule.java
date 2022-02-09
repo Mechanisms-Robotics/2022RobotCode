@@ -16,7 +16,6 @@ import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -92,8 +91,8 @@ public class SwerveModule {
   private final CANCoder steeringEncoder;
   private final String moduleName;
 
-  private double lastAngle; // For debugging
   private final double angleOffsetRads; // This is only used to calibrate the swerve modules
+  private double lastAngle;
 
   /**
    * Constructs a swerve module.
@@ -102,13 +101,17 @@ public class SwerveModule {
    * @param wheelMotorId The CAN ID of the Spark Max used to control the wheel
    * @param steeringMotorId The CAN ID of the Spark Max used to control the steering
    * @param angleEncoderId The CAN ID of the CANCoder used to determine the angle of the module
-   * @param angleOffsetRads The swerve modle offest in Radians
+   * @param angleOffsetRads The swerve module offset in Radians
    */
   public SwerveModule(
-      String name, int wheelMotorId, int steeringMotorId, int angleEncoderId, double angleOffsetRads) {
+      String name,
+      int wheelMotorId,
+      int steeringMotorId,
+      int angleEncoderId,
+      double angleOffsetRads) {
 
     moduleName = name;
-    this.angleOffsetRads = angleOffsetRads
+    this.angleOffsetRads = angleOffsetRads;
 
     // Setup wheel motor
     wheelMotor = new WPI_TalonFX(wheelMotorId);
@@ -132,7 +135,6 @@ public class SwerveModule {
 
     resetToAbsolute();
   }
-
 
   /**
    * Get the steering angle based on the absolute encoder
@@ -159,7 +161,7 @@ public class SwerveModule {
    */
   public double getWheelVelocity() {
     return falconToMPS(
-            wheelMotor.getSelectedSensorVelocity(), Math.PI * WHEEL_DIAMETER, WHEEL_GEAR_RATIO);
+        wheelMotor.getSelectedSensorVelocity(), Math.PI * WHEEL_DIAMETER, WHEEL_GEAR_RATIO);
   }
 
   /**
@@ -181,7 +183,7 @@ public class SwerveModule {
     // CTRE is not
     state = CTREModuleState.optimize(state, getState().angle);
     setSpeed(state.speedMetersPerSecond);
-    setSteeringAngle(state.angle);
+    setSteeringAngle(state);
   }
 
   /**
@@ -199,44 +201,15 @@ public class SwerveModule {
         wheelFeedforward.calculate(wheelVelocityMPS));
   }
 
-  private int encoderResetCounter = 0;
-  private static final int ENCODER_RESET_ITERATIONS = 500; // Reset after being still for 10 sec
-  private static final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(0.5);
-
-  private void setSteeringAngle(Rotation2d angle) {
-    double currentAngleRadians = falconToRads(steerMotor.getSelectedSensorPosition(), STEER_GEAR_RATIO);
-
-    // Reset the Falcons's internal encoder periodically when the module is not rotating.
-    // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
-    // end up getting a good reading. If we reset periodically this won't matter anymore.
-    if (falconToRads(steerMotor.getSelectedSensorVelocity(), STEER_GEAR_RATIO) < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
-      if (++encoderResetCounter >= ENCODER_RESET_ITERATIONS) {
-        encoderResetCounter = 0;
-        final double absoluteAngle = getSteeringAngle().getRadians();
-        steerMotor.setSelectedSensorPosition(Units.radsToFalcon(absoluteAngle, STEER_GEAR_RATIO));
-        currentAngleRadians = absoluteAngle;
-      }
-    } else {
-      encoderResetCounter = 0;
-    }
-
-    double currentAngleRadiansMod = currentAngleRadians % (2.0 * Math.PI);
-    if (currentAngleRadiansMod < 0.0) {
-      currentAngleRadiansMod += 2.0 * Math.PI;
-    }
-
-    // The reference angle has the range [0, 2pi) but the Falcon's encoder can go above that
-    double adjustedReferenceAngleRadians = angleOffsetRads + currentAngleRadians - currentAngleRadiansMod;
-    if (angleOffsetRads - currentAngleRadiansMod > Math.PI) {
-      adjustedReferenceAngleRadians -= 2.0 * Math.PI;
-    } else if (angleOffsetRads - currentAngleRadiansMod < -Math.PI) {
-      adjustedReferenceAngleRadians += 2.0 * Math.PI;
-    }
-
-    // TODO: CONVERT ALL Angles to Radians internaly
-    steerMotor.set(ControlMode.Position, Units.radsToFalcon(adjustedReferenceAngleRadians, STEER_GEAR_RATIO));
-
-    angleOffsetRads = referenceAngleRadians;
+  private void setSteeringAngle(SwerveModuleState desiredState) {
+    // Prevent rotating module if speed is less than 1%. Prevents Jittering.
+    double angle =
+        (Math.abs(desiredState.speedMetersPerSecond) <= (Swerve.maxVelocity * 0.01))
+            ? lastAngle
+            : desiredState.angle
+                .getDegrees();
+    steerMotor.set(ControlMode.Position, Units.radsToFalcon(angle, STEER_GEAR_RATIO));
+    lastAngle = angle;
   }
 
   /** Resets the steering motor's internal encoder to the value of the absolute encoder. * */
