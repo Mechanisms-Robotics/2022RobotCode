@@ -1,9 +1,5 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.ID.ACCELERATOR_FOLLOWER_MOTOR_ID;
-import static frc.robot.Constants.ID.ACCELERATOR_MOTOR_ID;
-import static frc.robot.Constants.startupCanTimeout;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -13,10 +9,14 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Accelerator extends SubsystemBase {
 
   private static final TalonFXConfiguration ACCELERATOR_MOTOR_CONFIG = new TalonFXConfiguration();
+
+  private static final double SHOOT_SPEED = 0.60;
+  private static final double IDLE_SPEED = -0.10;
 
   static {
     // TODO: Determine how much current the accelerator draws nominally and
@@ -28,16 +28,16 @@ public class Accelerator extends SubsystemBase {
     ACCELERATOR_MOTOR_CONFIG.supplyCurrLimit = acceleratorCurrentLimit;
   }
 
-  private final WPI_TalonFX acceleratorMotor = new WPI_TalonFX(ACCELERATOR_MOTOR_ID);
+  private final WPI_TalonFX acceleratorMotor = new WPI_TalonFX(40);
   private final WPI_TalonFX acceleratorFollowerMotor =
-      new WPI_TalonFX(ACCELERATOR_FOLLOWER_MOTOR_ID);
+      new WPI_TalonFX(41);
 
   public Accelerator() {
-    acceleratorMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, startupCanTimeout);
+    acceleratorMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
     acceleratorMotor.setInverted(TalonFXInvertType.Clockwise);
     acceleratorMotor.setNeutralMode(NeutralMode.Brake);
 
-    acceleratorFollowerMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, startupCanTimeout);
+    acceleratorFollowerMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
     acceleratorFollowerMotor.follow(acceleratorMotor);
     acceleratorFollowerMotor.setInverted(InvertType.OpposeMaster);
     acceleratorFollowerMotor.setNeutralMode(NeutralMode.Brake);
@@ -47,7 +47,15 @@ public class Accelerator extends SubsystemBase {
     acceleratorFollowerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
   }
 
-  public void setOpenLoop(double percentOutput) {
+  public void spinup() {
+    setOpenLoop(SHOOT_SPEED);
+  }
+
+  public void idle() {
+    setOpenLoop(IDLE_SPEED);
+  }
+
+  private void setOpenLoop(double percentOutput) {
     acceleratorMotor.set(ControlMode.PercentOutput, percentOutput);
   }
 

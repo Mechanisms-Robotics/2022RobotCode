@@ -1,4 +1,4 @@
-package frc.robot.commands.aiming;
+package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;

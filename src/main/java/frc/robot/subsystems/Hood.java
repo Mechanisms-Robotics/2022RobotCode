@@ -4,37 +4,25 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import static frc.robot.Constants.ID.HOOD_SERVO_PWM_PORT_ID;
-
 public class Hood extends SubsystemBase {
-  private static final double HOOD_STEP_AMOUNT = 0.01;
-
-  private final Servo hoodServo = new Servo(HOOD_SERVO_PWM_PORT_ID);
+  private final Servo hoodServo = new Servo(0);
   private double currentPos = 0.0;
 
   public Hood() {
     hoodServo.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
   }
 
-  public void setHoodRawPosition(double rawPosition) {
-    MathUtil.clamp(rawPosition, -1.0, 1.0);
+  public void aimHood(double range) {
+    // Aim the hood based on an interpolating tree map
+  }
+
+  private void setHoodRawPosition(double rawPosition) {
+    rawPosition = MathUtil.clamp(rawPosition, -1.0, 1.0);
 
     // Set speed is the speed of the pwm pulse not the speed of the servo
     // PWM speed commands the servo position.
     hoodServo.setSpeed(rawPosition);
     currentPos = rawPosition;
-  }
-
-  public void increaseHood() {
-    double currentPos = hoodServo.getSpeed();
-    double wantedPos = currentPos + HOOD_STEP_AMOUNT;
-    setHoodRawPosition(wantedPos);
-  }
-
-  public void decreaseHood() {
-    double currentPos = hoodServo.getSpeed();
-    double wantedPos = currentPos - HOOD_STEP_AMOUNT;
-    setHoodRawPosition(wantedPos);
   }
 
   public double getCurrentPos() {
