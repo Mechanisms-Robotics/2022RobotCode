@@ -25,13 +25,13 @@ public class Swerve extends SubsystemBase {
   private static final double driveBaseLength = 0.5969; // m
 
   private static final Translation2d flModuleLocation =
-      new Translation2d(-driveBaseLength / 2.0, driveBaseWidth / 2.0);
+      new Translation2d(driveBaseWidth / 2.0, driveBaseLength / 2.0);
   private static final Translation2d frModuleLocation =
-      new Translation2d(driveBaseLength / 2.0, driveBaseWidth / 2.0);
+      new Translation2d(driveBaseWidth / 2.0, -driveBaseLength / 2.0);
   private static final Translation2d blModuleLocation =
-      new Translation2d(-driveBaseLength / 2.0, -driveBaseWidth / 2.0);
+      new Translation2d(-driveBaseWidth / 2.0, driveBaseLength / 2.0);
   private static final Translation2d brModuleLocation =
-      new Translation2d(driveBaseLength / 2.0, -driveBaseWidth / 2.0);
+      new Translation2d(-driveBaseWidth / 2.0, -driveBaseLength / 2.0);
 
   private static final int flWheelMotorID = 12;
   private static final int flSteerMotorID = 13;
@@ -94,6 +94,7 @@ public class Swerve extends SubsystemBase {
   public Swerve() {
     poseEstimator = new SwerveDriveOdometry(kinematics, getHeading(), new Pose2d());
 
+    gyro.setFusedHeading(0.0);
     this.register();
     this.setName("Swerve Drive");
   }
@@ -107,7 +108,7 @@ public class Swerve extends SubsystemBase {
         blModule.getState(),
         brModule.getState());
 
-    // If we are currently cunning a tarjecto
+    // If we are currently cunning a trajectory
     if (trajectoryController.isFinished()) {
       headingController.update(desiredSpeeds, getHeading());
     } else {
@@ -144,7 +145,6 @@ public class Swerve extends SubsystemBase {
 
   private void setSwerveStates(ChassisSpeeds speeds) {
     SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
-
     setModuleStates(states);
   }
 
@@ -177,7 +177,7 @@ public class Swerve extends SubsystemBase {
 
   /** Zeros the gyro heading. */
   public void zeroHeading() {
-    gyro.setYaw(0.0);
+    setHeading(new Rotation2d());
   }
 
   private void setHeading(Rotation2d heading) {
@@ -185,9 +185,7 @@ public class Swerve extends SubsystemBase {
   }
 
   private Rotation2d getRawHeading() {
-    double[] ypr = new double[3];
-    gyro.getYawPitchRoll(ypr);
-    return Rotation2d.fromDegrees(ypr[0]);
+    return Rotation2d.fromDegrees(gyro.getFusedHeading());
   }
 
   public SwerveDriveKinematics getKinematics() {
