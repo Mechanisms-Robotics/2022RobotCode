@@ -232,6 +232,13 @@ public class Swerve extends SubsystemBase {
     poseEstimator.resetPosition(new Pose2d(), new Rotation2d());
   }
 
+  public void calibrateModules() {
+    flModule.resetToAbsolute();
+    frModule.resetToAbsolute();
+    blModule.resetToAbsolute();
+    brModule.resetToAbsolute();
+  }
+
   /**
    * Start following a trajectory.
    *
