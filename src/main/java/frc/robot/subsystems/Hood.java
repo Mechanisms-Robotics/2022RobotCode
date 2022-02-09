@@ -1,14 +1,15 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ID.HOOD_SERVO_PWM_PORT_ID;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Hood extends SubsystemBase {
-  private static final int HOOD_SERVO_PWM_PORT = 0;
   private static final double HOOD_STEP_AMOUNT = 0.01;
 
-  private final Servo hoodServo = new Servo(HOOD_SERVO_PWM_PORT);
+  private final Servo hoodServo = new Servo(HOOD_SERVO_PWM_PORT_ID);
   private double currentPos = 0.0;
 
   public Hood() {
