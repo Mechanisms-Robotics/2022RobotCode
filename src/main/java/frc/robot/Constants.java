@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+
 public final class Constants {
 
   public static final int startupCanTimeout = 100; // ms
@@ -11,6 +15,12 @@ public final class Constants {
   public static final double loopTime = 0.02; // s
   public static final int talonPrimaryPid = 0;
   public static final int falconCPR = 2048; // counts per revolution
+
+  public static final Transform2d feildToRobot =
+      new Transform2d(
+          new Pose2d(0, 0, Rotation2d.fromDegrees(0.0)),
+          new Pose2d(0, 0, Rotation2d.fromDegrees(0.0)));
+
   public static final double intakeSpeed = 0.40;
   public static final double feederSpeed = 0.50;
   public static final double acceleratorSpeed = 0.20;

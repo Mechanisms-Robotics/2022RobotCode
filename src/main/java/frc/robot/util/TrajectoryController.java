@@ -74,6 +74,8 @@ public class TrajectoryController {
     final double currentTime = timer.get();
     final var desiredState =
         (PathPlannerTrajectory.PathPlannerState) trajectory.sample(currentTime);
+    desiredState.poseMeters = desiredState.poseMeters.transformBy(Constants.feildToRobot);
+    desiredState.holonomicRotation.rotateBy(Constants.feildToRobot.getRotation());
     return controller.calculate(currentPose, desiredState, desiredState.holonomicRotation);
   }
 
