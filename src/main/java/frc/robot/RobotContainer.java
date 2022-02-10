@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.SwerveCalibrationCommand;
 import frc.robot.commands.auto.Basic1Ball;
-import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Hood;
@@ -50,6 +49,7 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
     intakeButton.toggleWhenPressed(new StartEndCommand(intake::intake, intake::stop, intake));
+    shootButton.toggleWhenPressed(new StartEndCommand(shooter::shoot, shooter::stop));
   }
 
   public Command getAutonomousCommand() {

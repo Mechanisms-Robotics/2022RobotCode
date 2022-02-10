@@ -9,16 +9,20 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
+import frc.robot.util.Units;
 
 public class Shooter extends SubsystemBase {
 
   private static final TalonFXConfiguration SHOOTER_MOTOR_CONFIG = new TalonFXConfiguration();
+  private static final double GEAR_RATIO = 1.5 / 1.0;
 
   private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> RANGE_TO_RPM =
       new InterpolatingTreeMap<>();
@@ -26,21 +30,28 @@ public class Shooter extends SubsystemBase {
 
   private final SimpleMotorFeedforward feedforward =
       new SimpleMotorFeedforward(
-          0.0, // ks
-          0.0, // kv
-          0.0 // ka
+          0.52017, // ks
+          0.000084452, // kv
+          0.0000089707 // ka
           );
 
   static {
     final var shooterCurrentLimit = new SupplyCurrentLimitConfiguration();
     shooterCurrentLimit.currentLimit = 20; // Amps
-    shooterCurrentLimit.triggerThresholdCurrent = 25; // Amps
+    shooterCurrentLimit.triggerThresholdCurrent = 40; // Amps
     shooterCurrentLimit.triggerThresholdTime = 0.5; // sec
     shooterCurrentLimit.enable = true;
     SHOOTER_MOTOR_CONFIG.supplyCurrLimit = shooterCurrentLimit;
 
+    final var shooterPID = new SlotConfiguration();
+    shooterPID.kP = 0.005;
+    SHOOTER_MOTOR_CONFIG.slot0 = shooterPID;
+
     RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(3000.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(20.0), new InterpolatingDouble(3000.0));
+
+    SHOOTER_MOTOR_CONFIG.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_2Ms;
+    SHOOTER_MOTOR_CONFIG.voltageMeasurementFilter = 4;
   }
 
   private final WPI_TalonFX shooterMotor = new WPI_TalonFX(50);
@@ -69,7 +80,7 @@ public class Shooter extends SubsystemBase {
     final double velocity = RANGE_TO_RPM.getInterpolated(new InterpolatingDouble(range)).value;
     shooterMotor.set(
         ControlMode.Velocity,
-        velocity,
+        Units.RPMToFalcon(velocity, GEAR_RATIO),
         DemandType.ArbitraryFeedForward,
         feedforward.calculate(velocity));
   }
@@ -77,7 +88,7 @@ public class Shooter extends SubsystemBase {
   public void shoot() {
     shooterMotor.set(
         ControlMode.Velocity,
-        DEFAULT_SHOOTER_VEL,
+        Units.RPMToFalcon(DEFAULT_SHOOTER_VEL, GEAR_RATIO),
         DemandType.ArbitraryFeedForward,
         feedforward.calculate(DEFAULT_SHOOTER_VEL));
   }

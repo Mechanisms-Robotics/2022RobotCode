@@ -4,6 +4,7 @@ import static frc.robot.Constants.startupCanTimeout;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -33,6 +34,8 @@ public class Feeder extends SubsystemBase {
     feederMotor.configAllSettings(FEEDER_MOTOR_CONFIG, startupCanTimeout);
     feederMotor.setInverted(TalonFXInvertType.Clockwise);
     feederMotor.setNeutralMode(NeutralMode.Coast);
+    feederMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+    feederMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
   }
 
   private void setOpenLoop(double percentOutput) {

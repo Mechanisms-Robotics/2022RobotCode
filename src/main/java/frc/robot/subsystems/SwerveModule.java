@@ -117,6 +117,7 @@ public class SwerveModule {
     wheelMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, startupCanTimeout);
     wheelMotor.selectProfileSlot(VELOCITY_PID_SLOT, 0);
     wheelMotor.setNeutralMode(NeutralMode.Brake);
+    wheelMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255, 255);
 
     // Setup steering encoder
     steeringEncoder = new CANCoder(angleEncoderId);
@@ -129,6 +130,7 @@ public class SwerveModule {
     steerMotor.setInverted(TalonFXInvertType.CounterClockwise);
     steerMotor.setNeutralMode(NeutralMode.Coast);
     steerMotor.selectProfileSlot(MOTION_MAGIC_PID_SLOT, 0);
+    steerMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255, 255);
 
     resetToAbsolute();
   }
