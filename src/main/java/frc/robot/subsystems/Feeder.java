@@ -43,7 +43,9 @@ public class Feeder extends SubsystemBase {
     this.setOpenLoop(FEEDER_INTAKE_SPEED);
   }
 
-  public void outtake() { this.setOpenLoop(FEEDER_OUTTAKE_SPEED); }
+  public void outtake() {
+    this.setOpenLoop(FEEDER_OUTTAKE_SPEED);
+  }
 
   public void feed() {
     this.setOpenLoop(FEEDER_FEED_SPEED);

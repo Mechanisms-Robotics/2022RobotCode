@@ -45,17 +45,11 @@ public class RobotContainer {
   }
 
   private void configureDefaultCommands() {
-    swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
+    // swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
   }
 
   private void configureButtonBindings() {
     intakeButton.toggleWhenPressed(new StartEndCommand(intake::intake, intake::stop, intake));
-    shootButton.toggleWhenPressed(new ShootCommand(feeder, shooter, accelerator));
-
-    feederButton.toggleWhenPressed(new StartEndCommand(feeder::feed, feeder::stop, feeder));
-    acceleratorButton.toggleWhenPressed(
-        new StartEndCommand(accelerator::spinup, accelerator::stop));
-    flywheelButton.toggleWhenPressed(new StartEndCommand(shooter::shoot, shooter::stop));
   }
 
   public Command getAutonomousCommand() {

@@ -52,7 +52,9 @@ public class Accelerator extends SubsystemBase {
     setOpenLoop(SHOOT_SPEED);
   }
 
-  public void backup() { setOpenLoop(BACKUP_SPEED); }
+  public void backup() {
+    setOpenLoop(BACKUP_SPEED);
+  }
 
   public void idle() {
     setOpenLoop(IDLE_SPEED);
