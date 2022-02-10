@@ -16,6 +16,7 @@ public class Accelerator extends SubsystemBase {
   private static final TalonFXConfiguration ACCELERATOR_MOTOR_CONFIG = new TalonFXConfiguration();
 
   private static final double SHOOT_SPEED = 0.60;
+  private static final double BACKUP_SPEED = -0.25;
   private static final double IDLE_SPEED = -0.10;
 
   static {
@@ -50,6 +51,8 @@ public class Accelerator extends SubsystemBase {
   public void spinup() {
     setOpenLoop(SHOOT_SPEED);
   }
+
+  public void backup() { setOpenLoop(BACKUP_SPEED); }
 
   public void idle() {
     setOpenLoop(IDLE_SPEED);

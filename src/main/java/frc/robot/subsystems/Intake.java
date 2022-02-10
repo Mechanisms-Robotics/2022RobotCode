@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase {
 
   private static final double INTAKE_SPEED = 0.50;
-  private static final double OUTTAKE_SPEED = 0.25;
+  private static final double OUTTAKE_SPEED = -0.25;
 
   private static final TalonFXConfiguration INTAKE_MOTOR_CONFIG = new TalonFXConfiguration();
 
