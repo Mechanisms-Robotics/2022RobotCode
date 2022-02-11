@@ -51,7 +51,7 @@ public class Shooter extends SubsystemBase {
     RANGE_TO_RPM.put(new InterpolatingDouble(20.0), new InterpolatingDouble(3000.0));
 
     SHOOTER_MOTOR_CONFIG.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_2Ms;
-    SHOOTER_MOTOR_CONFIG.voltageMeasurementFilter = 4;
+    SHOOTER_MOTOR_CONFIG.velocityMeasurementWindow = 4;
   }
 
   private final WPI_TalonFX shooterMotor = new WPI_TalonFX(50);
