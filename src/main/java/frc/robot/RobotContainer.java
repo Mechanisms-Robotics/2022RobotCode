@@ -2,15 +2,14 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.BackupCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.OuttakeCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SwerveCalibrationCommand;
-import frc.robot.commands.accelerator.AcceleratorCommand;
 import frc.robot.commands.auto.Basic1Ball;
-import frc.robot.commands.drivetrain.DriveTeleopCommand;
-import frc.robot.commands.feeder.FeederCommand;
-import frc.robot.commands.intake.IntakeCommand;
-import frc.robot.commands.shooter.ShootCommand;
-import frc.robot.commands.shooter.SpinupCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Hood;
@@ -18,7 +17,6 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.util.ControllerWrapper;
-import frc.robot.util.ControllerWrapper.Direction;
 import java.util.function.Supplier;
 
 public class RobotContainer {
@@ -33,15 +31,8 @@ public class RobotContainer {
   private final ControllerWrapper controllerWrapper = new ControllerWrapper(0);
 
   private final Button intakeButton = new Button(controllerWrapper::getLeftTriggerButton);
+  private final Button outtakeButton = new Button(controllerWrapper::getTriangleButton);
   private final Button shootButton = new Button(controllerWrapper::getRightTriggerButton);
-
-  private final Button jogHoodUpButton =
-      new Button(() -> (controllerWrapper.getPOV() == Direction.Up));
-  private final Button jogHoodDownButton =
-      new Button(() -> (controllerWrapper.getPOV() == Direction.Down));
-  private final Button feederButton = new Button(controllerWrapper::getLeftBumperButton);
-  private final Button acceleratorButton = new Button(controllerWrapper::getRightBumperButton);
-  private final Button flywheelButton = new Button(controllerWrapper::getXButton);
 
   Supplier<Double> inputX = () -> -controllerWrapper.getLeftJoystickX(),
       inputY = () -> -controllerWrapper.getLeftJoystickY(),
@@ -54,21 +45,20 @@ public class RobotContainer {
   }
 
   private void configureDefaultCommands() {
-    swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
-    // hood.setDefaultCommand(new ContinuousJogHoodCommand(hood, true));
+    // swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
   }
 
   private void configureButtonBindings() {
-    intakeButton.toggleWhenPressed(new IntakeCommand(intake));
-    shootButton.toggleWhenPressed(new ShootCommand(feeder, accelerator, shooter));
-
-    //    jogHoodUpButton.toggleWhenPressed(new ContinuousJogHoodCommand(hood, false));
-    //    jogHoodDownButton.toggleWhenPressed(new ContinuousJogHoodCommand(hood, true));
-    jogHoodUpButton.whenPressed(() -> hood.setHoodRawPosition(1.0));
-    jogHoodDownButton.whenPressed(() -> hood.setHoodRawPosition(-1.0));
-    feederButton.toggleWhenPressed(new FeederCommand(feeder));
-    acceleratorButton.toggleWhenPressed(new AcceleratorCommand(accelerator));
-    flywheelButton.toggleWhenPressed(new SpinupCommand(shooter));
+    intakeButton.toggleWhenPressed(
+        new StartEndCommand(
+            () -> {
+              new IntakeCommand(intake, feeder).schedule();
+            },
+            () -> {
+              new BackupCommand(accelerator, feeder).schedule();
+            }));
+    outtakeButton.whenHeld(new OuttakeCommand(intake, feeder, accelerator));
+    shootButton.toggleWhenPressed(new ShootCommand(shooter, accelerator, feeder));
   }
 
   public Command getAutonomousCommand() {
