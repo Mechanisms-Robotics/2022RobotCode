@@ -17,6 +17,7 @@ public class Accelerator extends SubsystemBase {
 
   private static final double SHOOT_SPEED = 0.60;
   private static final double BACKUP_SPEED = -0.25;
+  private static final double OUTTAKE_SPEED = -0.25;
   private static final double IDLE_SPEED = -0.10;
 
   static {
@@ -48,12 +49,16 @@ public class Accelerator extends SubsystemBase {
     acceleratorFollowerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
   }
 
-  public void spinup() {
+  public void shoot() {
     setOpenLoop(SHOOT_SPEED);
   }
 
   public void backup() {
     setOpenLoop(BACKUP_SPEED);
+  }
+
+  public void outtake() {
+    setOpenLoop(OUTTAKE_SPEED);
   }
 
   public void idle() {

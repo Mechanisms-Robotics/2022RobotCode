@@ -4,6 +4,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.BackupCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.OuttakeCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SwerveCalibrationCommand;
 import frc.robot.commands.auto.Basic1Ball;
 import frc.robot.subsystems.Accelerator;
@@ -27,11 +31,8 @@ public class RobotContainer {
   private final ControllerWrapper controllerWrapper = new ControllerWrapper(0);
 
   private final Button intakeButton = new Button(controllerWrapper::getLeftTriggerButton);
+  private final Button outtakeButton = new Button(controllerWrapper::getTriangleButton);
   private final Button shootButton = new Button(controllerWrapper::getRightTriggerButton);
-
-  private final Button feederButton = new Button(controllerWrapper::getLeftBumperButton);
-  private final Button acceleratorButton = new Button(controllerWrapper::getRightBumperButton);
-  private final Button flywheelButton = new Button(controllerWrapper::getXButton);
 
   Supplier<Double> inputX = () -> -controllerWrapper.getLeftJoystickX(),
       inputY = () -> -controllerWrapper.getLeftJoystickY(),
@@ -48,8 +49,16 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    intakeButton.toggleWhenPressed(new StartEndCommand(intake::intake, intake::stop, intake));
-    shootButton.toggleWhenPressed(new StartEndCommand(shooter::shoot, shooter::stop));
+    intakeButton.toggleWhenPressed(
+        new StartEndCommand(
+            () -> {
+              new IntakeCommand(intake, feeder).schedule();
+            },
+            () -> {
+              new BackupCommand(accelerator, feeder).schedule();
+            }));
+    outtakeButton.whenHeld(new OuttakeCommand(intake, feeder, accelerator));
+    shootButton.toggleWhenPressed(new ShootCommand(shooter, accelerator, feeder));
   }
 
   public Command getAutonomousCommand() {

@@ -14,16 +14,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Feeder extends SubsystemBase {
 
   private static final TalonFXConfiguration FEEDER_MOTOR_CONFIG = new TalonFXConfiguration();
-  private static final double FEEDER_FEED_SPEED = 0.75;
+  private static final double FEEDER_SHOOT_SPEED = 0.75;
   private static final double FEEDER_INTAKE_SPEED = 0.50;
   private static final double FEEDER_OUTTAKE_SPEED = -0.50;
+  private static final double FEEDER_BACKUP_SPEED = -0.25;
 
   static {
     // TODO: Determine how much current the feeder draws nominally and
     final var feederCurrentLimit = new SupplyCurrentLimitConfiguration();
-    feederCurrentLimit.currentLimit = 10; // Amps
-    feederCurrentLimit.triggerThresholdCurrent = 15; // Amps
-    feederCurrentLimit.triggerThresholdTime = 0.5; // sec
+    feederCurrentLimit.currentLimit = 30; // Amps
+    feederCurrentLimit.triggerThresholdCurrent = 35; // Amps
+    feederCurrentLimit.triggerThresholdTime = 0.25; // sec
     feederCurrentLimit.enable = true;
     FEEDER_MOTOR_CONFIG.supplyCurrLimit = feederCurrentLimit;
   }
@@ -43,15 +44,19 @@ public class Feeder extends SubsystemBase {
   }
 
   public void intake() {
-    this.setOpenLoop(FEEDER_INTAKE_SPEED);
+    setOpenLoop(FEEDER_INTAKE_SPEED);
   }
 
   public void outtake() {
-    this.setOpenLoop(FEEDER_OUTTAKE_SPEED);
+    setOpenLoop(FEEDER_OUTTAKE_SPEED);
   }
 
-  public void feed() {
-    this.setOpenLoop(FEEDER_FEED_SPEED);
+  public void shoot() {
+    setOpenLoop(FEEDER_SHOOT_SPEED);
+  }
+
+  public void backup() {
+    setOpenLoop(FEEDER_BACKUP_SPEED);
   }
 
   public void stop() {

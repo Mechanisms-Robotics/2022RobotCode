@@ -15,7 +15,7 @@ public final class Constants {
   public static final double loopTime = 0.02; // s
   public static final int talonPrimaryPid = 0;
   public static final int falconCPR = 2048; // counts per revolution
-  public static final Transform2d feildToRobot =
+  public static final Transform2d fieldRobot =
       new Transform2d(
           new Pose2d(0, 0, Rotation2d.fromDegrees(0.0)),
           new Pose2d(0, 0, Rotation2d.fromDegrees(0.0)));
