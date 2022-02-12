@@ -36,6 +36,8 @@ public class Accelerator extends SubsystemBase {
     acceleratorMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
     acceleratorMotor.setInverted(TalonFXInvertType.Clockwise);
     acceleratorMotor.setNeutralMode(NeutralMode.Brake);
+    acceleratorMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+    acceleratorMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
 
     acceleratorFollowerMotor.configAllSettings(
         ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);

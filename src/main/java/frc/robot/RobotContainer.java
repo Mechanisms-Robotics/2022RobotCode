@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.SwerveCalibrationCommand;
@@ -30,13 +31,15 @@ public class RobotContainer {
   private final Button intakeButton = new Button(controllerWrapper::getLeftTriggerButton);
   private final Button shootButton = new Button(controllerWrapper::getRightTriggerButton);
 
+  private final Button gyroResetButton = new Button(controllerWrapper::getShareButton);
+
   private final Button feederButton = new Button(controllerWrapper::getLeftBumperButton);
   private final Button acceleratorButton = new Button(controllerWrapper::getRightBumperButton);
   private final Button flywheelButton = new Button(controllerWrapper::getXButton);
 
   Supplier<Double> inputX = () -> -controllerWrapper.getLeftJoystickX(),
       inputY = () -> -controllerWrapper.getLeftJoystickY(),
-      rotation = () -> -controllerWrapper.getRightJoystickX();
+      rotation = () -> controllerWrapper.getRightJoystickX();
 
   public RobotContainer() {
     swerve.zeroHeading();
@@ -51,6 +54,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     intakeButton.toggleWhenPressed(new StartEndCommand(intake::intake, intake::stop, intake));
     shootButton.toggleWhenPressed(new StartEndCommand(shooter::shoot, shooter::stop));
+    gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
   }
 
   public Command getAutonomousCommand() {

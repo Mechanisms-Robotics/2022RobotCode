@@ -185,7 +185,8 @@ public class Swerve extends SubsystemBase {
   }
 
   private Rotation2d getRawHeading() {
-    return Rotation2d.fromDegrees(gyro.getFusedHeading());
+    // For the Pigeon 1 use getFusedHeading the Pigeon 2 uses getYaw. See the Pigeon 2 user guide.
+    return Rotation2d.fromDegrees(gyro.getYaw());
   }
 
   public SwerveDriveKinematics getKinematics() {

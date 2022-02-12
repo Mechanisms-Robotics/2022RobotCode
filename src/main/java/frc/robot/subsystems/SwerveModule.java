@@ -184,9 +184,9 @@ public class SwerveModule {
   public void setState(SwerveModuleState state) {
     // Custom optimize command, since default WPILib optimize assumes continuous controller which
     // CTRE is not
-    state = CTREModuleState.optimize(state, getState().angle);
-    setSpeed(state.speedMetersPerSecond);
-    setSteeringAngle(state);
+    SwerveModuleState optimizedState = CTREModuleState.optimize(state, getState().angle);
+    setSpeed(optimizedState.speedMetersPerSecond);
+    setSteeringAngle(optimizedState);
   }
 
   /**

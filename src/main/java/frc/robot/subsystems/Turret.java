@@ -38,6 +38,8 @@ public class Turret extends SubsystemBase {
     turretMotor.setInverted(TalonFXInvertType.Clockwise);
     turretMotor.setNeutralMode(
         NeutralMode.Brake); // Should we use cost mode once the turret can move?
+
+    turretMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
   }
 
   public void aim(Rotation2d aimingPos) {

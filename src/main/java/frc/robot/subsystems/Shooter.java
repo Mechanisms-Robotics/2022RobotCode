@@ -61,6 +61,7 @@ public class Shooter extends SubsystemBase {
     shooterMotor.configAllSettings(SHOOTER_MOTOR_CONFIG, startupCanTimeout);
     shooterMotor.setInverted(TalonFXInvertType.Clockwise);
     shooterMotor.setNeutralMode(NeutralMode.Coast);
+    shooterMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
 
     shooterFollowerMotor.configAllSettings(SHOOTER_MOTOR_CONFIG, startupCanTimeout);
     shooterFollowerMotor.follow(shooterMotor);
