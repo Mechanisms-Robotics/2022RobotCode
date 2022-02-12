@@ -38,8 +38,8 @@ public class SwerveModule {
 
   private final SimpleMotorFeedforward wheelFeedforward = new SimpleMotorFeedforward(
       0.319185544,
-      0.319185544,
-      0.319185544);
+      2.2544,
+      0.063528);
 
   static {
     // Wheel Motor Current Limiting
@@ -72,9 +72,9 @@ public class SwerveModule {
     STEERING_MOTOR_CONFIG.voltageCompSaturation = 8.0; // Volts
 
     var steeringPID = new SlotConfiguration();
-    steeringPID.kP = 0.3; // 0.3 // 0.6
+    steeringPID.kP = 0.6; // 0.3 // 0.6
     steeringPID.kI = 0.0; // 0.00012
-    steeringPID.kD = 3.0; // 3.0 // 12.0
+    steeringPID.kD = 12.0; // 3.0 // 12.0
     steeringPID.kF = 0.0; // 0.0008
     steeringPID.allowableClosedloopError = 10; // ticks
     STEERING_MOTOR_CONFIG.slot1 = steeringPID;
@@ -185,12 +185,13 @@ public class SwerveModule {
     // Custom optimize command, since default WPILib optimize assumes continuous controller which
     // CTRE is not
     state = CTREModuleState.optimize(state, getState().angle);
-    //setSpeed(state.speedMetersPerSecond);
+    setSpeed(state.speedMetersPerSecond);
     setSteeringAngle(state);
   }
 
   /**
-   * Set the speed of the wheel.
+   * Set the speed of the wheel.=/\
+   *
    *
    * @param wheelVelocityMPS Speed of the wheel in meters per second
    */
@@ -201,7 +202,7 @@ public class SwerveModule {
         ControlMode.Velocity,
         velocity,
         DemandType.ArbitraryFeedForward,
-        wheelFeedforward.calculate(wheelVelocityMPS));
+        wheelFeedforward.calculate(wheelVelocityMPS) / 12.0);
   }
 
   private void setSteeringAngle(SwerveModuleState desiredState) {
@@ -210,7 +211,6 @@ public class SwerveModule {
         (Math.abs(desiredState.speedMetersPerSecond) <= (Swerve.maxVelocity * 0.01))
             ? lastAngle
             : Units.normalizeRotation2d(desiredState.angle).getRadians();
-    angle = 0.0;//0.5 * 3.141592653589793;
     steerMotor.set(ControlMode.Position, Units.radsToFalcon(angle, STEER_GEAR_RATIO));
     lastAngle = angle;
   }

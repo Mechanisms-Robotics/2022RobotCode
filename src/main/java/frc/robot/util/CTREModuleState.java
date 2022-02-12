@@ -21,7 +21,7 @@ public class CTREModuleState {
     double targetAngle =
         placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
     double targetSpeed = desiredState.speedMetersPerSecond;
-    double delta = targetAngle - currentAngle.getDegrees();
+    double delta = targetAngle - Units.normalizeRotation2d(currentAngle).getDegrees();
     if (Math.abs(delta) > 90) {
       targetSpeed = -targetSpeed;
       targetAngle = delta > 90 ? (targetAngle -= 180) : (targetAngle += 180);
