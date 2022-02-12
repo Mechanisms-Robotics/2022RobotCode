@@ -1,5 +1,7 @@
 package frc.robot.util;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class Units {
 
   /**
@@ -65,5 +67,9 @@ public class Units {
     double wheelRPM = ((velocity * 60) / circumference);
     double wheelVelocity = RPMToFalcon(wheelRPM, gearRatio);
     return wheelVelocity;
+  }
+
+  public static Rotation2d normalizeRotation2d(Rotation2d rotation) {
+    return new Rotation2d(rotation.getCos(), rotation.getSin());
   }
 }

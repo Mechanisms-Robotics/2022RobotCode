@@ -19,6 +19,7 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.CTREModuleState;
 import frc.robot.util.Units;
 
@@ -35,7 +36,10 @@ public class SwerveModule {
   private static final TalonFXConfiguration STEERING_MOTOR_CONFIG = new TalonFXConfiguration();
   private static final CANCoderConfiguration CONFIGURATION = new CANCoderConfiguration();
 
-  private final SimpleMotorFeedforward wheelFeedforward = new SimpleMotorFeedforward(0.0, 0.0, 0.0);
+  private final SimpleMotorFeedforward wheelFeedforward = new SimpleMotorFeedforward(
+      0.319185544,
+      0.319185544,
+      0.319185544);
 
   static {
     // Wheel Motor Current Limiting
@@ -50,7 +54,7 @@ public class SwerveModule {
     WHEEL_MOTOR_CONFIG.voltageCompSaturation = 12.0; // Volts
 
     var wheelPID = new SlotConfiguration();
-    wheelPID.kP = 0.00; // TODO: Tune
+    wheelPID.kP = 0.0; // 0.0007298
 
     WHEEL_MOTOR_CONFIG.slot0 = wheelPID;
 
@@ -68,9 +72,9 @@ public class SwerveModule {
     STEERING_MOTOR_CONFIG.voltageCompSaturation = 8.0; // Volts
 
     var steeringPID = new SlotConfiguration();
-    steeringPID.kP = 0.6; // 0.3
+    steeringPID.kP = 0.3; // 0.3 // 0.6
     steeringPID.kI = 0.0; // 0.00012
-    steeringPID.kD = 12.0; // 3.0
+    steeringPID.kD = 3.0; // 3.0 // 12.0
     steeringPID.kF = 0.0; // 0.0008
     steeringPID.allowableClosedloopError = 10; // ticks
     STEERING_MOTOR_CONFIG.slot1 = steeringPID;
@@ -98,17 +102,17 @@ public class SwerveModule {
    * @param wheelMotorId The CAN ID of the Spark Max used to control the wheel
    * @param steeringMotorId The CAN ID of the Spark Max used to control the steering
    * @param angleEncoderId The CAN ID of the CANCoder used to determine the angle of the module
-   * @param angleOffsetRads The swerve module offset in Radians
+   * @param angleOffsetDegs The swerve module offset in Radians
    */
   public SwerveModule(
       String name,
       int wheelMotorId,
       int steeringMotorId,
       int angleEncoderId,
-      double angleOffsetRads) {
+      double angleOffsetDegs) {
 
     moduleName = name;
-    this.angleOffsetRads = angleOffsetRads;
+    this.angleOffsetRads = Math.toRadians(angleOffsetDegs);
 
     // Setup wheel motor
     wheelMotor = new WPI_TalonFX(wheelMotorId);
@@ -141,7 +145,7 @@ public class SwerveModule {
    * @return Steering angle in radians.
    */
   public Rotation2d getSteeringAngle() {
-    return new Rotation2d(steeringEncoder.getAbsolutePosition() - angleOffsetRads);
+    return Units.normalizeRotation2d(new Rotation2d( Math.toRadians(steeringEncoder.getAbsolutePosition()) - angleOffsetRads));
   }
 
   /**
@@ -181,7 +185,7 @@ public class SwerveModule {
     // Custom optimize command, since default WPILib optimize assumes continuous controller which
     // CTRE is not
     state = CTREModuleState.optimize(state, getState().angle);
-    setSpeed(state.speedMetersPerSecond);
+    //setSpeed(state.speedMetersPerSecond);
     setSteeringAngle(state);
   }
 
@@ -205,14 +209,16 @@ public class SwerveModule {
     double angle =
         (Math.abs(desiredState.speedMetersPerSecond) <= (Swerve.maxVelocity * 0.01))
             ? lastAngle
-            : desiredState.angle.getDegrees();
+            : Units.normalizeRotation2d(desiredState.angle).getRadians();
+    angle = 0.0;//0.5 * 3.141592653589793;
     steerMotor.set(ControlMode.Position, Units.radsToFalcon(angle, STEER_GEAR_RATIO));
     lastAngle = angle;
   }
 
   /** Resets the steering motor's internal encoder to the value of the absolute encoder. * */
   public void resetToAbsolute() {
-    double absolutePosition = falconToRads(getSteeringAngle().getRadians(), STEER_GEAR_RATIO);
+    double absolutePosition = radsToFalcon(Math.toRadians(steeringEncoder.getAbsolutePosition()) - angleOffsetRads, STEER_GEAR_RATIO);
+    System.out.println(absolutePosition);
     steerMotor.setSelectedSensorPosition(absolutePosition);
   }
 
