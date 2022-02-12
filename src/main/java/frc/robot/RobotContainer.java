@@ -5,6 +5,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.BackupCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.OuttakeCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SwerveCalibrationCommand;
 import frc.robot.commands.auto.Basic1Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
@@ -29,6 +33,7 @@ public class RobotContainer {
   private final ControllerWrapper controllerWrapper = new ControllerWrapper(0);
 
   private final Button intakeButton = new Button(controllerWrapper::getLeftTriggerButton);
+  private final Button outtakeButton = new Button(controllerWrapper::getTriangleButton);
   private final Button shootButton = new Button(controllerWrapper::getRightTriggerButton);
 
   private final Button gyroResetButton = new Button(controllerWrapper::getShareButton);
@@ -52,8 +57,16 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    intakeButton.toggleWhenPressed(new StartEndCommand(intake::intake, intake::stop, intake));
-    shootButton.toggleWhenPressed(new StartEndCommand(shooter::shoot, shooter::stop));
+    intakeButton.toggleWhenPressed(
+        new StartEndCommand(
+            () -> {
+              new IntakeCommand(intake, feeder).schedule();
+            },
+            () -> {
+              new BackupCommand(accelerator, feeder).schedule();
+            }));
+    outtakeButton.whenHeld(new OuttakeCommand(intake, feeder, accelerator));
+    shootButton.toggleWhenPressed(new ShootCommand(shooter, accelerator, feeder));
     gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
   }
 

@@ -26,7 +26,7 @@ public class Shooter extends SubsystemBase {
 
   private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> RANGE_TO_RPM =
       new InterpolatingTreeMap<>();
-  private static final double DEFAULT_SHOOTER_VEL = 3000.0;
+  private static final double DEFAULT_SHOOTER_VEL = 500.0;
 
   private final SimpleMotorFeedforward feedforward =
       new SimpleMotorFeedforward(
@@ -51,7 +51,7 @@ public class Shooter extends SubsystemBase {
     RANGE_TO_RPM.put(new InterpolatingDouble(20.0), new InterpolatingDouble(3000.0));
 
     SHOOTER_MOTOR_CONFIG.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_2Ms;
-    SHOOTER_MOTOR_CONFIG.voltageMeasurementFilter = 4;
+    SHOOTER_MOTOR_CONFIG.velocityMeasurementWindow = 4;
   }
 
   private final WPI_TalonFX shooterMotor = new WPI_TalonFX(50);
