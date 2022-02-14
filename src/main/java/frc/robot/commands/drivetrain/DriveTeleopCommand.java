@@ -115,7 +115,7 @@ public class DriveTeleopCommand extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    swerve.stop();
+    swerve.drive(0, 0, 0, false);
   }
 
   protected void driveRotationVelocityMode(double dx, double dy, double dr) {

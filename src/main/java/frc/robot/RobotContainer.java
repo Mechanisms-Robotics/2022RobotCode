@@ -9,7 +9,6 @@ import frc.robot.commands.BackupCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.SwerveCalibrationCommand;
 import frc.robot.commands.auto.Basic1Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
@@ -74,7 +73,4 @@ public class RobotContainer {
     return new Basic1Ball(swerve);
   }
 
-  public void runDisabledCalibration() {
-    CommandScheduler.getInstance().schedule(new SwerveCalibrationCommand(swerve));
-  }
 }
