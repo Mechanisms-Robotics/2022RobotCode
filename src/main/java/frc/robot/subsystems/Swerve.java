@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.HeadingController;
 import frc.robot.util.TrajectoryController;
+import frc.robot.util.Units;
 
 /** The base swerve drive class, controls all swerve modules in coordination. */
 public class Swerve extends SubsystemBase {
@@ -59,18 +62,37 @@ public class Swerve extends SubsystemBase {
 
   private final SwerveDriveOdometry poseEstimator;
 
-  private final SwerveModule flModule =
-      new SwerveModule(
-          "Front Left", flWheelMotorID, flSteerMotorID, flSteerEncoderID, flAngleOffset);
-  private final SwerveModule frModule =
-      new SwerveModule(
-          "Front Right", frWheelMotorID, frSteerMotorID, frSteerEncoderID, frAngleOffset);
-  private final SwerveModule blModule =
-      new SwerveModule(
-          "Back Left", blWheelMotorID, blSteerMotorID, blSteerEncoderID, blAngleOffset);
-  private final SwerveModule brModule =
-      new SwerveModule(
-          "Back Right", brWheelMotorID, brSteerMotorID, brSteerEncoderID, brAngleOffset);
+  private final SwerveModule flModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      flWheelMotorID,
+      flSteerMotorID,
+      flSteerEncoderID,
+      Math.toRadians(flAngleOffset)
+  );
+
+  private final SwerveModule frModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      frWheelMotorID,
+      frSteerMotorID,
+      frSteerEncoderID,
+      Math.toRadians(frAngleOffset)
+  );
+
+  private final SwerveModule blModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      blWheelMotorID,
+      blSteerMotorID,
+      blSteerEncoderID,
+      Math.toRadians(blAngleOffset)
+  );
+
+  private final SwerveModule brModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      brWheelMotorID,
+      brSteerMotorID,
+      brSteerEncoderID,
+      Math.toRadians(brAngleOffset)
+  );
 
   public final PigeonIMU gyro = new PigeonIMU(gyroID);
 
@@ -220,24 +242,9 @@ public class Swerve extends SubsystemBase {
     poseEstimator.resetPosition(pose, getHeading());
   }
 
-  /** Stop all motors on the drive train */
-  public void stop() {
-    flModule.stop();
-    frModule.stop();
-    blModule.stop();
-    brModule.stop();
-  }
-
   public void resetSensors() {
     zeroHeading();
     poseEstimator.resetPosition(new Pose2d(), new Rotation2d());
-  }
-
-  public void calibrateModules() {
-    flModule.resetToAbsolute();
-    frModule.resetToAbsolute();
-    blModule.resetToAbsolute();
-    brModule.resetToAbsolute();
   }
 
   /**

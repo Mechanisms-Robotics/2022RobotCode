@@ -1,5 +1,6 @@
 package com.swervedrivespecialties.swervelib.ctre;
 
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
@@ -9,6 +10,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.swervedrivespecialties.swervelib.DriveController;
 import com.swervedrivespecialties.swervelib.DriveControllerFactory;
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import frc.robot.util.Units;
 
 public final class Falcon500DriveControllerFactoryBuilder {
     private static final double TICKS_PER_ROTATION = 2048.0;
@@ -71,6 +74,10 @@ public final class Falcon500DriveControllerFactoryBuilder {
             motor.setInverted(moduleConfiguration.isDriveInverted() ? TalonFXInvertType.Clockwise : TalonFXInvertType.CounterClockwise);
             motor.setSensorPhase(true);
 
+            // TODO: Rewrite SDS base code to make this cleaner
+            motor.config_kP(0,  0.0007298);
+            motor.selectProfileSlot(0, 0);
+
             // Reduce CAN status frame rates
             CtreUtils.checkCtreError(
                     motor.setStatusFramePeriod(
@@ -90,18 +97,28 @@ public final class Falcon500DriveControllerFactoryBuilder {
         private final double sensorVelocityCoefficient;
         private final double nominalVoltage = hasVoltageCompensation() ? Falcon500DriveControllerFactoryBuilder.this.nominalVoltage : 12.0;
 
+        // TODO: Rewrite SDS Base Code to Make this cleaner
+        private final SimpleMotorFeedforward wheelFeedforward = new SimpleMotorFeedforward(
+            0.319185544,
+            2.2544,
+            0.063528
+        );
+
         private ControllerImplementation(TalonFX motor, double sensorVelocityCoefficient) {
             this.motor = motor;
             this.sensorVelocityCoefficient = sensorVelocityCoefficient;
         }
 
         @Override
-        public void setReferenceVoltage(double voltage) {
-            motor.set(TalonFXControlMode.PercentOutput, voltage / nominalVoltage);
+        public void setSpeed(double speedMPS) {
+            motor.set(TalonFXControlMode.Velocity,
+                speedMPS,
+                DemandType.ArbitraryFeedForward,
+                wheelFeedforward.calculate(speedMPS) / 12.0);
         }
 
         @Override
-        public double getStateVelocity() {
+        public double getVelocity() {
             return motor.getSelectedSensorVelocity() * sensorVelocityCoefficient;
         }
     }

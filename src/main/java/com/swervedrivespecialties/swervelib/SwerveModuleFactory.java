@@ -1,7 +1,10 @@
 package com.swervedrivespecialties.swervelib;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import frc.robot.util.Units;
 
 public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
     private final ModuleConfiguration moduleConfiguration;
@@ -49,7 +52,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
 
         @Override
         public double getDriveVelocity() {
-            return driveController.getStateVelocity();
+            return driveController.getVelocity();
         }
 
         @Override
@@ -58,37 +61,48 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         }
 
         @Override
-        public void set(double driveVoltage, double steerAngle) {
-            steerAngle %= (2.0 * Math.PI);
-            if (steerAngle < 0.0) {
-                steerAngle += 2.0 * Math.PI;
+        public void setState(SwerveModuleState state) {
+            double speedMPS = state.speedMetersPerSecond;
+
+            // We normalize the angle later in this funcion.
+            double steerAngleRads = state.angle.getDegrees();
+
+            steerAngleRads %= (2.0 * Math.PI);
+            if (steerAngleRads < 0.0) {
+                steerAngleRads += 2.0 * Math.PI;
             }
 
-            double difference = steerAngle - getSteerAngle();
+            double difference = steerAngleRads - getSteerAngle();
             // Change the target angle so the difference is in the range [-pi, pi) instead of [0, 2pi)
             if (difference >= Math.PI) {
-                steerAngle -= 2.0 * Math.PI;
+                steerAngleRads -= 2.0 * Math.PI;
             } else if (difference < -Math.PI) {
-                steerAngle += 2.0 * Math.PI;
+                steerAngleRads += 2.0 * Math.PI;
             }
-            difference = steerAngle - getSteerAngle(); // Recalculate difference
+            difference = steerAngleRads - getSteerAngle(); // Recalculate difference
 
             // If the difference is greater than 90 deg or less than -90 deg the drive can be inverted so the total
             // movement of the module is less than 90 deg
             if (difference > Math.PI / 2.0 || difference < -Math.PI / 2.0) {
                 // Only need to add 180 deg here because the target angle will be put back into the range [0, 2pi)
-                steerAngle += Math.PI;
-                driveVoltage *= -1.0;
+                steerAngleRads += Math.PI;
+                speedMPS *= -1.0;
             }
 
             // Put the target angle back into the range [0, 2pi)
-            steerAngle %= (2.0 * Math.PI);
-            if (steerAngle < 0.0) {
-                steerAngle += 2.0 * Math.PI;
+            steerAngleRads %= (2.0 * Math.PI);
+            if (steerAngleRads < 0.0) {
+                steerAngleRads += 2.0 * Math.PI;
             }
 
-            driveController.setReferenceVoltage(driveVoltage);
-            steerController.setReferenceAngle(steerAngle);
+            driveController.setSpeed(speedMPS);
+            steerController.setReferenceAngle(steerAngleRads);
+        }
+
+
+        @Override
+        public SwerveModuleState getState() {
+            return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getSteerAngle()));
         }
     }
 }
