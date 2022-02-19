@@ -44,7 +44,7 @@ public class RobotContainer {
 
   Supplier<Double> inputX = () -> -controllerWrapper.getLeftJoystickX(),
       inputY = () -> -controllerWrapper.getLeftJoystickY(),
-      rotation = () -> controllerWrapper.getRightJoystickX();
+      rotation = () -> -controllerWrapper.getRightJoystickX();
 
   public RobotContainer() {
     swerve.zeroHeading();
@@ -55,7 +55,6 @@ public class RobotContainer {
   private void configureDefaultCommands() {
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
     hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(0.1), hood));
-    accelerator.setDefaultCommand(new RunCommand(accelerator::shoot, accelerator));
   }
 
   private void configureButtonBindings() {

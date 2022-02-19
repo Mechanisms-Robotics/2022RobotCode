@@ -75,5 +75,6 @@ public class Accelerator extends SubsystemBase {
 
   public void stop() {
     acceleratorMotor.set(ControlMode.PercentOutput, 0.0);
+    acceleratorFollowerMotor.set(ControlMode.PercentOutput, 0.0);
   }
 }

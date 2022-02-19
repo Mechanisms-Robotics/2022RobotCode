@@ -14,10 +14,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Feeder extends SubsystemBase {
 
   private static final TalonFXConfiguration FEEDER_MOTOR_CONFIG = new TalonFXConfiguration();
-  private static final double FEEDER_SHOOT_SPEED = 0.30;
-  private static final double FEEDER_INTAKE_SPEED = 0.50;
-  private static final double FEEDER_OUTTAKE_SPEED = -0.50;
-  private static final double FEEDER_BACKUP_SPEED = -0.25;
+  private static final double FEEDER_SHOOT_SPEED = 0.50;
+  private static final double FEEDER_INTAKE_SPEED = 1.0;
+  private static final double FEEDER_OUTTAKE_SPEED = -1.0;
+  private static final double FEEDER_BACKUP_SPEED = -0.5;
 
   static {
     // TODO: Determine how much current the feeder draws nominally and
@@ -40,7 +40,7 @@ public class Feeder extends SubsystemBase {
   }
 
   private void setOpenLoop(double percentOutput) {
-    //feederMotor.set(ControlMode.PercentOutput, percentOutput);
+    feederMotor.set(ControlMode.PercentOutput, percentOutput);
   }
 
   public void intake() {
