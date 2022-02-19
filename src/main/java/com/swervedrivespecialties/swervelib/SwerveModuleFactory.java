@@ -65,7 +65,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
             double speedMPS = state.speedMetersPerSecond;
 
             // We normalize the angle later in this funcion.
-            double steerAngleRads = state.angle.getDegrees();
+            double steerAngleRads = state.angle.getRadians();
 
             steerAngleRads %= (2.0 * Math.PI);
             if (steerAngleRads < 0.0) {

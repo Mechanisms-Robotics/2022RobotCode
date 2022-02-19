@@ -23,7 +23,7 @@ public class Swerve extends SubsystemBase {
   public static final double maxVelocity = 4.5; // m / s
   public static final double maxRotationalVelocity = 1.5 * Math.PI; // rads/s
 
-  // The center of the robot is the origin point for all locations
+  // The center of the robot is the origin point fo=/\r all locations
   private static final double driveBaseWidth = 0.5969; // m
   private static final double driveBaseLength = 0.5969; // m
 
@@ -49,10 +49,10 @@ public class Swerve extends SubsystemBase {
   private static final int brSteerMotorID = 17;
   private static final int brSteerEncoderID = 16;
 
-  private static final double flAngleOffset = 237.393; //58.447;
-  private static final double frAngleOffset = 333.984; //154.160;
-  private static final double blAngleOffset = 82.529; //263.320;
-  private static final double brAngleOffset = 76.289; //255.850;
+  private static final double flAngleOffset = -238.096;
+  private static final double frAngleOffset = -335.479; //154.160;
+  private static final double blAngleOffset = -82.090;
+  private static final double brAngleOffset = -75.059; //255.850;
 
   private static final int gyroID = 2;
 
