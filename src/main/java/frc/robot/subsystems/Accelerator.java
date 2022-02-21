@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -15,7 +16,7 @@ public class Accelerator extends SubsystemBase {
 
   private static final TalonFXConfiguration ACCELERATOR_MOTOR_CONFIG = new TalonFXConfiguration();
 
-  private static final double SHOOT_SPEED = 0.60;
+  private static final double SHOOT_SPEED = 0.20;
   private static final double BACKUP_SPEED = -0.25;
   private static final double OUTTAKE_SPEED = -0.25;
   private static final double IDLE_SPEED = -0.10;
@@ -37,11 +38,13 @@ public class Accelerator extends SubsystemBase {
     acceleratorMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
     acceleratorMotor.setInverted(TalonFXInvertType.Clockwise);
     acceleratorMotor.setNeutralMode(NeutralMode.Brake);
+    acceleratorMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+    acceleratorMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
 
     acceleratorFollowerMotor.configAllSettings(
         ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
-    acceleratorFollowerMotor.follow(acceleratorMotor);
-    acceleratorFollowerMotor.setInverted(InvertType.OpposeMaster);
+    //acceleratorFollowerMotor.follow(acceleratorMotor);
+    acceleratorFollowerMotor.setInverted(TalonFXInvertType.CounterClockwise);
     acceleratorFollowerMotor.setNeutralMode(NeutralMode.Brake);
 
     // CAN Bus Usage Optimisation.
@@ -67,9 +70,11 @@ public class Accelerator extends SubsystemBase {
 
   private void setOpenLoop(double percentOutput) {
     acceleratorMotor.set(ControlMode.PercentOutput, percentOutput);
+    acceleratorFollowerMotor.set(ControlMode.PercentOutput, percentOutput);
   }
 
   public void stop() {
     acceleratorMotor.set(ControlMode.PercentOutput, 0.0);
+    acceleratorFollowerMotor.set(ControlMode.PercentOutput, 0.0);
   }
 }

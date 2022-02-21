@@ -115,7 +115,7 @@ public class DriveTeleopCommand extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    swerve.stop();
+    swerve.drive(0, 0, 0, false);
   }
 
   protected void driveRotationVelocityMode(double dx, double dy, double dr) {
@@ -123,8 +123,8 @@ public class DriveTeleopCommand extends CommandBase {
     Translation2d translation = scaleTranslationInput(new Translation2d(dx, dy));
 
     // Apply Ramp Rates
-    dx = vxRateLimiter.calculate(translation.getX() * Swerve.maxVelocity);
-    dy = vyRateLimiter.calculate(translation.getY() * Swerve.maxVelocity);
+    dx = vxRateLimiter.calculate(translation.getY() * Swerve.maxVelocity);
+    dy = vyRateLimiter.calculate(-translation.getX() * Swerve.maxVelocity);
     dr = vrRateLimiter.calculate(dr * Swerve.maxRotationalVelocity);
 
     swerve.drive(dx, dy, dr, fieldOriented);

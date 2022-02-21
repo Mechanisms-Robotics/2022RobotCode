@@ -16,7 +16,7 @@ public class Hood extends SubsystemBase {
     // Aim the hood based on an interpolating tree map
   }
 
-  private void setHoodRawPosition(double rawPosition) {
+  public void setHoodRawPosition(double rawPosition) {
     rawPosition = MathUtil.clamp(rawPosition, -1.0, 1.0);
 
     // Set speed is the speed of the pwm pulse not the speed of the servo

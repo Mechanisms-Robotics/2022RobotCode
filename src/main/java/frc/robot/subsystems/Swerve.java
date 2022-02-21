@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.HeadingController;
 import frc.robot.util.TrajectoryController;
+import frc.robot.util.Units;
 
 /** The base swerve drive class, controls all swerve modules in coordination. */
 public class Swerve extends SubsystemBase {
@@ -20,7 +23,7 @@ public class Swerve extends SubsystemBase {
   public static final double maxVelocity = 4.5; // m / s
   public static final double maxRotationalVelocity = 1.5 * Math.PI; // rads/s
 
-  // The center of the robot is the origin point for all locations
+  // The center of the robot is the origin point fo=/\r all locations
   private static final double driveBaseWidth = 0.5969; // m
   private static final double driveBaseLength = 0.5969; // m
 
@@ -46,10 +49,10 @@ public class Swerve extends SubsystemBase {
   private static final int brSteerMotorID = 17;
   private static final int brSteerEncoderID = 16;
 
-  private static final double flAngleOffset = -33.0551;
-  private static final double frAngleOffset = 64.9154;
-  private static final double blAngleOffset = 173.8311;
-  private static final double brAngleOffset = -195.0347;
+  private static final double flAngleOffset = -238.096; // -238.096
+  private static final double frAngleOffset = -332.402; // -335.479
+  private static final double blAngleOffset = -172.441; // -82.090
+  private static final double brAngleOffset = -77.432; // -75.059;
 
   private static final int gyroID = 2;
 
@@ -59,18 +62,37 @@ public class Swerve extends SubsystemBase {
 
   private final SwerveDriveOdometry poseEstimator;
 
-  private final SwerveModule flModule =
-      new SwerveModule(
-          "Front Left", flWheelMotorID, flSteerMotorID, flSteerEncoderID, flAngleOffset);
-  private final SwerveModule frModule =
-      new SwerveModule(
-          "Front Right", frWheelMotorID, frSteerMotorID, frSteerEncoderID, frAngleOffset);
-  private final SwerveModule blModule =
-      new SwerveModule(
-          "Back Left", blWheelMotorID, blSteerMotorID, blSteerEncoderID, blAngleOffset);
-  private final SwerveModule brModule =
-      new SwerveModule(
-          "Back Right", brWheelMotorID, brSteerMotorID, brSteerEncoderID, brAngleOffset);
+  private final SwerveModule flModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      flWheelMotorID,
+      flSteerMotorID,
+      flSteerEncoderID,
+      Math.toRadians(flAngleOffset)
+  );
+
+  private final SwerveModule frModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      frWheelMotorID,
+      frSteerMotorID,
+      frSteerEncoderID,
+      Math.toRadians(frAngleOffset)
+  );
+
+  private final SwerveModule blModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      blWheelMotorID,
+      blSteerMotorID,
+      blSteerEncoderID,
+      Math.toRadians(blAngleOffset)
+  );
+
+  private final SwerveModule brModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      brWheelMotorID,
+      brSteerMotorID,
+      brSteerEncoderID,
+      Math.toRadians(brAngleOffset)
+  );
 
   public final PigeonIMU gyro = new PigeonIMU(gyroID);
 
@@ -185,7 +207,8 @@ public class Swerve extends SubsystemBase {
   }
 
   private Rotation2d getRawHeading() {
-    return Rotation2d.fromDegrees(gyro.getFusedHeading());
+    // For the Pigeon 1 use getFusedHeading the Pigeon 2 uses getYaw. See the Pigeon 2 user guide.
+    return Rotation2d.fromDegrees(gyro.getYaw());
   }
 
   public SwerveDriveKinematics getKinematics() {
@@ -219,24 +242,9 @@ public class Swerve extends SubsystemBase {
     poseEstimator.resetPosition(pose, getHeading());
   }
 
-  /** Stop all motors on the drive train */
-  public void stop() {
-    flModule.stop();
-    frModule.stop();
-    blModule.stop();
-    brModule.stop();
-  }
-
   public void resetSensors() {
     zeroHeading();
     poseEstimator.resetPosition(new Pose2d(), new Rotation2d());
-  }
-
-  public void calibrateModules() {
-    flModule.resetToAbsolute();
-    frModule.resetToAbsolute();
-    blModule.resetToAbsolute();
-    brModule.resetToAbsolute();
   }
 
   /**
