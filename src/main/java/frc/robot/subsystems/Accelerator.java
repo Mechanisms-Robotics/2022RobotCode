@@ -1,12 +1,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -53,7 +50,7 @@ public class Accelerator extends SubsystemBase {
 
     acceleratorFollowerMotor.configAllSettings(
         ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
-    //acceleratorFollowerMotor.follow(acceleratorMotor);
+    // acceleratorFollowerMotor.follow(acceleratorMotor);
     acceleratorFollowerMotor.setInverted(TalonFXInvertType.CounterClockwise);
     acceleratorFollowerMotor.setNeutralMode(NeutralMode.Brake);
 
@@ -63,14 +60,9 @@ public class Accelerator extends SubsystemBase {
   }
 
   public void shoot() {
-    acceleratorMotor.set(
-        ControlMode.Velocity,
-        Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO));
+    acceleratorMotor.set(ControlMode.Velocity, Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO));
 
-    acceleratorFollowerMotor.set(
-        ControlMode.Velocity,
-        Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO)
-    );
+    acceleratorFollowerMotor.set(ControlMode.Velocity, Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO));
   }
 
   public void backup() {

@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.startupCanTimeout;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
@@ -80,15 +79,11 @@ public class Shooter extends SubsystemBase {
 
   public void shoot(double range) {
     final double velocity = RANGE_TO_RPM.getInterpolated(new InterpolatingDouble(range)).value;
-    shooterMotor.set(
-        ControlMode.Velocity,
-        Units.RPMToFalcon(velocity, GEAR_RATIO));
+    shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(velocity, GEAR_RATIO));
   }
 
   public void shoot() {
-    shooterMotor.set(
-        ControlMode.Velocity,
-        Units.RPMToFalcon(DEFAULT_SHOOTER_VEL, GEAR_RATIO));
+    shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(DEFAULT_SHOOTER_VEL, GEAR_RATIO));
   }
 
   public void stop() {
