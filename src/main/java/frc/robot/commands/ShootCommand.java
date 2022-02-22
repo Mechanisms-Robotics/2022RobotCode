@@ -12,7 +12,7 @@ public class ShootCommand extends ParallelCommandGroup {
 
   public ShootCommand(Shooter shooter, Accelerator accelerator, Feeder feeder, Hood hood) {
     addCommands(
-        //new StartEndCommand(accelerator::shoot, accelerator::stop),
+        new StartEndCommand(accelerator::shoot, accelerator::stop),
         new StartEndCommand(feeder::shoot, feeder::stop),
         new StartEndCommand(shooter::shoot, shooter::stop));
 

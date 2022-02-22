@@ -26,7 +26,7 @@ public class Shooter extends SubsystemBase {
 
   private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> RANGE_TO_RPM =
       new InterpolatingTreeMap<>();
-  private static final double DEFAULT_SHOOTER_VEL = 1000.0;
+  private static final double DEFAULT_SHOOTER_VEL = 2250.0; // 1500.0
 
   private final SimpleMotorFeedforward feedforward =
       new SimpleMotorFeedforward(
@@ -37,14 +37,15 @@ public class Shooter extends SubsystemBase {
 
   static {
     final var shooterCurrentLimit = new SupplyCurrentLimitConfiguration();
-    shooterCurrentLimit.currentLimit = 20; // Amps
-    shooterCurrentLimit.triggerThresholdCurrent = 40; // Amps
+    shooterCurrentLimit.currentLimit = 40; // Amps
+    shooterCurrentLimit.triggerThresholdCurrent = 45; // Amps
     shooterCurrentLimit.triggerThresholdTime = 0.5; // sec
     shooterCurrentLimit.enable = true;
     SHOOTER_MOTOR_CONFIG.supplyCurrLimit = shooterCurrentLimit;
 
     final var shooterPID = new SlotConfiguration();
-    shooterPID.kP = 0.10;
+    shooterPID.kP = 0.075;
+    shooterPID.kF = 0.055;
     SHOOTER_MOTOR_CONFIG.slot0 = shooterPID;
 
     RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(3000.0));
@@ -81,21 +82,13 @@ public class Shooter extends SubsystemBase {
     final double velocity = RANGE_TO_RPM.getInterpolated(new InterpolatingDouble(range)).value;
     shooterMotor.set(
         ControlMode.Velocity,
-        Units.RPMToFalcon(velocity, GEAR_RATIO),
-        DemandType.ArbitraryFeedForward,
-        feedforward.calculate(velocity));
+        Units.RPMToFalcon(velocity, GEAR_RATIO));
   }
 
   public void shoot() {
-    /*
     shooterMotor.set(
         ControlMode.Velocity,
-        Units.RPMToFalcon(DEFAULT_SHOOTER_VEL, GEAR_RATIO),
-        DemandType.ArbitraryFeedForward,
-        feedforward.calculate(DEFAULT_SHOOTER_VEL));
-        */
-
-     shooterMotor.set(0.5);
+        Units.RPMToFalcon(DEFAULT_SHOOTER_VEL, GEAR_RATIO));
   }
 
   public void stop() {

@@ -54,14 +54,14 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
-    hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(0.1), hood));
+    hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(1.0), hood)); // -0.5
   }
 
   private void configureButtonBindings() {
     intakeButton.toggleWhenPressed(
         new StartEndCommand(
             () -> {
-              new IntakeCommand(intake, feeder).schedule();
+              new IntakeCommand(intake, feeder, accelerator).schedule();
             },
             () -> {
               new BackupCommand(accelerator, feeder).schedule();
