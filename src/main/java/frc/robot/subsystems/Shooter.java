@@ -19,15 +19,25 @@ import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
 import frc.robot.util.Units;
 
+/**
+ * This class contains all the code responsible for the behaviour of the Shooter subsystem
+ */
 public class Shooter extends SubsystemBase {
 
+  // Shooter motor configuration
   private static final TalonFXConfiguration SHOOTER_MOTOR_CONFIG = new TalonFXConfiguration();
-  private static final double GEAR_RATIO = 1.5 / 1.0;
 
+  // Shooter gear ratio
+  private static final double GEAR_RATIO = 1.5 / 1.0; // 1.5:1 reduction
+
+  // Range interpolating tree map
   private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> RANGE_TO_RPM =
       new InterpolatingTreeMap<>();
+
+  // Default shooter speed
   private static final double DEFAULT_SHOOTER_VEL = 1000.0;
 
+  // Shooter feedforward
   private final SimpleMotorFeedforward feedforward =
       new SimpleMotorFeedforward(
           0.52017, // ks
@@ -35,7 +45,9 @@ public class Shooter extends SubsystemBase {
           0.0000089707 // ka
           );
 
+  // Configure shooter current limit, PID, and interpolating tree map
   static {
+    // Configure shooter current limit
     final var shooterCurrentLimit = new SupplyCurrentLimitConfiguration();
     shooterCurrentLimit.currentLimit = 20; // Amps
     shooterCurrentLimit.triggerThresholdCurrent = 40; // Amps
@@ -43,42 +55,62 @@ public class Shooter extends SubsystemBase {
     shooterCurrentLimit.enable = true;
     SHOOTER_MOTOR_CONFIG.supplyCurrLimit = shooterCurrentLimit;
 
+    // Configure shooter PID
     final var shooterPID = new SlotConfiguration();
     shooterPID.kP = 0.10;
     SHOOTER_MOTOR_CONFIG.slot0 = shooterPID;
 
+    // Configure shooter range interpolating tree map
     RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(3000.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(20.0), new InterpolatingDouble(3000.0));
 
+    // Configure shooter velocity measurement
     SHOOTER_MOTOR_CONFIG.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_2Ms;
     SHOOTER_MOTOR_CONFIG.velocityMeasurementWindow = 4;
   }
 
+  // Shooter master and follower motor
   private final WPI_TalonFX shooterMotor = new WPI_TalonFX(50);
   private final WPI_TalonFX shooterFollowerMotor = new WPI_TalonFX(51);
 
+  /**
+   * Constructs a Shooter
+   */
   public Shooter() {
+    // Configure shooter master motor
     shooterMotor.configAllSettings(SHOOTER_MOTOR_CONFIG, startupCanTimeout);
     shooterMotor.setInverted(TalonFXInvertType.Clockwise);
     shooterMotor.setNeutralMode(NeutralMode.Coast);
     shooterMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
 
+    // Configure shooter follower motor
     shooterFollowerMotor.configAllSettings(SHOOTER_MOTOR_CONFIG, startupCanTimeout);
     shooterFollowerMotor.follow(shooterMotor);
     shooterFollowerMotor.setInverted(InvertType.OpposeMaster);
     shooterFollowerMotor.setNeutralMode(NeutralMode.Coast);
 
-    // CAN Bus Usage Optimisation.
+    // CAN bus utilization optimisation
     shooterFollowerMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
     shooterFollowerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
   }
 
+  /**
+   * Sets the shooter motors to run at a desired percentage
+   * @param percentOutput The percentage to run the shooter motors at
+   */
   private void setOpenLoop(double percentOutput) {
     shooterMotor.set(ControlMode.PercentOutput, percentOutput);
   }
 
+  /**
+   * Runs the shooter at a calculated RPM given a range to the target
+   * @param range Range to target
+   */
   public void shoot(double range) {
+    // Interpolate RPM given range
     final double velocity = RANGE_TO_RPM.getInterpolated(new InterpolatingDouble(range)).value;
+
+    // Run shooter motor at velocity
     shooterMotor.set(
         ControlMode.Velocity,
         Units.RPMToFalcon(velocity, GEAR_RATIO),
@@ -86,6 +118,9 @@ public class Shooter extends SubsystemBase {
         feedforward.calculate(velocity));
   }
 
+  /**
+   * Runs the shooter at the default RPM
+   */
   public void shoot() {
     /*
     shooterMotor.set(
@@ -95,9 +130,12 @@ public class Shooter extends SubsystemBase {
         feedforward.calculate(DEFAULT_SHOOTER_VEL));
         */
 
-     shooterMotor.set(0.5);
+    shooterMotor.set(0.5);
   }
 
+  /**
+   * Stops the shooter
+   */
   public void stop() {
     shooterMotor.set(ControlMode.PercentOutput, 0.0);
   }
