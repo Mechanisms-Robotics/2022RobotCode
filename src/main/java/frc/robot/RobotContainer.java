@@ -56,7 +56,6 @@ public class RobotContainer {
   private void configureDefaultCommands() {
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
     hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(-1.0), hood)); // -0.5
-    turret.setDefaultCommand(new RunCommand(() -> turret.aim(-90.0), turret));
   }
 
   private void configureButtonBindings() {
