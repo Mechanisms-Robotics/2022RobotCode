@@ -17,6 +17,7 @@ import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Turret;
 import frc.robot.util.ControllerWrapper;
 import java.util.function.Supplier;
 
@@ -28,6 +29,7 @@ public class RobotContainer {
   private final Accelerator accelerator = new Accelerator();
   private final Shooter shooter = new Shooter();
   private final Hood hood = new Hood();
+  public final Turret turret = new Turret();
 
   private final ControllerWrapper controllerWrapper = new ControllerWrapper(0);
 
@@ -53,7 +55,8 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
-    hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(1.0), hood)); // -0.5
+    hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(-1.0), hood)); // -0.5
+    turret.setDefaultCommand(new RunCommand(() -> turret.aim(-90.0), turret));
   }
 
   private void configureButtonBindings() {
