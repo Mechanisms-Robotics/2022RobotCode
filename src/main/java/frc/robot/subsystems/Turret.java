@@ -82,6 +82,8 @@ public class Turret extends SubsystemBase {
    * @param degrees The angle between the current turret angle and the desired turret angle
    */
   public void aim(double degrees) {
+    updateValues();
+
     this.desiredAngle =
         MathUtil.clamp(
             this.currentAngle + Math.toRadians(degrees),
@@ -104,7 +106,12 @@ public class Turret extends SubsystemBase {
 
     // PID the turret motor to the desired position
     turretMotor.set(ControlMode.MotionMagic, Units.radsToFalcon(rads, TURRET_GEAR_RATIO));
+  }
 
+  /**
+   * Updates currentPosition, and aimed periodically
+   */
+  public void updateValues() {
     // Update the currentAngle
     this.currentAngle =
         Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO);
@@ -113,10 +120,6 @@ public class Turret extends SubsystemBase {
     this.aimed =
         MathUtil.applyDeadband(this.desiredAngle - this.currentAngle, TURRET_ALLOWABLE_ERROR)
             == 0.0;
-
-    // TODO: Fix angle bug and remove this debug output
-    System.out.println("Turret Setpoint" + Units.radsToFalcon(rads, TURRET_GEAR_RATIO));
-    SmartDashboard.putNumber("Turret Setpoint", Units.radsToFalcon(rads, TURRET_GEAR_RATIO));
   }
 
   /**
@@ -130,6 +133,9 @@ public class Turret extends SubsystemBase {
 
   /** Zeros the turret encoder, this is called in autonomousInit and testInit */
   public void zero() {
+    if (zeroed) {
+      return;
+    }
     turretMotor.setSelectedSensorPosition(0.0);
     zeroed = true;
   }
