@@ -12,9 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.Units;
 
-/**
- * This contains all the code responsible for the behaviour of the Accelerator subsystem.
- */
+/** This contains all the code responsible for the behaviour of the Accelerator subsystem. */
 public class Accelerator extends SubsystemBase {
 
   // Accelerator motor configuration
@@ -48,9 +46,7 @@ public class Accelerator extends SubsystemBase {
   private final WPI_TalonFX acceleratorMotor = new WPI_TalonFX(40);
   private final WPI_TalonFX acceleratorFollowerMotor = new WPI_TalonFX(41);
 
-  /**
-   * Constructs an Accelerator
-   */
+  /** Constructs an Accelerator */
   public Accelerator() {
     // Configures accelerator motor
     acceleratorMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
@@ -71,38 +67,31 @@ public class Accelerator extends SubsystemBase {
     acceleratorFollowerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
   }
 
-  /**
-   * Runs the accelerator at SHOOT_SPEED
-   */
+  /** Runs the accelerator at SHOOT_SPEED */
   public void shoot() {
     acceleratorMotor.set(ControlMode.Velocity, Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO));
 
     acceleratorFollowerMotor.set(ControlMode.Velocity, Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO));
   }
 
-  /**
-   * Runs the accelerator at BACKUP_SPEED
-   */
+  /** Runs the accelerator at BACKUP_SPEED */
   public void backup() {
     setOpenLoop(BACKUP_SPEED);
   }
 
-  /**
-   * Runs the accelerator at OUTTAKE_SPEED
-   */
+  /** Runs the accelerator at OUTTAKE_SPEED */
   public void outtake() {
     setOpenLoop(OUTTAKE_SPEED);
   }
 
-  /**
-   * Runs the accelerator at IDLE_SPEED
-   */
+  /** Runs the accelerator at IDLE_SPEED */
   public void idle() {
     setOpenLoop(IDLE_SPEED);
   }
 
   /**
    * Sets the accelerator motors to run at a desired percentage
+   *
    * @param percentOutput The percentage to run the motors at
    */
   private void setOpenLoop(double percentOutput) {
@@ -110,9 +99,7 @@ public class Accelerator extends SubsystemBase {
     acceleratorFollowerMotor.set(ControlMode.PercentOutput, percentOutput);
   }
 
-  /**
-   * Stops the accelerator motors
-   */
+  /** Stops the accelerator motors */
   public void stop() {
     acceleratorMotor.set(ControlMode.PercentOutput, 0.0);
     acceleratorFollowerMotor.set(ControlMode.PercentOutput, 0.0);

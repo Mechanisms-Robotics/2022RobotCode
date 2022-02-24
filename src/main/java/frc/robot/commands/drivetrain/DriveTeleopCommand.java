@@ -109,10 +109,11 @@ public class DriveTeleopCommand extends CommandBase {
     this(driverX, driverY, driverRotation, true, swerve);
   }
 
-  //private Rotation2d currentRotationCommand;
+  // private Rotation2d currentRotationCommand;
 
   /**
-   * Gets the driver translation and rotation input, deadbands it, then calls driveRotationVelocityMode
+   * Gets the driver translation and rotation input, deadbands it, then calls
+   * driveRotationVelocityMode
    */
   @Override
   public void execute() {
@@ -138,6 +139,7 @@ public class DriveTeleopCommand extends CommandBase {
 
   /**
    * Checks if this command is finished
+   *
    * @return Is this command finished
    */
   @Override
@@ -147,6 +149,7 @@ public class DriveTeleopCommand extends CommandBase {
 
   /**
    * Stops the swerve drive
+   *
    * @param interrupted Whether this command was interrupted or not
    */
   @Override
@@ -156,6 +159,7 @@ public class DriveTeleopCommand extends CommandBase {
 
   /**
    * Drives the swerve drive with a desired x, y, and rotation.
+   *
    * @param dx Desired x translation
    * @param dy Desired y translation
    * @param dr Desired rotation
@@ -175,6 +179,7 @@ public class DriveTeleopCommand extends CommandBase {
 
   /**
    * Drives the swerve drive with a desired x and y position, and rotation
+   *
    * @param dx Desired x position
    * @param dy Desired y position
    * @param rotation Desired rotation
@@ -189,6 +194,7 @@ public class DriveTeleopCommand extends CommandBase {
 
   /**
    * Scales translational inputs to an exponential curve
+   *
    * @param input Translational input
    * @return Scaled translational input
    */
@@ -207,6 +213,7 @@ public class DriveTeleopCommand extends CommandBase {
 
   /**
    * Checks if the input is with the deadband, if so zeros it
+   *
    * @param input The input to deadband
    * @return The dead-banded input
    */

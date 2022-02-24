@@ -11,9 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-/**
- * This class contains all the code responsible for the behaviour of the Feeder subsystem
- */
+/** This class contains all the code responsible for the behaviour of the Feeder subsystem */
 public class Feeder extends SubsystemBase {
 
   // Feeder motor configuration
@@ -39,9 +37,7 @@ public class Feeder extends SubsystemBase {
   // Feeder motor
   private final WPI_TalonFX feederMotor = new WPI_TalonFX(30);
 
-  /**
-   * Constructs a Feeder
-   */
+  /** Constructs a Feeder */
   public Feeder() {
     // Configure feeder motor
     feederMotor.configAllSettings(FEEDER_MOTOR_CONFIG, startupCanTimeout);
@@ -53,43 +49,34 @@ public class Feeder extends SubsystemBase {
 
   /**
    * Sets the feeder motor to run at a desired percentage
+   *
    * @param percentOutput The percentage to run the feeder motor at
    */
   private void setOpenLoop(double percentOutput) {
     feederMotor.set(ControlMode.PercentOutput, percentOutput);
   }
 
-  /**
-   * Runs the feeder at INTAKE_SPEED
-   */
+  /** Runs the feeder at INTAKE_SPEED */
   public void intake() {
     setOpenLoop(INTAKE_SPEED);
   }
 
-  /**
-   * Runs the feeder at OUTTAKE_SPEED
-   */
+  /** Runs the feeder at OUTTAKE_SPEED */
   public void outtake() {
     setOpenLoop(OUTTAKE_SPEED);
   }
 
-  /**
-   * Runs the feeder at SHOOT_SPEED
-   */
+  /** Runs the feeder at SHOOT_SPEED */
   public void shoot() {
     setOpenLoop(SHOOT_SPEED);
   }
 
-  /**
-   * Runs the feeder at BACKUP_SPEED
-   */
+  /** Runs the feeder at BACKUP_SPEED */
   public void backup() {
     setOpenLoop(BACKUP_SPEED);
   }
 
-  /**
-   * Stops the feeder
-   */
+  /** Stops the feeder */
   public void stop() {
     feederMotor.set(ControlMode.PercentOutput, 0.0);
   }

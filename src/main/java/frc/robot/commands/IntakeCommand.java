@@ -6,12 +6,11 @@ import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
 
-/**
- * This command runs the intake and feeder to intake a ball
- */
+/** This command runs the intake and feeder to intake a ball */
 public class IntakeCommand extends ParallelCommandGroup {
   /**
    * Constructs an IntakeCommand
+   *
    * @param intake Instance of Intake
    * @param feeder Instance of Feeder
    */

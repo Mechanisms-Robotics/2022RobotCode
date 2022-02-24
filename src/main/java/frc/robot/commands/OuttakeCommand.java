@@ -6,12 +6,11 @@ import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
 
-/**
- * This command will outtake the intake, feeder, and accelerator
- */
+/** This command will outtake the intake, feeder, and accelerator */
 public class OuttakeCommand extends ParallelCommandGroup {
   /**
    * Constructs an OuttakeCommand
+   *
    * @param intake Instance of Intake
    * @param feeder Instance of Feeder
    * @param accelerator Instance of Accelerator

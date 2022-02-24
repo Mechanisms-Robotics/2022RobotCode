@@ -4,15 +4,13 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
-import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Shooter;
 
-/**
- * This command runs the shooter, accelerator, and feeder to shoot a ball
- */
+/** This command runs the shooter, accelerator, and feeder to shoot a ball */
 public class ShootCommand extends ParallelCommandGroup {
   /**
    * Constructs a ShootCommand
+   *
    * @param shooter Instance of Shooter
    * @param accelerator Instance of Accelerator
    * @param feeder Instance of Feeder

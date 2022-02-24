@@ -18,9 +18,7 @@ import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
 import frc.robot.util.Units;
 
-/**
- * This class contains all the code responsible for the behaviour of the Shooter subsystem
- */
+/** This class contains all the code responsible for the behaviour of the Shooter subsystem */
 public class Shooter extends SubsystemBase {
 
   // Shooter motor configuration
@@ -73,9 +71,7 @@ public class Shooter extends SubsystemBase {
   private final WPI_TalonFX shooterMotor = new WPI_TalonFX(50);
   private final WPI_TalonFX shooterFollowerMotor = new WPI_TalonFX(51);
 
-  /**
-   * Constructs a Shooter
-   */
+  /** Constructs a Shooter */
   public Shooter() {
     // Configure shooter master motor
     shooterMotor.configAllSettings(SHOOTER_MOTOR_CONFIG, startupCanTimeout);
@@ -96,6 +92,7 @@ public class Shooter extends SubsystemBase {
 
   /**
    * Sets the shooter motors to run at a desired percentage
+   *
    * @param percentOutput The percentage to run the shooter motors at
    */
   private void setOpenLoop(double percentOutput) {
@@ -104,6 +101,7 @@ public class Shooter extends SubsystemBase {
 
   /**
    * Runs the shooter at a calculated RPM given a range to the target
+   *
    * @param range Range to target
    */
   public void shoot(double range) {
@@ -114,16 +112,12 @@ public class Shooter extends SubsystemBase {
     shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(velocity, GEAR_RATIO));
   }
 
-  /**
-   * Runs the shooter at the default RPM
-   */
+  /** Runs the shooter at the default RPM */
   public void shoot() {
     shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(DEFAULT_SHOOTER_VEL, GEAR_RATIO));
   }
 
-  /**
-   * Stops the shooter
-   */
+  /** Stops the shooter */
   public void stop() {
     shooterMotor.set(ControlMode.PercentOutput, 0.0);
   }

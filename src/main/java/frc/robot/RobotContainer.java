@@ -47,9 +47,7 @@ public class RobotContainer {
       inputY = () -> -driverController.getLeftJoystickY(),
       rotation = () -> -driverController.getRightJoystickX();
 
-  /**
-   * Constructs a RobotContainer
-   */
+  /** Constructs a RobotContainer */
   public RobotContainer() {
     // Zero the swerve heading
     swerve.zeroHeading();
@@ -61,9 +59,7 @@ public class RobotContainer {
     configureDefaultCommands();
   }
 
-  /**
-   * Configures all default commands
-   */
+  /** Configures all default commands */
   private void configureDefaultCommands() {
     // Set the swerve default command to a DriveTeleopCommand
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
@@ -72,11 +68,10 @@ public class RobotContainer {
     hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(-1.0), hood)); // -0.5
   }
 
-  /**
-   * Configures all button bindings
-   */
+  /** Configures all button bindings */
   private void configureButtonBindings() {
-    // When the intake button is pressed toggle an IntakeCommand, when it is ended run a BackupCommand
+    // When the intake button is pressed toggle an IntakeCommand, when it is ended run a
+    // BackupCommand
     intakeButton.toggleWhenPressed(
         new StartEndCommand(
             () -> {
@@ -98,6 +93,7 @@ public class RobotContainer {
 
   /**
    * Gets the command to run in autonomous
+   *
    * @return The command to run in autonomous
    */
   public Command getAutonomousCommand() {

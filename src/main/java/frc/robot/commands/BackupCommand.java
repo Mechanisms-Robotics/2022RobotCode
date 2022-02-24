@@ -5,22 +5,22 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 
-/**
- * This command backs up the accelerator and feeder for a set amount of time
- */
+/** This command backs up the accelerator and feeder for a set amount of time */
 public class BackupCommand extends ParallelCommandGroup {
   // Time to back it up for
   private static final double BACKUP_TIME = 0.25; // Seconds
 
   /**
    * Constructs a BackupCommand
+   *
    * @param accelerator An instance of Accelerator
    * @param feeder An instance of Feeder
    */
   public BackupCommand(Accelerator accelerator, Feeder feeder) {
     // Add commands to the ParallelCommandGroup
     addCommands(
-        // A start end command to back up then stop the accelerator and feeder with a timeout of BACKUP_TIME
+        // A start end command to back up then stop the accelerator and feeder with a timeout of
+        // BACKUP_TIME
         new StartEndCommand(
                 () -> {
                   accelerator.backup();
