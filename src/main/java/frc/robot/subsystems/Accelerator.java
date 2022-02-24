@@ -12,17 +12,21 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.Units;
 
+/** This contains all the code responsible for the behaviour of the Accelerator subsystem. */
 public class Accelerator extends SubsystemBase {
 
+  // Accelerator motor configuration
   private static final TalonFXConfiguration ACCELERATOR_MOTOR_CONFIG = new TalonFXConfiguration();
 
-  private static final double SHOOT_SPEED = 500; // 500
-  private static final double BACKUP_SPEED = -0.5;
-  private static final double OUTTAKE_SPEED = -0.5;
-  private static final double IDLE_SPEED = -0.10;
+  // Accelerator speeds
+  private static final double SHOOT_SPEED = 500; // RPM
+  private static final double BACKUP_SPEED = -0.5; // percent
+  private static final double OUTTAKE_SPEED = -0.5; // percent
+  private static final double IDLE_SPEED = -0.10; // percent
 
-  private static final double GEAR_RATIO = 2.0 / 1.0; // 2:1
+  private static final double GEAR_RATIO = 2.0; // 2:1
 
+  // Configure the accelerator current limits
   static {
     // TODO: Determine how much current the accelerator draws nominally and
     final var acceleratorCurrentLimit = new SupplyCurrentLimitConfiguration();
@@ -38,16 +42,20 @@ public class Accelerator extends SubsystemBase {
     ACCELERATOR_MOTOR_CONFIG.slot0 = acceleratorPID;
   }
 
+  // Accelerator master and follower motor
   private final WPI_TalonFX acceleratorMotor = new WPI_TalonFX(40);
   private final WPI_TalonFX acceleratorFollowerMotor = new WPI_TalonFX(41);
 
+  /** Constructs an Accelerator */
   public Accelerator() {
+    // Configures accelerator motor
     acceleratorMotor.configAllSettings(ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
     acceleratorMotor.setInverted(TalonFXInvertType.Clockwise);
     acceleratorMotor.setNeutralMode(NeutralMode.Brake);
     acceleratorMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
     acceleratorMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
 
+    // Configures accelerator follower motor
     acceleratorFollowerMotor.configAllSettings(
         ACCELERATOR_MOTOR_CONFIG, Constants.startupCanTimeout);
     // acceleratorFollowerMotor.follow(acceleratorMotor);
@@ -59,29 +67,39 @@ public class Accelerator extends SubsystemBase {
     acceleratorFollowerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
   }
 
+  /** Runs the accelerator at SHOOT_SPEED */
   public void shoot() {
     acceleratorMotor.set(ControlMode.Velocity, Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO));
 
     acceleratorFollowerMotor.set(ControlMode.Velocity, Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO));
   }
 
+  /** Runs the accelerator at BACKUP_SPEED */
   public void backup() {
     setOpenLoop(BACKUP_SPEED);
   }
 
+  /** Runs the accelerator at OUTTAKE_SPEED */
   public void outtake() {
     setOpenLoop(OUTTAKE_SPEED);
   }
 
+  /** Runs the accelerator at IDLE_SPEED */
   public void idle() {
     setOpenLoop(IDLE_SPEED);
   }
 
+  /**
+   * Sets the accelerator motors to run at a desired percentage
+   *
+   * @param percentOutput The percentage to run the motors at
+   */
   private void setOpenLoop(double percentOutput) {
     acceleratorMotor.set(ControlMode.PercentOutput, percentOutput);
     acceleratorFollowerMotor.set(ControlMode.PercentOutput, percentOutput);
   }
 
+  /** Stops the accelerator motors */
   public void stop() {
     acceleratorMotor.set(ControlMode.PercentOutput, 0.0);
     acceleratorFollowerMotor.set(ControlMode.PercentOutput, 0.0);

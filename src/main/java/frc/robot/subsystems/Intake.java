@@ -11,13 +11,17 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/** This class contains all the code responsible for the behaviour of the intake class */
 public class Intake extends SubsystemBase {
 
-  private static final double INTAKE_SPEED = 0.40;
-  private static final double OUTTAKE_SPEED = -0.25;
+  // Intake speeds
+  private static final double INTAKE_SPEED = 0.40; // percent
+  private static final double OUTTAKE_SPEED = -0.25; // percent
 
+  // Intake motor configuration
   private static final TalonFXConfiguration INTAKE_MOTOR_CONFIG = new TalonFXConfiguration();
 
+  // Configure the intake current limit
   static {
     final var intakeCurrentLimit = new SupplyCurrentLimitConfiguration();
     intakeCurrentLimit.currentLimit = 15; // Amps
@@ -27,29 +31,41 @@ public class Intake extends SubsystemBase {
     INTAKE_MOTOR_CONFIG.supplyCurrLimit = intakeCurrentLimit;
   }
 
+  // Intake motor
   private final WPI_TalonFX intakeMotor = new WPI_TalonFX(20);
 
+  /** Constructs an Intake */
   public Intake() {
+    // Configure intake motor
     intakeMotor.configAllSettings(INTAKE_MOTOR_CONFIG, startupCanTimeout);
     intakeMotor.setInverted(TalonFXInvertType.Clockwise);
     intakeMotor.setNeutralMode(NeutralMode.Coast);
 
+    // CAN bus utilization optimization
     intakeMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
     intakeMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
   }
 
+  /**
+   * Set the intake motor to run at a desired percentage
+   *
+   * @param percentOutput The percentage to run the intake motor at
+   */
   private void setOpenLoop(double percentOutput) {
     intakeMotor.set(ControlMode.PercentOutput, percentOutput);
   }
 
+  /** Runs the intake at INTAKE_SPEED */
   public void intake() {
     setOpenLoop(INTAKE_SPEED);
   }
 
+  /** Runs the intake at OUTTAKE_SPEED */
   public void outtake() {
     setOpenLoop(OUTTAKE_SPEED);
   }
 
+  /** Stops the intake */
   public void stop() {
     intakeMotor.set(ControlMode.PercentOutput, 0.0);
   }

@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 
 public class RobotContainer {
 
+  // Subsystems
   private final Swerve swerve = new Swerve();
   private final Intake intake = new Intake();
   private final Feeder feeder = new Feeder();
@@ -31,34 +32,46 @@ public class RobotContainer {
   private final Hood hood = new Hood();
   public final Turret turret = new Turret();
 
-  private final ControllerWrapper controllerWrapper = new ControllerWrapper(0);
+  // Controllers
+  private final ControllerWrapper driverController = new ControllerWrapper(0);
 
-  private final Button intakeButton = new Button(controllerWrapper::getLeftTriggerButton);
-  private final Button outtakeButton = new Button(controllerWrapper::getTriangleButton);
-  private final Button shootButton = new Button(controllerWrapper::getRightTriggerButton);
+  // Buttons
+  private final Button intakeButton = new Button(driverController::getLeftTriggerButton);
+  private final Button outtakeButton = new Button(driverController::getTriangleButton);
+  private final Button shootButton = new Button(driverController::getRightTriggerButton);
 
-  private final Button gyroResetButton = new Button(controllerWrapper::getShareButton);
+  private final Button gyroResetButton = new Button(driverController::getShareButton);
 
-  private final Button feederButton = new Button(controllerWrapper::getLeftBumperButton);
-  private final Button acceleratorButton = new Button(controllerWrapper::getRightBumperButton);
-  private final Button flywheelButton = new Button(controllerWrapper::getXButton);
+  // Swerve inputs
+  Supplier<Double> inputX = () -> -driverController.getLeftJoystickX(),
+      inputY = () -> -driverController.getLeftJoystickY(),
+      rotation = () -> -driverController.getRightJoystickX();
 
-  Supplier<Double> inputX = () -> -controllerWrapper.getLeftJoystickX(),
-      inputY = () -> -controllerWrapper.getLeftJoystickY(),
-      rotation = () -> -controllerWrapper.getRightJoystickX();
-
+  /** Constructs a RobotContainer */
   public RobotContainer() {
+    // Zero the swerve heading
     swerve.zeroHeading();
+
+    // Configure button bindings
     configureButtonBindings();
+
+    // Configure default commands
     configureDefaultCommands();
   }
 
+  /** Configures all default commands */
   private void configureDefaultCommands() {
+    // Set the swerve default command to a DriveTeleopCommand
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
+
+    // Set the hood default command to a RunCommand to set its position to 0.1
     hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(-1.0), hood)); // -0.5
   }
 
+  /** Configures all button bindings */
   private void configureButtonBindings() {
+    // When the intake button is pressed toggle an IntakeCommand, when it is ended run a
+    // BackupCommand
     intakeButton.toggleWhenPressed(
         new StartEndCommand(
             () -> {
@@ -67,11 +80,22 @@ public class RobotContainer {
             () -> {
               new BackupCommand(accelerator, feeder).schedule();
             }));
+
+    // When the outtake button is held run an OuttakeCommand
     outtakeButton.whenHeld(new OuttakeCommand(intake, feeder, accelerator));
-    shootButton.toggleWhenPressed(new ShootCommand(shooter, accelerator, feeder, hood));
+
+    // When the shoot button is pressed toggle a ShootCommand
+    shootButton.toggleWhenPressed(new ShootCommand(shooter, accelerator, feeder));
+
+    // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
     gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
   }
 
+  /**
+   * Gets the command to run in autonomous
+   *
+   * @return The command to run in autonomous
+   */
   public Command getAutonomousCommand() {
     return new Basic1Ball(swerve);
   }
