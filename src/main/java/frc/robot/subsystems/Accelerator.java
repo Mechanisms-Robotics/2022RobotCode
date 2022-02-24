@@ -19,7 +19,7 @@ public class Accelerator extends SubsystemBase {
   private static final TalonFXConfiguration ACCELERATOR_MOTOR_CONFIG = new TalonFXConfiguration();
 
   // Accelerator speeds
-  private static final double SHOOT_SPEED = 500; // 500
+  private static final double SHOOT_SPEED = 500; // RPM
   private static final double BACKUP_SPEED = -0.5; // percent
   private static final double OUTTAKE_SPEED = -0.5; // percent
   private static final double IDLE_SPEED = -0.10; // percent
