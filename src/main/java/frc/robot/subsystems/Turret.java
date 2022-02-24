@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Units;
 
@@ -108,9 +107,7 @@ public class Turret extends SubsystemBase {
     turretMotor.set(ControlMode.MotionMagic, Units.radsToFalcon(rads, TURRET_GEAR_RATIO));
   }
 
-  /**
-   * Updates currentPosition, and aimed periodically
-   */
+  /** Updates currentPosition, and aimed periodically */
   public void updateValues() {
     // Update the currentAngle
     this.currentAngle =

@@ -11,7 +11,7 @@ public class IntakeCommand extends ParallelCommandGroup {
     addCommands(
         new StartEndCommand(intake::intake, intake::stop),
         new StartEndCommand(feeder::intake, feeder::stop));
-        //new StartEndCommand(accelerator::idle, accelerator::stop));
+    // new StartEndCommand(accelerator::idle, accelerator::stop));
 
     addRequirements(intake, feeder);
   }
