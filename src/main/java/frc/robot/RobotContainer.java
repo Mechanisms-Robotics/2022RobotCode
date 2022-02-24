@@ -2,9 +2,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.AimCommand;
 import frc.robot.commands.BackupCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
@@ -13,6 +13,7 @@ import frc.robot.commands.auto.Basic1Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.GoalTracker;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -31,6 +32,9 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Hood hood = new Hood();
   public final Turret turret = new Turret();
+
+  // Goal Tracker
+  private final GoalTracker goalTracker = new GoalTracker();
 
   // Controllers
   private final ControllerWrapper driverController = new ControllerWrapper(0);
@@ -64,8 +68,8 @@ public class RobotContainer {
     // Set the swerve default command to a DriveTeleopCommand
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
 
-    // Set the hood default command to a RunCommand to set its position to 0.1
-    hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(-1.0), hood)); // -0.5
+    // Set the turret default command to a AimCommand
+    turret.setDefaultCommand(new AimCommand(shooter, hood, turret, goalTracker));
   }
 
   /** Configures all button bindings */
