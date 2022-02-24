@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Feeder extends SubsystemBase {
 
   private static final TalonFXConfiguration FEEDER_MOTOR_CONFIG = new TalonFXConfiguration();
-  private static final double FEEDER_SHOOT_SPEED = 0.50;
-  private static final double FEEDER_INTAKE_SPEED = 1.0;
+  private static final double FEEDER_SHOOT_SPEED = 1.0;
+  private static final double FEEDER_INTAKE_SPEED = 0.5;
   private static final double FEEDER_OUTTAKE_SPEED = -1.0;
   private static final double FEEDER_BACKUP_SPEED = -0.5;
 

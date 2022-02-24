@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -18,6 +17,7 @@ import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Turret;
 import frc.robot.util.ControllerWrapper;
 import java.util.function.Supplier;
 
@@ -29,6 +29,7 @@ public class RobotContainer {
   private final Accelerator accelerator = new Accelerator();
   private final Shooter shooter = new Shooter();
   private final Hood hood = new Hood();
+  public final Turret turret = new Turret();
 
   private final ControllerWrapper controllerWrapper = new ControllerWrapper(0);
 
@@ -54,14 +55,14 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
-    hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(0.1), hood));
+    hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(-1.0), hood)); // -0.5
   }
 
   private void configureButtonBindings() {
     intakeButton.toggleWhenPressed(
         new StartEndCommand(
             () -> {
-              new IntakeCommand(intake, feeder).schedule();
+              new IntakeCommand(intake, feeder, accelerator).schedule();
             },
             () -> {
               new BackupCommand(accelerator, feeder).schedule();
@@ -74,5 +75,4 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return new Basic1Ball(swerve);
   }
-
 }

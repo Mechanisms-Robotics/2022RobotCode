@@ -6,7 +6,7 @@ import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 
 public class BackupCommand extends ParallelCommandGroup {
-  private static final double BACKUP_TIME = 1.0; // Seconds
+  private static final double BACKUP_TIME = 0.25; // Seconds
 
   public BackupCommand(Accelerator accelerator, Feeder feeder) {
     addCommands(
