@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.startupCanTimeout;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
@@ -35,7 +34,7 @@ public class Shooter extends SubsystemBase {
       new InterpolatingTreeMap<>();
 
   // Default shooter speed
-  private static final double DEFAULT_SHOOTER_VEL = 1000.0;
+  private static final double DEFAULT_SHOOTER_VEL = 2250.0; // 1500.0
 
   // Shooter feedforward
   private final SimpleMotorFeedforward feedforward =
@@ -49,15 +48,16 @@ public class Shooter extends SubsystemBase {
   static {
     // Configure shooter current limit
     final var shooterCurrentLimit = new SupplyCurrentLimitConfiguration();
-    shooterCurrentLimit.currentLimit = 20; // Amps
-    shooterCurrentLimit.triggerThresholdCurrent = 40; // Amps
+    shooterCurrentLimit.currentLimit = 40; // Amps
+    shooterCurrentLimit.triggerThresholdCurrent = 45; // Amps
     shooterCurrentLimit.triggerThresholdTime = 0.5; // sec
     shooterCurrentLimit.enable = true;
     SHOOTER_MOTOR_CONFIG.supplyCurrLimit = shooterCurrentLimit;
 
     // Configure shooter PID
     final var shooterPID = new SlotConfiguration();
-    shooterPID.kP = 0.10;
+    shooterPID.kP = 0.075;
+    shooterPID.kF = 0.055;
     SHOOTER_MOTOR_CONFIG.slot0 = shooterPID;
 
     // Configure shooter range interpolating tree map
@@ -111,26 +111,14 @@ public class Shooter extends SubsystemBase {
     final double velocity = RANGE_TO_RPM.getInterpolated(new InterpolatingDouble(range)).value;
 
     // Run shooter motor at velocity
-    shooterMotor.set(
-        ControlMode.Velocity,
-        Units.RPMToFalcon(velocity, GEAR_RATIO),
-        DemandType.ArbitraryFeedForward,
-        feedforward.calculate(velocity));
+    shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(velocity, GEAR_RATIO));
   }
 
   /**
    * Runs the shooter at the default RPM
    */
   public void shoot() {
-    /*
-    shooterMotor.set(
-        ControlMode.Velocity,
-        Units.RPMToFalcon(DEFAULT_SHOOTER_VEL, GEAR_RATIO),
-        DemandType.ArbitraryFeedForward,
-        feedforward.calculate(DEFAULT_SHOOTER_VEL));
-        */
-
-    shooterMotor.set(0.5);
+    shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(DEFAULT_SHOOTER_VEL, GEAR_RATIO));
   }
 
   /**

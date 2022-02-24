@@ -5,10 +5,12 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.Units;
 
 /**
  * This contains all the code responsible for the behaviour of the Accelerator subsystem.
@@ -19,20 +21,27 @@ public class Accelerator extends SubsystemBase {
   private static final TalonFXConfiguration ACCELERATOR_MOTOR_CONFIG = new TalonFXConfiguration();
 
   // Accelerator speeds
-  private static final double SHOOT_SPEED = 0.20; // percent
-  private static final double BACKUP_SPEED = -0.25; // percent
-  private static final double OUTTAKE_SPEED = -0.25; // percent
+  private static final double SHOOT_SPEED = 500; // 500
+  private static final double BACKUP_SPEED = -0.5; // percent
+  private static final double OUTTAKE_SPEED = -0.5; // percent
   private static final double IDLE_SPEED = -0.10; // percent
+
+  private static final double GEAR_RATIO = 2.0; // 2:1
 
   // Configure the accelerator current limits
   static {
     // TODO: Determine how much current the accelerator draws nominally and
     final var acceleratorCurrentLimit = new SupplyCurrentLimitConfiguration();
-    acceleratorCurrentLimit.currentLimit = 10; // Amps
-    acceleratorCurrentLimit.triggerThresholdCurrent = 15; // Amps
+    acceleratorCurrentLimit.currentLimit = 30; // Amps
+    acceleratorCurrentLimit.triggerThresholdCurrent = 35; // Amps
     acceleratorCurrentLimit.triggerThresholdTime = 0.5; // sec
     acceleratorCurrentLimit.enable = true;
     ACCELERATOR_MOTOR_CONFIG.supplyCurrLimit = acceleratorCurrentLimit;
+
+    final var acceleratorPID = new SlotConfiguration();
+    acceleratorPID.kP = 0.05;
+    acceleratorPID.kF = 0.05;
+    ACCELERATOR_MOTOR_CONFIG.slot0 = acceleratorPID;
   }
 
   // Accelerator master and follower motor
@@ -66,7 +75,9 @@ public class Accelerator extends SubsystemBase {
    * Runs the accelerator at SHOOT_SPEED
    */
   public void shoot() {
-    setOpenLoop(SHOOT_SPEED);
+    acceleratorMotor.set(ControlMode.Velocity, Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO));
+
+    acceleratorFollowerMotor.set(ControlMode.Velocity, Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO));
   }
 
   /**

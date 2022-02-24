@@ -10,7 +10,7 @@ import frc.robot.subsystems.Feeder;
  */
 public class BackupCommand extends ParallelCommandGroup {
   // Time to back it up for
-  private static final double BACKUP_TIME = 1.0; // Seconds
+  private static final double BACKUP_TIME = 0.25; // Seconds
 
   /**
    * Constructs a BackupCommand
