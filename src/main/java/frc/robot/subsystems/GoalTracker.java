@@ -24,7 +24,7 @@ public class GoalTracker extends SubsystemBase {
     this.limelight = new PhotonCamera("limelight");
 
     // Turn off the limelight's LEDs
-    turnOffLEDs();
+    turnOnLEDs();
   }
 
   /**
@@ -57,7 +57,7 @@ public class GoalTracker extends SubsystemBase {
     if (hasTarget()) {
       // Get the best target and get the yaw to it
       PhotonTrackedTarget trackedTarget = this.limelight.getLatestResult().getBestTarget();
-      double targetYaw = trackedTarget.getYaw();
+      double targetYaw = -trackedTarget.getYaw();
 
       // Output targetYaw to SmartDashboard
       SmartDashboard.putNumber("targetYaw", targetYaw);

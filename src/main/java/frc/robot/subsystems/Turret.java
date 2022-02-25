@@ -19,7 +19,7 @@ public class Turret extends SubsystemBase {
   private static final double TURRET_GEAR_RATIO = 50.0; // 50:1
   private static final double TURRET_FORWARD_LIMIT = Math.toRadians(0.0); // 0 degrees
   private static final double TURRET_REVERSE_LIMIT = Math.toRadians(-270.0); // -270 degrees
-  private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(1.0); // 1 degree
+  private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(5.0); // 1 degree
 
   private boolean zeroed = false; // Has the turret been zeroed
 
@@ -88,6 +88,10 @@ public class Turret extends SubsystemBase {
             this.currentAngle + Math.toRadians(degrees),
             TURRET_REVERSE_LIMIT,
             TURRET_FORWARD_LIMIT);
+
+    if (isAimed()) {
+      return;
+    }
 
     setPosition(this.desiredAngle);
   }

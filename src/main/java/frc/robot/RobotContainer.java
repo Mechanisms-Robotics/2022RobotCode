@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.AimCommand;
@@ -67,6 +68,8 @@ public class RobotContainer {
   private void configureDefaultCommands() {
     // Set the swerve default command to a DriveTeleopCommand
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
+
+    hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(-1.0), hood));
 
     // Set the turret default command to a AimCommand
     turret.setDefaultCommand(new AimCommand(shooter, hood, turret, goalTracker));
