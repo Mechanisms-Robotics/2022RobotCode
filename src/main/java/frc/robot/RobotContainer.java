@@ -85,7 +85,7 @@ public class RobotContainer {
     outtakeButton.whenHeld(new OuttakeCommand(intake, feeder, accelerator));
 
     // When the shoot button is pressed toggle a ShootCommand
-    shootButton.toggleWhenPressed(new ShootCommand(shooter, accelerator, feeder));
+    shootButton.whenHeld(new ShootCommand(shooter, hood, accelerator, feeder));
 
     // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
     gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));

@@ -32,7 +32,7 @@ public class Shooter extends SubsystemBase {
       new InterpolatingTreeMap<>();
 
   // Default shooter speed
-  private static final double DEFAULT_SHOOTER_VEL = 2250.0; // 1500.0
+  private static final double DEFAULT_SHOOTER_VEL = 1450.0; // RPM
 
   // Shooter feedforward
   private final SimpleMotorFeedforward feedforward =
