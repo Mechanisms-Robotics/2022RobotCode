@@ -115,6 +115,6 @@ public class RobotContainer {
    * @return The command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new Basic1Ball(swerve);
+    return new Basic1Ball(swerve, shooter, turret, accelerator, feeder);
   }
 }

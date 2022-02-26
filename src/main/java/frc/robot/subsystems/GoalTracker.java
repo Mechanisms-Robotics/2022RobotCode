@@ -57,6 +57,12 @@ public class GoalTracker extends SubsystemBase {
     if (hasTarget()) {
       // Get the best target and get the yaw to it
       PhotonTrackedTarget trackedTarget = this.limelight.getLatestResult().getBestTarget();
+
+      if (trackedTarget == null) {
+        SmartDashboard.putNumber("targetYaw", 0.0);
+        return 0.0;
+      }
+
       double targetYaw = -trackedTarget.getYaw();
 
       // Output targetYaw to SmartDashboard
@@ -86,6 +92,12 @@ public class GoalTracker extends SubsystemBase {
     if (hasTarget()) {
       // Get the best target and calculate the range to it
       PhotonTrackedTarget trackedTarget = this.limelight.getLatestResult().getBestTarget();
+
+      if (trackedTarget == null) {
+        SmartDashboard.putNumber("targetRange", 0.0);
+        return 0.0;
+      }
+
       double targetRange =
           PhotonUtils.calculateDistanceToTargetMeters(
               CAMERA_HEIGHT,

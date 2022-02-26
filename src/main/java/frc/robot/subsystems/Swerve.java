@@ -164,6 +164,10 @@ public class Swerve extends SubsystemBase {
     desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, 0.0, getHeading());
   }
 
+  public void stop() {
+    drive(0.0, 0.0, 0.0, true);
+  }
+
   private void setSwerveStates(ChassisSpeeds speeds) {
     SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
     setModuleStates(states);
