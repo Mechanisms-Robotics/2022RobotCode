@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.HeadingController;
 import frc.robot.util.TrajectoryController;
+import frc.robot.util.Units;
 
 /** The base swerve drive class, controls all swerve modules in coordination. */
 public class Swerve extends SubsystemBase {
@@ -50,7 +51,7 @@ public class Swerve extends SubsystemBase {
 
   private static final double flAngleOffset = -238.096; // -238.096
   private static final double frAngleOffset = -332.402; // -335.479
-  private static final double blAngleOffset = -177.012; // -172.441
+  private static final double blAngleOffset = -172.441; // -82.090
   private static final double brAngleOffset = -77.432; // -75.059;
 
   private static final int gyroID = 2;
@@ -61,37 +62,37 @@ public class Swerve extends SubsystemBase {
 
   private final SwerveDriveOdometry poseEstimator;
 
-  private final SwerveModule flModule =
-      Mk4SwerveModuleHelper.createFalcon500(
-          Mk4SwerveModuleHelper.GearRatio.L2,
-          flWheelMotorID,
-          flSteerMotorID,
-          flSteerEncoderID,
-          Math.toRadians(flAngleOffset));
+  private final SwerveModule flModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      flWheelMotorID,
+      flSteerMotorID,
+      flSteerEncoderID,
+      Math.toRadians(flAngleOffset)
+  );
 
-  private final SwerveModule frModule =
-      Mk4SwerveModuleHelper.createFalcon500(
-          Mk4SwerveModuleHelper.GearRatio.L2,
-          frWheelMotorID,
-          frSteerMotorID,
-          frSteerEncoderID,
-          Math.toRadians(frAngleOffset));
+  private final SwerveModule frModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      frWheelMotorID,
+      frSteerMotorID,
+      frSteerEncoderID,
+      Math.toRadians(frAngleOffset)
+  );
 
-  private final SwerveModule blModule =
-      Mk4SwerveModuleHelper.createFalcon500(
-          Mk4SwerveModuleHelper.GearRatio.L2,
-          blWheelMotorID,
-          blSteerMotorID,
-          blSteerEncoderID,
-          Math.toRadians(blAngleOffset));
+  private final SwerveModule blModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      blWheelMotorID,
+      blSteerMotorID,
+      blSteerEncoderID,
+      Math.toRadians(blAngleOffset)
+  );
 
-  private final SwerveModule brModule =
-      Mk4SwerveModuleHelper.createFalcon500(
-          Mk4SwerveModuleHelper.GearRatio.L2,
-          brWheelMotorID,
-          brSteerMotorID,
-          brSteerEncoderID,
-          Math.toRadians(brAngleOffset));
+  private final SwerveModule brModule = Mk4SwerveModuleHelper.createFalcon500(
+      Mk4SwerveModuleHelper.GearRatio.L2,
+      brWheelMotorID,
+      brSteerMotorID,
+      brSteerEncoderID,
+      Math.toRadians(brAngleOffset)
+  );
 
   public final PigeonIMU gyro = new PigeonIMU(gyroID);
 
