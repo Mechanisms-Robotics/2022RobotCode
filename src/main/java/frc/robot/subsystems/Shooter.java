@@ -25,14 +25,14 @@ public class Shooter extends SubsystemBase {
   private static final TalonFXConfiguration SHOOTER_MOTOR_CONFIG = new TalonFXConfiguration();
 
   // Shooter gear ratio
-  private static final double GEAR_RATIO = 1.5 / 1.0; // 1.5:1 reduction
+  private static final double GEAR_RATIO = 1.5; // 1.5:1 reduction
 
   // Range interpolating tree map
   private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> RANGE_TO_RPM =
       new InterpolatingTreeMap<>();
 
   // Default shooter speed
-  private static final double DEFAULT_SHOOTER_VEL = 2250.0; // 1500.0
+  private static final double DEFAULT_SHOOTER_VEL = 1500.0; // RPM
 
   // Shooter feedforward
   private final SimpleMotorFeedforward feedforward =
@@ -58,8 +58,9 @@ public class Shooter extends SubsystemBase {
     shooterPID.kF = 0.055;
     SHOOTER_MOTOR_CONFIG.slot0 = shooterPID;
 
-    // Configure shooter range interpolating tree map
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(3000.0));
+    // Configure shooter range interpolating tree map (meters, RPM)
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1500.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(1.72), new InterpolatingDouble(2000.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(20.0), new InterpolatingDouble(3000.0));
 
     // Configure shooter velocity measurement

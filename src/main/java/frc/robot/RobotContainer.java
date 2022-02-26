@@ -2,10 +2,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.AimCommand;
 import frc.robot.commands.BackupCommand;
+import frc.robot.commands.FenderShotCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
@@ -13,6 +14,7 @@ import frc.robot.commands.auto.Basic1Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.GoalTracker;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -32,12 +34,16 @@ public class RobotContainer {
   private final Hood hood = new Hood();
   public final Turret turret = new Turret();
 
+  // Goal Tracker
+  private final GoalTracker goalTracker = new GoalTracker();
+
   // Controllers
   private final ControllerWrapper driverController = new ControllerWrapper(0);
 
   // Buttons
   private final Button intakeButton = new Button(driverController::getLeftTriggerButton);
   private final Button outtakeButton = new Button(driverController::getTriangleButton);
+  private final Button fenderShotButton = new Button(driverController::getRightBumperButton);
   private final Button shootButton = new Button(driverController::getRightTriggerButton);
 
   private final Button gyroResetButton = new Button(driverController::getShareButton);
@@ -64,8 +70,15 @@ public class RobotContainer {
     // Set the swerve default command to a DriveTeleopCommand
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
 
-    // Set the hood default command to a RunCommand to set its position to 0.1
-    hood.setDefaultCommand(new RunCommand(() -> hood.setHoodRawPosition(-1.0), hood)); // -0.5
+    // Set the turret default command to a AimCommand
+    turret.setDefaultCommand(
+        new AimCommand(
+            turret,
+            hood,
+            goalTracker::hasTarget,
+            goalTracker::getTargetAngle,
+            goalTracker::getTargetRange,
+            fenderShotButton::get));
   }
 
   /** Configures all button bindings */
@@ -84,8 +97,13 @@ public class RobotContainer {
     // When the outtake button is held run an OuttakeCommand
     outtakeButton.whenHeld(new OuttakeCommand(intake, feeder, accelerator));
 
+    // When the fender shot button is held, run a FenderShotCommand
+    fenderShotButton.whenHeld(new FenderShotCommand(shooter, turret, accelerator, feeder));
+
     // When the shoot button is pressed toggle a ShootCommand
-    shootButton.toggleWhenPressed(new ShootCommand(shooter, accelerator, feeder));
+    shootButton.whenHeld(
+        new ShootCommand(
+            shooter, accelerator, feeder, goalTracker::hasTarget, goalTracker::getTargetRange));
 
     // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
     gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
