@@ -19,7 +19,7 @@ public class Turret extends SubsystemBase {
   private static final double TURRET_GEAR_RATIO = 50.0; // 50:1
   private static final double TURRET_FORWARD_LIMIT = Math.toRadians(0.0); // 0 degrees
   private static final double TURRET_REVERSE_LIMIT = Math.toRadians(-270.0); // -270 degrees
-  private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(5.0); // 1 degree
+  private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(0.5); // 0.5 degrees
 
   private boolean zeroed = false; // Has the turret been zeroed
 
@@ -44,12 +44,18 @@ public class Turret extends SubsystemBase {
     TURRET_MOTOR_CONFIG.forwardSoftLimitEnable = true;
     TURRET_MOTOR_CONFIG.reverseSoftLimitEnable = true;
 
-    // Turret motor PID configuration
-    final var turretPID = new SlotConfiguration();
-    turretPID.kP = 0.5;
-    turretPID.allowableClosedloopError =
+    // Turret motion magic PID configuration
+    final var turretMMPID = new SlotConfiguration();
+    turretMMPID.kP = 0.5;
+    turretMMPID.allowableClosedloopError =
         Units.radsToFalcon(TURRET_ALLOWABLE_ERROR, TURRET_GEAR_RATIO);
-    TURRET_MOTOR_CONFIG.slot0 = turretPID;
+    TURRET_MOTOR_CONFIG.slot0 = turretMMPID;
+
+    // Turret position PID configuration
+    final var turretPositionPID = new SlotConfiguration();
+    turretPositionPID.kP = 0.16;
+    turretPositionPID.allowableClosedloopError = Units.radsToFalcon(TURRET_ALLOWABLE_ERROR, TURRET_GEAR_RATIO);
+    TURRET_MOTOR_CONFIG.slot1 = turretPositionPID;
 
     // Turret motor Motion Magic configuration
     TURRET_MOTOR_CONFIG.motionAcceleration =
@@ -71,6 +77,7 @@ public class Turret extends SubsystemBase {
     turretMotor.configAllSettings(TURRET_MOTOR_CONFIG, startupCanTimeout);
     turretMotor.setInverted(TalonFXInvertType.Clockwise);
     turretMotor.setNeutralMode(NeutralMode.Brake);
+    turretMotor.selectProfileSlot(1, 0);
 
     turretMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
   }
