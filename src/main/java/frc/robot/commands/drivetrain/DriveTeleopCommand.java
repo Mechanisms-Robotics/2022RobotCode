@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 public class DriveTeleopCommand extends CommandBase {
 
   // Max velocity and acceleration rates
-  protected static final double MAX_TRANSLATIONAL_VELOCITY_RATE = 10; // m/s per second
+  protected static final double MAX_TRANSLATIONAL_VELOCITY_RATE = 4.0; // m/s per second
   protected static final double MAX_ROTATION_VELOCITY_RATE = 4 * Math.PI; // rads/s per second
 
   // Joystick deadband
