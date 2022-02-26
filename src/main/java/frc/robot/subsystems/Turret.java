@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Units;
 
@@ -53,8 +54,10 @@ public class Turret extends SubsystemBase {
 
     // Turret position PID configuration
     final var turretPositionPID = new SlotConfiguration();
-    turretPositionPID.kP = 0.16;
-    turretPositionPID.allowableClosedloopError = Units.radsToFalcon(TURRET_ALLOWABLE_ERROR, TURRET_GEAR_RATIO);
+    turretPositionPID.kP = 0.1;
+    turretPositionPID.kD = 1.0;
+    turretPositionPID.allowableClosedloopError =
+        Units.radsToFalcon(TURRET_ALLOWABLE_ERROR, TURRET_GEAR_RATIO);
     TURRET_MOTOR_CONFIG.slot1 = turretPositionPID;
 
     // Turret motor Motion Magic configuration
@@ -103,6 +106,11 @@ public class Turret extends SubsystemBase {
     setPosition(this.desiredAngle);
   }
 
+  /** Sets the turret to the zero position */
+  public void goToZero() {
+    setPosition(0.0);
+  }
+
   /**
    * PIDs the turret motor to an angle
    *
@@ -123,6 +131,8 @@ public class Turret extends SubsystemBase {
     // Update the currentAngle
     this.currentAngle =
         Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO);
+
+    SmartDashboard.putNumber("Turret Angle", Math.toDegrees(this.currentAngle));
 
     // Check if we're at the desired angle and update aimed
     this.aimed =

@@ -24,7 +24,11 @@ public class Hood extends SubsystemBase {
     hoodServo.setBounds(2.0, 1.8, 1.5, 1.2, 1.0);
 
     // Configure hood range interpolating tree map (meters, hood position)
-    RANGE_TO_POSITION.put(new InterpolatingDouble(0.0), new InterpolatingDouble(-0.5));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.0), new InterpolatingDouble(-0.35));
+    RANGE_TO_POSITION.put(
+        new InterpolatingDouble(1.72),
+        new InterpolatingDouble(1.0)); // from fender to inside of bumper
+    RANGE_TO_POSITION.put(new InterpolatingDouble(3.0), new InterpolatingDouble(1.0));
     RANGE_TO_POSITION.put(new InterpolatingDouble(20.0), new InterpolatingDouble(1.0));
   }
 
@@ -33,7 +37,7 @@ public class Hood extends SubsystemBase {
    *
    * @param range Range to target
    */
-  public void aimHood(double range) {
+  public void aim(double range) {
     // Calculate interpolated hood position based on range and call setHoodRawPosition
     setHoodRawPosition(RANGE_TO_POSITION.getInterpolated(new InterpolatingDouble(range)).value);
   }

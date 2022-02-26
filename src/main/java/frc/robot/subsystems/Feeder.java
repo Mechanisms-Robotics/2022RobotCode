@@ -18,7 +18,7 @@ public class Feeder extends SubsystemBase {
   private static final TalonFXConfiguration FEEDER_MOTOR_CONFIG = new TalonFXConfiguration();
 
   // Feeder speeds
-  private static final double SHOOT_SPEED = 1.0; // percent
+  private static final double SHOOT_SPEED = 0.75; // percent
   private static final double INTAKE_SPEED = 0.5; // percent
   private static final double OUTTAKE_SPEED = -1.0; // percent
   private static final double BACKUP_SPEED = -0.5; // percent
