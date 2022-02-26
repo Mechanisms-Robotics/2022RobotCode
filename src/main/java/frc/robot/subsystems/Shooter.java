@@ -33,6 +33,7 @@ public class Shooter extends SubsystemBase {
 
   // Default shooter speed
   private static final double DEFAULT_SHOOTER_VEL = 1500.0; // RPM
+  private static final double BACKUP_SPEED = -0.25; // percent
 
   // Shooter feedforward
   private final SimpleMotorFeedforward feedforward =
@@ -61,6 +62,7 @@ public class Shooter extends SubsystemBase {
     // Configure shooter range interpolating tree map (meters, RPM)
     RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1500.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(1.72), new InterpolatingDouble(2000.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(2.82), new InterpolatingDouble(2000.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(20.0), new InterpolatingDouble(3000.0));
 
     // Configure shooter velocity measurement
@@ -116,6 +118,11 @@ public class Shooter extends SubsystemBase {
   /** Runs the shooter at the default RPM */
   public void shoot() {
     shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(DEFAULT_SHOOTER_VEL, GEAR_RATIO));
+  }
+
+  /** Backs up the shooter in case of a jam */
+  public void backup() {
+    shooterMotor.set(ControlMode.PercentOutput, BACKUP_SPEED);
   }
 
   /** Stops the shooter */

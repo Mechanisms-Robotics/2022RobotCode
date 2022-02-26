@@ -10,7 +10,7 @@ import frc.robot.commands.FenderShotCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.auto.Basic1Ball;
+import frc.robot.commands.auto.Tarmac2Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
@@ -39,12 +39,15 @@ public class RobotContainer {
 
   // Controllers
   private final ControllerWrapper driverController = new ControllerWrapper(0);
+  private final ControllerWrapper secondaryController = new ControllerWrapper(1);
 
   // Buttons
   private final Button intakeButton = new Button(driverController::getLeftTriggerButton);
   private final Button outtakeButton = new Button(driverController::getTriangleButton);
   private final Button fenderShotButton = new Button(driverController::getRightBumperButton);
   private final Button shootButton = new Button(driverController::getRightTriggerButton);
+
+  private final Button backupShooterButton = new Button(secondaryController::getXButton);
 
   private final Button gyroResetButton = new Button(driverController::getShareButton);
 
@@ -105,6 +108,8 @@ public class RobotContainer {
         new ShootCommand(
             shooter, accelerator, feeder, goalTracker::hasTarget, goalTracker::getTargetRange));
 
+    backupShooterButton.whenHeld(new StartEndCommand(shooter::backup, shooter::stop));
+
     // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
     gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
   }
@@ -115,6 +120,16 @@ public class RobotContainer {
    * @return The command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new Basic1Ball(swerve, shooter, turret, accelerator, feeder);
+    return new Tarmac2Ball(
+        swerve,
+        shooter,
+        turret,
+        hood,
+        accelerator,
+        feeder,
+        intake,
+        goalTracker::hasTarget,
+        goalTracker::getTargetAngle,
+        goalTracker::getTargetRange);
   }
 }

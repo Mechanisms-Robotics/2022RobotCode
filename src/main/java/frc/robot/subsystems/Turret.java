@@ -106,6 +106,19 @@ public class Turret extends SubsystemBase {
     setPosition(this.desiredAngle);
   }
 
+  /** Snaps the turret to the angle (radians) */
+  public void snapTo(double angle) {
+    updateValues();
+
+    this.desiredAngle = MathUtil.clamp(angle, TURRET_REVERSE_LIMIT, TURRET_FORWARD_LIMIT);
+
+    if (isAimed()) {
+      return;
+    }
+
+    setPosition(this.desiredAngle);
+  }
+
   /** Sets the turret to the zero position */
   public void goToZero() {
     setPosition(0.0);
