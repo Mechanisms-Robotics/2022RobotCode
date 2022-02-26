@@ -13,10 +13,10 @@ public class DriveTeleopCommand extends CommandBase {
 
   // Max velocity and acceleration rates
   protected static final double MAX_TRANSLATIONAL_VELOCITY_RATE = 4.0; // m/s per second
-  protected static final double MAX_ROTATION_VELOCITY_RATE = 4 * Math.PI; // rads/s per second
+  protected static final double MAX_ROTATION_VELOCITY_RATE = 2 * Math.PI; // rads/s per second
 
   // Joystick deadband
-  private static final double DEADBAND = 0.15; // joystick percentage
+  private static final double DEADBAND = 0.0; // joystick percentage
 
   // Instance of swerve
   protected final Swerve swerve;
