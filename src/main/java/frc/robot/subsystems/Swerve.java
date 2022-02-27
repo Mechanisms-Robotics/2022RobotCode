@@ -6,6 +6,7 @@ import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -48,10 +49,10 @@ public class Swerve extends SubsystemBase {
   private static final int brSteerMotorID = 17;
   private static final int brSteerEncoderID = 16;
 
-  private static final double flAngleOffset = -237.217; // -238.096
-  private static final double frAngleOffset = -334.424; // -335.479
-  private static final double blAngleOffset = -81.211; // -82.090
-  private static final double brAngleOffset = -77.959; // -75.059
+  private static final double flAngleOffset = -59.15; // -237.217
+  private static final double frAngleOffset = -154.69; // -334.424
+  private static final double blAngleOffset = -261.48; // -81.211
+  private static final double brAngleOffset = -257.69; // -77.959
 
   private static final int gyroID = 2;
 
@@ -237,12 +238,16 @@ public class Swerve extends SubsystemBase {
    * @return A Pose2d that represents the position of the robot
    */
   public Pose2d getPose() {
-    return poseEstimator.getPoseMeters();
+    return poseEstimator
+        .getPoseMeters()
+        .transformBy(new Transform2d(new Translation2d(), new Rotation2d(Math.PI)));
   }
 
   public void setPose(Pose2d pose, Rotation2d heading) {
     setHeading(heading);
-    poseEstimator.resetPosition(pose, getHeading());
+    poseEstimator.resetPosition(
+        pose.transformBy(new Transform2d(new Translation2d(), new Rotation2d(Math.PI))),
+        getHeading());
   }
 
   public void resetSensors() {

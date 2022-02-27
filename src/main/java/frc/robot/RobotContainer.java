@@ -10,8 +10,7 @@ import frc.robot.commands.FenderShotCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.auto.Tarmac2Ball;
-import frc.robot.commands.auto.TarmacFender2Ball;
+import frc.robot.commands.auto.Fender1Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
@@ -55,7 +54,7 @@ public class RobotContainer {
   // Swerve inputs
   Supplier<Double> inputX = () -> -driverController.getLeftJoystickX(),
       inputY = () -> -driverController.getLeftJoystickY(),
-      rotation = () -> -driverController.getRightJoystickX();
+      rotation = () -> driverController.getRightJoystickX();
 
   /** Constructs a RobotContainer */
   public RobotContainer() {
@@ -121,12 +120,6 @@ public class RobotContainer {
    * @return The command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new TarmacFender2Ball(
-        swerve,
-        shooter,
-        turret,
-        accelerator,
-        feeder,
-        intake);
+    return new Fender1Ball(swerve, shooter, turret, accelerator, feeder);
   }
 }
