@@ -79,6 +79,8 @@ public class AutoShootCommand extends CommandBase {
             && turretIsAimedSupplier.get()
             && swerveVelocitySupplier.get() <= MAX_VELOCITY) {
           feeder.shoot();
+        } else {
+          feeder.stop();
         }
       } else {
         spinningUp = false;
