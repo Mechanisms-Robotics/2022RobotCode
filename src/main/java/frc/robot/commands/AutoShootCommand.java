@@ -16,6 +16,7 @@ public class AutoShootCommand extends CommandBase {
   // Suppliers of data from the GoalTracker
   private final Supplier<Boolean> hasTargetSupplier;
   private final Supplier<Double> targetRangeSupplier;
+  private final Supplier<Boolean> turretIsAimedSupplier;
 
   // Timer for spinup
   private final Timer spinupTimer = new Timer();
@@ -41,13 +42,15 @@ public class AutoShootCommand extends CommandBase {
       Accelerator accelerator,
       Feeder feeder,
       Supplier<Boolean> hasTargetSupplier,
-      Supplier<Double> targetRangeSupplier) {
+      Supplier<Double> targetRangeSupplier,
+      Supplier<Boolean> turretIsAimedSupplier) {
     this.shooter = shooter;
     this.accelerator = accelerator;
     this.feeder = feeder;
 
     this.hasTargetSupplier = hasTargetSupplier;
     this.targetRangeSupplier = targetRangeSupplier;
+    this.turretIsAimedSupplier = turretIsAimedSupplier;
 
     // Add the shooter, accelerator, and feeder as a requirement
     addRequirements(shooter, accelerator, feeder);
@@ -59,7 +62,7 @@ public class AutoShootCommand extends CommandBase {
   @Override
   public void execute() {
     if (hasTargetSupplier.get()) {
-      if (targetRangeSupplier.get() <= MAX_RANGE) {
+      if (targetRangeSupplier.get() <= MAX_RANGE && turretIsAimedSupplier.get()) {
         shooter.shoot(targetRangeSupplier.get());
         accelerator.shoot();
 
