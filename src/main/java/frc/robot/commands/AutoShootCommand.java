@@ -62,7 +62,7 @@ public class AutoShootCommand extends CommandBase {
   @Override
   public void execute() {
     if (hasTargetSupplier.get()) {
-      if (targetRangeSupplier.get() <= MAX_RANGE && turretIsAimedSupplier.get()) {
+      if (targetRangeSupplier.get() <= MAX_RANGE) {
         shooter.shoot(targetRangeSupplier.get());
         accelerator.shoot();
 
@@ -71,7 +71,7 @@ public class AutoShootCommand extends CommandBase {
           spinupTimer.start();
 
           spinningUp = true;
-        } else if (spinupTimer.hasElapsed(SPINUP_TIME)) {
+        } else if (spinupTimer.hasElapsed(SPINUP_TIME) && turretIsAimedSupplier.get()) {
           feeder.shoot();
         }
       } else {
