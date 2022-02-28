@@ -17,6 +17,7 @@ public class AutoShootCommand extends CommandBase {
   private final Supplier<Boolean> hasTargetSupplier;
   private final Supplier<Double> targetRangeSupplier;
   private final Supplier<Boolean> turretIsAimedSupplier;
+  private final Supplier<Double> swerveVelocitySupplier;
 
   // Timer for spinup
   private final Timer spinupTimer = new Timer();
@@ -26,6 +27,7 @@ public class AutoShootCommand extends CommandBase {
 
   // The maximum range to shoot from
   private static final double MAX_RANGE = 3.0; // meters
+  private static final double MAX_VELOCITY = 1.0; // m/s
 
   // Whether we are spinning up or not
   private boolean spinningUp = false;
@@ -43,7 +45,8 @@ public class AutoShootCommand extends CommandBase {
       Feeder feeder,
       Supplier<Boolean> hasTargetSupplier,
       Supplier<Double> targetRangeSupplier,
-      Supplier<Boolean> turretIsAimedSupplier) {
+      Supplier<Boolean> turretIsAimedSupplier,
+      Supplier<Double> swerveVelocitySupplier) {
     this.shooter = shooter;
     this.accelerator = accelerator;
     this.feeder = feeder;
@@ -51,6 +54,7 @@ public class AutoShootCommand extends CommandBase {
     this.hasTargetSupplier = hasTargetSupplier;
     this.targetRangeSupplier = targetRangeSupplier;
     this.turretIsAimedSupplier = turretIsAimedSupplier;
+    this.swerveVelocitySupplier = swerveVelocitySupplier;
 
     // Add the shooter, accelerator, and feeder as a requirement
     addRequirements(shooter, accelerator, feeder);
@@ -71,7 +75,9 @@ public class AutoShootCommand extends CommandBase {
           spinupTimer.start();
 
           spinningUp = true;
-        } else if (spinupTimer.hasElapsed(SPINUP_TIME) && turretIsAimedSupplier.get()) {
+        } else if (spinupTimer.hasElapsed(SPINUP_TIME)
+            && turretIsAimedSupplier.get()
+            && swerveVelocitySupplier.get() <= MAX_VELOCITY) {
           feeder.shoot();
         }
       } else {

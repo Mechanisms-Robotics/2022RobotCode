@@ -233,6 +233,16 @@ public class Swerve extends SubsystemBase {
   }
 
   /**
+   * Gets the velocity of the drivetrain in m/s
+   *
+   * @return The velocity of the drivetrain
+   */
+  public double getVelocity() {
+    return Math.sqrt(
+        Math.pow(getSpeeds().vxMetersPerSecond, 2) + Math.pow(getSpeeds().vyMetersPerSecond, 2));
+  }
+
+  /**
    * Get the current pose of the robot.
    *
    * @return A Pose2d that represents the position of the robot
