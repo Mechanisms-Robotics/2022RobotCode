@@ -110,7 +110,7 @@ public class RobotContainer {
             feeder,
             goalTracker::hasTarget,
             goalTracker::getTargetRange,
-            turret::isAimed,
+            turret::getAimError,
             swerve::getVelocity));
 
     // When the feeder intake button is pressed intake the feeder, when it is released stop it
