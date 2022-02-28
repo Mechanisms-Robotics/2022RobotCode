@@ -246,7 +246,7 @@ public class Swerve extends SubsystemBase {
   public void setPose(Pose2d pose, Rotation2d heading) {
     setHeading(heading);
     poseEstimator.resetPosition(
-        pose.transformBy(new Transform2d(new Translation2d(), new Rotation2d(Math.PI))),
+        pose,
         getHeading());
   }
 
