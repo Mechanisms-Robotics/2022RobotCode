@@ -25,7 +25,7 @@ public class Fender1Ball extends SequentialCommandGroup {
   public Fender1Ball(
       Swerve swerve, Shooter shooter, Turret turret, Accelerator accelerator, Feeder feeder) {
     addCommands(
-        new FenderShotCommand(shooter, turret, accelerator, feeder).withTimeout(3.0),
+        new FenderShotCommand(shooter, turret, accelerator, feeder).withTimeout(1.5),
         new InstantCommand(
             () ->
                 swerve.setPose(

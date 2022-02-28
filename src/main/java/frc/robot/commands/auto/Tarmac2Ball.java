@@ -57,7 +57,7 @@ public class Tarmac2Ball extends SequentialCommandGroup {
                         swerve)
                     .andThen(swerve::stop))
             .andThen(new BackupCommand(accelerator, feeder)),
-        new RunCommand(() -> turret.snapTo(Math.toRadians(-90.0))).withTimeout(1.0),
+        new RunCommand(() -> turret.snapTo(Math.toRadians(-90.0))).withTimeout(0.5),
         new ParallelCommandGroup(
             new AimCommand(
                 turret,
