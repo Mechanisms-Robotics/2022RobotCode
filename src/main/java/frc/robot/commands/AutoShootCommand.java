@@ -26,7 +26,7 @@ public class AutoShootCommand extends CommandBase {
   private static final double SPINUP_TIME = 1.0; // seconds
 
   // The maximum range to shoot from
-  private static final double MAX_RANGE = 3.0; // meters
+  private static final double MAX_RANGE = 1.5; // meters
   private static final double MAX_VELOCITY = 1.0; // m/s
   private static final double MAX_TURRET_ERROR = Math.toRadians(3.0); // degrees -> rads
 
