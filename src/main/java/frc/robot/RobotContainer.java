@@ -6,9 +6,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.AimCommand;
-import frc.robot.commands.BackupCommand;
+import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.FenderShotCommand;
-import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.auto.Fender1Ball;
@@ -47,7 +46,10 @@ public class RobotContainer {
   private final Button outtakeButton = new Button(driverController::getTriangleButton);
   private final Button fenderShotButton = new Button(driverController::getRightBumperButton);
   private final Button shootButton = new Button(driverController::getRightTriggerButton);
+  private final Button autoShootButton = new Button(driverController::getLeftBumperButton);
 
+  private final Button feederIntakeButton = new Button(secondaryController::getLeftBumperButton);
+  private final Button feederBackupButton = new Button(secondaryController::getLeftTriggerButton);
   private final Button backupShooterButton = new Button(secondaryController::getXButton);
 
   private final Button gyroResetButton = new Button(driverController::getShareButton);
@@ -87,16 +89,8 @@ public class RobotContainer {
 
   /** Configures all button bindings */
   private void configureButtonBindings() {
-    // When the intake button is pressed toggle an IntakeCommand, when it is ended run a
-    // BackupCommand
-    intakeButton.toggleWhenPressed(
-        new StartEndCommand(
-            () -> {
-              new IntakeCommand(intake, feeder, accelerator).schedule();
-            },
-            () -> {
-              new BackupCommand(accelerator, feeder).schedule();
-            }));
+    // When the intake button is pressed toggle the intake.
+    intakeButton.toggleWhenPressed(new StartEndCommand(intake::intake, intake::stop));
 
     // When the outtake button is held run an OuttakeCommand
     outtakeButton.whenHeld(new OuttakeCommand(intake, feeder, accelerator));
@@ -108,6 +102,17 @@ public class RobotContainer {
     shootButton.whenHeld(
         new ShootCommand(
             shooter, accelerator, feeder, goalTracker::hasTarget, goalTracker::getTargetRange));
+
+    // When the auto shoot button is pressed toggle a AutoShoot command
+    autoShootButton.toggleWhenPressed(
+        new AutoShootCommand(
+            shooter, accelerator, feeder, goalTracker::hasTarget, goalTracker::getTargetRange));
+
+    // When the feeder intake button is pressed intake the feeder, when it is released stop it
+    feederIntakeButton.whenHeld(new StartEndCommand(feeder::intake, feeder::stop));
+
+    // When the feeder backup button is pressed backup the feeder, when it is released stop it
+    feederBackupButton.whenHeld(new StartEndCommand(feeder::backup, feeder::stop));
 
     backupShooterButton.whenHeld(new StartEndCommand(shooter::backup, shooter::stop));
 

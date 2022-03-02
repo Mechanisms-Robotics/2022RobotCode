@@ -43,28 +43,29 @@ public class Tarmac5Ball extends SequentialCommandGroup {
             () ->
                 swerve.setPose(
                     trajectory1.getInitialPose(), trajectory1.getInitialState().holonomicRotation)),
-        new FenderShotCommand(shooter, turret, accelerator, feeder)
-            .withTimeout(1.5),
+        new FenderShotCommand(shooter, turret, accelerator, feeder).withTimeout(1.5),
         new IntakeCommand(intake, feeder, accelerator)
             .raceWith(
                 new FunctionalCommand(
-                    () -> swerve.followTrajectory(trajectory1),
-                    () -> {},
-                    interrupted -> {},
-                    swerve::isTrajectoryFinished,
-                    swerve)
+                        () -> swerve.followTrajectory(trajectory1),
+                        () -> {},
+                        interrupted -> {},
+                        swerve::isTrajectoryFinished,
+                        swerve)
                     .andThen(swerve::stop))
             .andThen(new BackupCommand(accelerator, feeder)),
-        new ShootCommand(shooter, accelerator, feeder, hasTargetSupplier, targetRangeSupplier).withTimeout(2.0),
-        new IntakeCommand(intake, feeder, accelerator).raceWith(
-            new FunctionalCommand(
-                () -> swerve.followTrajectory(trajectory2),
-                () -> {},
-                interrupted -> {},
-                swerve::isTrajectoryFinished,
-                swerve)
-                .andThen(swerve::stop)
-        ).andThen(new BackupCommand(accelerator, feeder)),
+        new ShootCommand(shooter, accelerator, feeder, hasTargetSupplier, targetRangeSupplier)
+            .withTimeout(2.0),
+        new IntakeCommand(intake, feeder, accelerator)
+            .raceWith(
+                new FunctionalCommand(
+                        () -> swerve.followTrajectory(trajectory2),
+                        () -> {},
+                        interrupted -> {},
+                        swerve::isTrajectoryFinished,
+                        swerve)
+                    .andThen(swerve::stop))
+            .andThen(new BackupCommand(accelerator, feeder)),
         new ShootCommand(shooter, accelerator, feeder, hasTargetSupplier, targetRangeSupplier));
   }
 }

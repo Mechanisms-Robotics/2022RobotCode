@@ -41,8 +41,7 @@ public class Tarmac3Ball extends SequentialCommandGroup {
             () ->
                 swerve.setPose(
                     trajectory.getInitialPose(), trajectory.getInitialState().holonomicRotation)),
-        new FenderShotCommand(shooter, turret, accelerator, feeder)
-            .withTimeout(1.5),
+        new FenderShotCommand(shooter, turret, accelerator, feeder).withTimeout(1.5),
         new IntakeCommand(intake, feeder, accelerator)
             .raceWith(
                 new FunctionalCommand(
