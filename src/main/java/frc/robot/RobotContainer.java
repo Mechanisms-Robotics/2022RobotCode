@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -52,9 +53,9 @@ public class RobotContainer {
   private final Button gyroResetButton = new Button(driverController::getShareButton);
 
   // Swerve inputs
-  Supplier<Double> inputX = () -> -driverController.getLeftJoystickX(),
-      inputY = () -> -driverController.getLeftJoystickY(),
-      rotation = () -> driverController.getRightJoystickX();
+  Supplier<Double> inputX = () -> -driverController.getLeftJoystickX();
+  Supplier<Double> inputY = () -> driverController.getLeftJoystickY();
+  Supplier<Double> inputRotation = () -> -driverController.getRightJoystickX();
 
   /** Constructs a RobotContainer */
   public RobotContainer() {
@@ -71,7 +72,7 @@ public class RobotContainer {
   /** Configures all default commands */
   private void configureDefaultCommands() {
     // Set the swerve default command to a DriveTeleopCommand
-    swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, rotation, true, swerve));
+    swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, inputRotation, true, swerve));
 
     // Set the turret default command to a AimCommand
     turret.setDefaultCommand(

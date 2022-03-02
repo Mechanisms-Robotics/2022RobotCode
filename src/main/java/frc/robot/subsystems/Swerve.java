@@ -12,10 +12,16 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.HeadingController;
 import frc.robot.util.TrajectoryController;
+
+import java.util.function.DoubleSupplier;
 
 /** The base swerve drive class, controls all swerve modules in coordination. */
 public class Swerve extends SubsystemBase {
@@ -49,10 +55,10 @@ public class Swerve extends SubsystemBase {
   private static final int brSteerMotorID = 17;
   private static final int brSteerEncoderID = 16;
 
-  private static final double flAngleOffset = -59.15; // -237.217
-  private static final double frAngleOffset = -154.69; // -334.424
-  private static final double blAngleOffset = -261.48; // -81.211
-  private static final double brAngleOffset = -257.69; // -77.959
+  private static final double flAngleOffset = -239.5; // -237.217
+  private static final double frAngleOffset = -334.33; // -334.424
+  private static final double blAngleOffset = -81.47; // -81.211
+  private static final double brAngleOffset = -75.32; // -77.959
 
   private static final int gyroID = 2;
 
@@ -62,8 +68,18 @@ public class Swerve extends SubsystemBase {
 
   private final SwerveDriveOdometry poseEstimator;
 
+  private final ShuffleboardTab tab = Shuffleboard.getTab("Swerve");
+  private final ShuffleboardLayout poseLayout = tab.getLayout("Swerve Pose", BuiltInLayouts.kList)
+      .withSize(2, 3).withPosition(0, 2);
+
+  private final ShuffleboardLayout targetSpeedLayout = tab.getLayout("Speeds", BuiltInLayouts.kList)
+      .withSize(2, 3).withPosition(2, 2);
+
   private final SwerveModule flModule =
       Mk4SwerveModuleHelper.createFalcon500(
+          tab.getLayout("Front Left Module", BuiltInLayouts.kList)
+              .withSize(2, 2)
+              .withPosition(0, 0),
           Mk4SwerveModuleHelper.GearRatio.L2,
           flWheelMotorID,
           flSteerMotorID,
@@ -72,6 +88,9 @@ public class Swerve extends SubsystemBase {
 
   private final SwerveModule frModule =
       Mk4SwerveModuleHelper.createFalcon500(
+          tab.getLayout("Front Right Module", BuiltInLayouts.kList)
+              .withSize(2, 2)
+              .withPosition(2, 0),
           Mk4SwerveModuleHelper.GearRatio.L2,
           frWheelMotorID,
           frSteerMotorID,
@@ -80,6 +99,9 @@ public class Swerve extends SubsystemBase {
 
   private final SwerveModule blModule =
       Mk4SwerveModuleHelper.createFalcon500(
+          tab.getLayout("Back Left Module", BuiltInLayouts.kList)
+              .withSize(2, 2)
+              .withPosition(4, 0),
           Mk4SwerveModuleHelper.GearRatio.L2,
           blWheelMotorID,
           blSteerMotorID,
@@ -88,6 +110,9 @@ public class Swerve extends SubsystemBase {
 
   private final SwerveModule brModule =
       Mk4SwerveModuleHelper.createFalcon500(
+          tab.getLayout("Back Right Module", BuiltInLayouts.kList)
+              .withSize(2, 2)
+              .withPosition(6, 0),
           Mk4SwerveModuleHelper.GearRatio.L2,
           brWheelMotorID,
           brSteerMotorID,
@@ -119,6 +144,7 @@ public class Swerve extends SubsystemBase {
     gyro.setFusedHeading(0.0);
     this.register();
     this.setName("Swerve Drive");
+
   }
 
   @Override
@@ -137,9 +163,13 @@ public class Swerve extends SubsystemBase {
       desiredSpeeds = trajectoryController.calculate(getPose());
     }
     setSwerveStates(desiredSpeeds);
+
+    SmartDashboard.putNumber("Target vX", desiredSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Target vY", desiredSpeeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("Target vR", desiredSpeeds.omegaRadiansPerSecond);
     SmartDashboard.putNumber("Robot X", getPose().getX());
     SmartDashboard.putNumber("Robot Y", getPose().getY());
-    SmartDashboard.putNumber("Robot Heading", getHeading().getDegrees());
+    SmartDashboard.putNumber("Robot Heading", getPose().getRotation().getDegrees());
   }
 
   public void drive(
@@ -184,6 +214,7 @@ public class Swerve extends SubsystemBase {
     flModule.setState(states[0]);
     frModule.setState(states[1]);
     blModule.setState(states[2]);
+    SmartDashboard.putNumber("Back Left dV", states[2].speedMetersPerSecond);
     brModule.setState(states[3]);
   }
 
@@ -203,7 +234,10 @@ public class Swerve extends SubsystemBase {
 
   /** Zeros the gyro heading. */
   public void zeroHeading() {
-    setHeading(new Rotation2d());
+    final var zeroRotation = new Rotation2d();
+    final var currentTranslation = poseEstimator.getPoseMeters().getTranslation();
+    setHeading(zeroRotation);
+    poseEstimator.resetPosition(new Pose2d(currentTranslation, zeroRotation) , zeroRotation);
   }
 
   private void setHeading(Rotation2d heading) {
@@ -238,16 +272,13 @@ public class Swerve extends SubsystemBase {
    * @return A Pose2d that represents the position of the robot
    */
   public Pose2d getPose() {
-    return poseEstimator
-        .getPoseMeters()
-        .transformBy(new Transform2d(new Translation2d(), new Rotation2d(Math.PI)));
+    return poseEstimator.getPoseMeters();
   }
 
   public void setPose(Pose2d pose, Rotation2d heading) {
     setHeading(heading);
-    poseEstimator.resetPosition(
-        pose,
-        getHeading());
+    final var currentTranslation = poseEstimator.getPoseMeters().getTranslation();
+    poseEstimator.resetPosition(new Pose2d(currentTranslation, heading) , heading);
   }
 
   public void resetSensors() {

@@ -170,7 +170,7 @@ public class DriveTeleopCommand extends CommandBase {
 
     // Apply Ramp Rates
     dx = vxRateLimiter.calculate(translation.getY() * Swerve.maxVelocity);
-    dy = vyRateLimiter.calculate(-translation.getX() * Swerve.maxVelocity);
+    dy = vyRateLimiter.calculate(translation.getX() * Swerve.maxVelocity);
     dr = vrRateLimiter.calculate(dr * Swerve.maxRotationalVelocity);
 
     // Drive the swerve
@@ -219,5 +219,10 @@ public class DriveTeleopCommand extends CommandBase {
    */
   protected static double deadband(double input) {
     return Math.abs(input) > DEADBAND ? input : 0;
+  }
+
+  @Override
+  public boolean runsWhenDisabled() {
+    return true;
   }
 }
