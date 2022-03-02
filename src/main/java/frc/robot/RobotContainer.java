@@ -47,8 +47,8 @@ public class RobotContainer {
   private final Button shootButton = new Button(driverController::getRightTriggerButton);
   private final Button autoShootButton = new Button(driverController::getLeftBumperButton);
 
-  private final Button feederIntakeButton = new Button(secondaryController::getLeftBumperButton);
-  private final Button feederBackupButton = new Button(secondaryController::getLeftTriggerButton);
+  private final Button feederIntakeButton = new Button(secondaryController::getRightBumperButton);
+  private final Button feederBackupButton = new Button(secondaryController::getRightTriggerButton);
   private final Button backupShooterButton = new Button(secondaryController::getXButton);
 
   private final Button gyroResetButton = new Button(driverController::getShareButton);
@@ -105,7 +105,14 @@ public class RobotContainer {
     // When the auto shoot button is pressed toggle a AutoShoot command
     autoShootButton.toggleWhenPressed(
         new AutoShootCommand(
-            shooter, accelerator, feeder, goalTracker::hasTarget, goalTracker::getTargetRange));
+            shooter,
+            accelerator,
+            feeder,
+            goalTracker::hasTarget,
+            goalTracker::getTargetRange,
+            turret::getAimError,
+            swerve::getVelocity,
+            swerve::getAngularVelocity));
 
     // When the feeder intake button is pressed intake the feeder, when it is released stop it
     feederIntakeButton.whenHeld(new StartEndCommand(feeder::intake, feeder::stop));

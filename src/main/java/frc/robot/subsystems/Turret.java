@@ -162,6 +162,15 @@ public class Turret extends SubsystemBase {
     return this.aimed;
   }
 
+  /**
+   * Checks the error between the current turret angle and the desired turret angle
+   *
+   * @return The error between the current turret angle and the desired turret angle
+   */
+  public double getAimError() {
+    return this.desiredAngle - this.currentAngle;
+  }
+
   /** Zeros the turret encoder, this is called in autonomousInit and testInit */
   public void zero() {
     if (zeroed) {
