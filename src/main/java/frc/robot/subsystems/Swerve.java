@@ -243,6 +243,15 @@ public class Swerve extends SubsystemBase {
   }
 
   /**
+   * Gets the angular velocity of the drivetrain in rads/s
+   *
+   * @return The angular velocity of the drivetrain in rads/s
+   */
+  public double getAngularVelocity() {
+    return getSpeeds().omegaRadiansPerSecond;
+  }
+
+  /**
    * Get the current pose of the robot.
    *
    * @return A Pose2d that represents the position of the robot

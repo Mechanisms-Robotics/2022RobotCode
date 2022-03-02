@@ -18,6 +18,7 @@ public class AutoShootCommand extends CommandBase {
   private final Supplier<Double> targetRangeSupplier;
   private final Supplier<Double> turretAimErrorSupplier;
   private final Supplier<Double> swerveVelocitySupplier;
+  private final Supplier<Double> swerveAngularVelocitySupplier;
 
   // Timer for spinup
   private final Timer spinupTimer = new Timer();
@@ -26,8 +27,9 @@ public class AutoShootCommand extends CommandBase {
   private static final double SPINUP_TIME = 1.0; // seconds
 
   // The maximum range to shoot from
-  private static final double MAX_RANGE = 1.5; // meters
+  private static final double MAX_RANGE = 1.0; // meters
   private static final double MAX_VELOCITY = 1.0; // m/s
+  private static final double MAX_ANGULAR_VELOCITY = 0.1; // rads/s
   private static final double MAX_TURRET_ERROR = Math.toRadians(3.0); // degrees -> rads
 
   // Whether we are spinning up or not
@@ -47,7 +49,8 @@ public class AutoShootCommand extends CommandBase {
       Supplier<Boolean> hasTargetSupplier,
       Supplier<Double> targetRangeSupplier,
       Supplier<Double> turretAimErrorSupplier,
-      Supplier<Double> swerveVelocitySupplier) {
+      Supplier<Double> swerveVelocitySupplier,
+      Supplier<Double> swerveAngularVelocitySupplier) {
     this.shooter = shooter;
     this.accelerator = accelerator;
     this.feeder = feeder;
@@ -56,6 +59,7 @@ public class AutoShootCommand extends CommandBase {
     this.targetRangeSupplier = targetRangeSupplier;
     this.turretAimErrorSupplier = turretAimErrorSupplier;
     this.swerveVelocitySupplier = swerveVelocitySupplier;
+    this.swerveAngularVelocitySupplier = swerveAngularVelocitySupplier;
 
     // Add the shooter, accelerator, and feeder as a requirement
     addRequirements(shooter, accelerator, feeder);
@@ -78,7 +82,8 @@ public class AutoShootCommand extends CommandBase {
           spinningUp = true;
         } else if (spinupTimer.hasElapsed(SPINUP_TIME)
             && Math.abs(turretAimErrorSupplier.get()) <= MAX_TURRET_ERROR
-            && swerveVelocitySupplier.get() <= MAX_VELOCITY) {
+            && swerveVelocitySupplier.get() <= MAX_VELOCITY
+            && swerveAngularVelocitySupplier.get() <= MAX_ANGULAR_VELOCITY) {
           feeder.shoot();
         } else {
           feeder.stop();
