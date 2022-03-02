@@ -55,7 +55,7 @@ public class Shooter extends SubsystemBase {
 
     // Configure shooter PID
     final var shooterPID = new SlotConfiguration();
-    shooterPID.kP = 0.075;
+    shooterPID.kP = 0.15; // 0.075
     shooterPID.kF = 0.055;
     SHOOTER_MOTOR_CONFIG.slot0 = shooterPID;
 
