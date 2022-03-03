@@ -13,8 +13,8 @@ import frc.robot.Constants;
 
 /** This class is used for controlling the swerve drive along a predefined trajectory. */
 public class TrajectoryController {
-  private static final double X_GAIN = 1.25;
-  private static final double Y_GAIN = 1.25;
+  private static final double X_GAIN = 1.25 * 2.0;
+  private static final double Y_GAIN = X_GAIN;
   private static final double THETA_GAIN = 2.0;
   private static final TrapezoidProfile.Constraints HEADING_PROFILE_CONSTRAINTS =
       new TrapezoidProfile.Constraints(2 * Math.PI, 4 * Math.PI);
@@ -22,11 +22,7 @@ public class TrajectoryController {
   private final Timer timer = new Timer();
   private PathPlannerTrajectory trajectory;
   private final SwerveDriveKinematics kinematics;
-  private final HolonomicDriveController controller =
-      new HolonomicDriveController(
-          new PIDController(X_GAIN, 0.0, 0.0, Constants.loopTime),
-          new PIDController(Y_GAIN, 0.0, 0.0, Constants.loopTime),
-          new ProfiledPIDController(THETA_GAIN, 0.0, 0.0, HEADING_PROFILE_CONSTRAINTS));
+  private final HolonomicDriveController controller;
   private boolean isFinished = true;
 
   /**
@@ -36,6 +32,15 @@ public class TrajectoryController {
    */
   public TrajectoryController(SwerveDriveKinematics kinematics) {
     this.kinematics = kinematics;
+
+    ProfiledPIDController thetaController = new ProfiledPIDController(THETA_GAIN, 0.0, 0.0, HEADING_PROFILE_CONSTRAINTS);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI); // Thanks mendax1234
+
+    this.controller =
+        new HolonomicDriveController(
+            new PIDController(X_GAIN, 0.0, 0.0, Constants.loopTime),
+            new PIDController(Y_GAIN, 0.0, 0.0, Constants.loopTime),
+            thetaController);
   }
 
   /**

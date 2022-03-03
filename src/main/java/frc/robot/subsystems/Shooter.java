@@ -63,8 +63,8 @@ public class Shooter extends SubsystemBase {
     RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1500.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(0.6), new InterpolatingDouble(1500.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(1.1), new InterpolatingDouble(1750.0));
-    //RANGE_TO_RPM.put(new InterpolatingDouble(1.72), new InterpolatingDouble(2000.0));
-    //RANGE_TO_RPM.put(new InterpolatingDouble(2.82), new InterpolatingDouble(2000.0));
+    // RANGE_TO_RPM.put(new InterpolatingDouble(1.72), new InterpolatingDouble(2000.0));
+    // RANGE_TO_RPM.put(new InterpolatingDouble(2.82), new InterpolatingDouble(2000.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(20.0), new InterpolatingDouble(3000.0));
 
     // Configure shooter velocity measurement

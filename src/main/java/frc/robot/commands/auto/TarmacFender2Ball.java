@@ -4,12 +4,15 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.AimCommand;
 import frc.robot.commands.BackupCommand;
 import frc.robot.commands.FenderShotCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
@@ -31,6 +34,7 @@ public class TarmacFender2Ball extends SequentialCommandGroup {
       Swerve swerve,
       Shooter shooter,
       Turret turret,
+      Hood hood,
       Accelerator accelerator,
       Feeder feeder,
       Intake intake) {
@@ -57,6 +61,8 @@ public class TarmacFender2Ball extends SequentialCommandGroup {
                             swerve)
                         .andThen(swerve::stop)))
             .andThen(new BackupCommand(accelerator, feeder)),
-        new FenderShotCommand(shooter, turret, accelerator, feeder));
+        new ParallelCommandGroup(
+            new AimCommand(turret, hood, () -> false, () -> 0.0, () -> 0.0, () -> true),
+            new FenderShotCommand(shooter, turret, accelerator, feeder)));
   }
 }

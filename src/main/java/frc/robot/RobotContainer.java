@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -10,7 +9,8 @@ import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.FenderShotCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.auto.Fender1Ball;
+import frc.robot.commands.auto.Tarmac3Ball;
+import frc.robot.commands.auto.TarmacFender2Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
@@ -133,6 +133,6 @@ public class RobotContainer {
    * @return The command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new Fender1Ball(swerve, shooter, turret, accelerator, feeder);
+    return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, goalTracker::hasTarget, goalTracker::getTargetAngle, goalTracker::getTargetRange);
   }
 }

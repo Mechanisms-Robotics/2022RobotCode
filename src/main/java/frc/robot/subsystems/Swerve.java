@@ -6,7 +6,6 @@ import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -20,8 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.HeadingController;
 import frc.robot.util.TrajectoryController;
-
-import java.util.function.DoubleSupplier;
 
 /** The base swerve drive class, controls all swerve modules in coordination. */
 public class Swerve extends SubsystemBase {
@@ -69,18 +66,18 @@ public class Swerve extends SubsystemBase {
   private final SwerveDriveOdometry poseEstimator;
 
   private final ShuffleboardTab tab = Shuffleboard.getTab("Swerve");
-  private final ShuffleboardLayout poseLayout = tab.getLayout("Swerve Pose", BuiltInLayouts.kList)
-      .withSize(2, 3).withPosition(0, 2);
+  private final ShuffleboardLayout poseLayout =
+      tab.getLayout("Swerve Pose", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 2);
 
-  private final ShuffleboardLayout targetSpeedLayout = tab.getLayout("Speeds", BuiltInLayouts.kList)
-      .withSize(2, 3).withPosition(2, 2);
+  private final ShuffleboardLayout targetSpeedLayout =
+      tab.getLayout("Speeds", BuiltInLayouts.kList).withSize(2, 3).withPosition(2, 2);
 
   private final SwerveModule flModule =
       Mk4SwerveModuleHelper.createFalcon500(
           tab.getLayout("Front Left Module", BuiltInLayouts.kList)
               .withSize(2, 2)
               .withPosition(0, 0),
-          Mk4SwerveModuleHelper.GearRatio.L2,
+          Mk4SwerveModuleHelper.GearRatio.L4,
           flWheelMotorID,
           flSteerMotorID,
           flSteerEncoderID,
@@ -91,7 +88,7 @@ public class Swerve extends SubsystemBase {
           tab.getLayout("Front Right Module", BuiltInLayouts.kList)
               .withSize(2, 2)
               .withPosition(2, 0),
-          Mk4SwerveModuleHelper.GearRatio.L2,
+          Mk4SwerveModuleHelper.GearRatio.L4,
           frWheelMotorID,
           frSteerMotorID,
           frSteerEncoderID,
@@ -99,10 +96,8 @@ public class Swerve extends SubsystemBase {
 
   private final SwerveModule blModule =
       Mk4SwerveModuleHelper.createFalcon500(
-          tab.getLayout("Back Left Module", BuiltInLayouts.kList)
-              .withSize(2, 2)
-              .withPosition(4, 0),
-          Mk4SwerveModuleHelper.GearRatio.L2,
+          tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 2).withPosition(4, 0),
+          Mk4SwerveModuleHelper.GearRatio.L4,
           blWheelMotorID,
           blSteerMotorID,
           blSteerEncoderID,
@@ -113,7 +108,7 @@ public class Swerve extends SubsystemBase {
           tab.getLayout("Back Right Module", BuiltInLayouts.kList)
               .withSize(2, 2)
               .withPosition(6, 0),
-          Mk4SwerveModuleHelper.GearRatio.L2,
+          Mk4SwerveModuleHelper.GearRatio.L4,
           brWheelMotorID,
           brSteerMotorID,
           brSteerEncoderID,
@@ -144,7 +139,6 @@ public class Swerve extends SubsystemBase {
     gyro.setFusedHeading(0.0);
     this.register();
     this.setName("Swerve Drive");
-
   }
 
   @Override
@@ -237,7 +231,7 @@ public class Swerve extends SubsystemBase {
     final var zeroRotation = new Rotation2d();
     final var currentTranslation = poseEstimator.getPoseMeters().getTranslation();
     setHeading(zeroRotation);
-    poseEstimator.resetPosition(new Pose2d(currentTranslation, zeroRotation) , zeroRotation);
+    poseEstimator.resetPosition(new Pose2d(currentTranslation, zeroRotation), zeroRotation);
   }
 
   private void setHeading(Rotation2d heading) {
@@ -296,8 +290,7 @@ public class Swerve extends SubsystemBase {
 
   public void setPose(Pose2d pose, Rotation2d heading) {
     setHeading(heading);
-    final var currentTranslation = poseEstimator.getPoseMeters().getTranslation();
-    poseEstimator.resetPosition(new Pose2d(currentTranslation, heading) , heading);
+    poseEstimator.resetPosition(pose, heading);
   }
 
   public void resetSensors() {
