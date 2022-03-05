@@ -20,7 +20,7 @@ public class AimCommand extends CommandBase {
   private final Supplier<Boolean> fenderShotButton;
 
   // The position of the hood for the fender shot
-  private static final double FENDER_HOOD_POSITION = -0.35;
+  private static final double FENDER_HOOD_POSITION = -0.25;
 
   /**
    * Constructs an AimCommand
