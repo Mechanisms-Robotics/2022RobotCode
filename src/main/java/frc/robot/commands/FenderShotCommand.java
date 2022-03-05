@@ -19,7 +19,7 @@ public class FenderShotCommand extends CommandBase {
   private final Timer spinupTimer = new Timer();
 
   // The amount of time it takes to spinup
-  private static final double SPINUP_TIME = 0.75; // seconds
+  private static final double SPINUP_TIME = 1.0; // seconds
 
   /**
    * Constructs a ShootCommand

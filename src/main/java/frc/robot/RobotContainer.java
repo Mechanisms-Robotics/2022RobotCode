@@ -9,7 +9,9 @@ import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.FenderShotCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.auto.Tarmac2Ball;
 import frc.robot.commands.auto.Tarmac3Ball;
+import frc.robot.commands.auto.Tarmac5Ball;
 import frc.robot.commands.auto.TarmacFender2Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
@@ -133,6 +135,6 @@ public class RobotContainer {
    * @return The command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, goalTracker::hasTarget, goalTracker::getTargetAngle, goalTracker::getTargetRange);
+    return new Tarmac2Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, goalTracker::hasTarget, goalTracker::getTargetAngle, goalTracker::getTargetRange);
   }
 }
