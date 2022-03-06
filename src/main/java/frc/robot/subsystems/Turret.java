@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
+import com.fasterxml.jackson.databind.deser.std.UntypedObjectDeserializer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,12 +22,9 @@ public class Turret extends SubsystemBase {
   private static final double TURRET_FORWARD_LIMIT = Math.toRadians(0.0); // 0 degrees
   private static final double TURRET_REVERSE_LIMIT = Math.toRadians(-270.0); // -270 degrees
   private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(0.5); // 0.5 degrees
+  private static final int TURRET_ALLOWABLE_ERROR_UNITS = Units.radsToFalcon(Math.toRadians(1.0), TURRET_GEAR_RATIO);
 
   private boolean zeroed = false; // Has the turret been zeroed
-
-  private double currentAngle = 0.0 * Math.PI; // rads
-  private double desiredAngle = 0.0 * Math.PI; // rads
-  private boolean aimed = false; // Is the turret aimed at the desired angle
 
   static {
     // Current limit configuration for the turret motor
@@ -91,32 +89,28 @@ public class Turret extends SubsystemBase {
    * @param degrees The angle between the current turret angle and the desired turret angle
    */
   public void aim(double degrees) {
-    updateValues();
-
-    this.desiredAngle =
-        MathUtil.clamp(
-            this.currentAngle + Math.toRadians(degrees),
-            TURRET_REVERSE_LIMIT,
-            TURRET_FORWARD_LIMIT);
-
     if (isAimed()) {
       return;
     }
-
-    setPosition(this.desiredAngle);
+    final double desiredAngle =
+            MathUtil.clamp(
+                    getAngle() + Math.toRadians(degrees),
+                    TURRET_REVERSE_LIMIT,
+                    TURRET_FORWARD_LIMIT);
+    setPosition(desiredAngle);
   }
 
   /** Snaps the turret to the angle (radians) */
   public void snapTo(double angle) {
-    updateValues();
-
-    this.desiredAngle = MathUtil.clamp(angle, TURRET_REVERSE_LIMIT, TURRET_FORWARD_LIMIT);
-
     if (isAimed()) {
       return;
     }
-
-    setPosition(this.desiredAngle);
+    final double desiredAngle =
+            MathUtil.clamp(
+                    angle,
+                    TURRET_REVERSE_LIMIT,
+                    TURRET_FORWARD_LIMIT);
+    setPosition(desiredAngle);
   }
 
   /** Sets the turret to the zero position */
@@ -139,27 +133,16 @@ public class Turret extends SubsystemBase {
     turretMotor.set(ControlMode.MotionMagic, Units.radsToFalcon(rads, TURRET_GEAR_RATIO));
   }
 
-  /** Updates currentPosition, and aimed periodically */
-  public void updateValues() {
-    // Update the currentAngle
-    this.currentAngle =
-        Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO);
-
-    SmartDashboard.putNumber("Turret Angle", Math.toDegrees(this.currentAngle));
-
-    // Check if we're at the desired angle and update aimed
-    this.aimed =
-        MathUtil.applyDeadband(this.desiredAngle - this.currentAngle, TURRET_ALLOWABLE_ERROR)
-            == 0.0;
-  }
-
   /**
    * Checks if the turret is aimed
    *
    * @return Is the turret aimed at the desired angle
    */
   public boolean isAimed() {
-    return this.aimed;
+    if (turretMotor.getControlMode().equals(ControlMode.Velocity) || turretMotor.getControlMode().equals(ControlMode.MotionMagic)) {
+      return Math.abs(turretMotor.getClosedLoopError()) <= TURRET_ALLOWABLE_ERROR_UNITS;
+    }
+    return true;
   }
 
   /**
@@ -168,7 +151,11 @@ public class Turret extends SubsystemBase {
    * @return The error between the current turret angle and the desired turret angle
    */
   public double getAimError() {
-    return this.desiredAngle - this.currentAngle;
+    return Units.falconToRads(turretMotor.getClosedLoopError(), TURRET_GEAR_RATIO);
+  }
+
+  public double getAngle() {
+    return Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO);
   }
 
   /** Zeros the turret encoder, this is called in autonomousInit and testInit */

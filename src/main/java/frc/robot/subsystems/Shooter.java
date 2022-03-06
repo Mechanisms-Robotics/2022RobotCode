@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
@@ -26,6 +27,8 @@ public class Shooter extends SubsystemBase {
 
   // Shooter gear ratio
   private static final double GEAR_RATIO = 1.5; // 1.5:1 reduction
+
+  private static final int SHOOTER_SPINUP_DEADBAND = Units.RPMToFalcon(50, GEAR_RATIO);
 
   // Range interpolating tree map
   private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> RANGE_TO_RPM =
@@ -130,5 +133,12 @@ public class Shooter extends SubsystemBase {
   /** Stops the shooter */
   public void stop() {
     shooterMotor.set(ControlMode.PercentOutput, 0.0);
+  }
+
+  public boolean atSpeed() {
+    if (shooterMotor.getControlMode().equals(ControlMode.Velocity)) {
+      return Math.abs(shooterMotor.getClosedLoopError()) <= SHOOTER_SPINUP_DEADBAND;
+    }
+    return true;
   }
 }

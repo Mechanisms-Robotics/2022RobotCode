@@ -55,11 +55,6 @@ public class Robot extends TimedRobot {
     m_robotContainer.turret.stop();
   }
 
-  @Override
-  public void disabledPeriodic() {
-    m_robotContainer.turret.updateValues();
-  }
-
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
@@ -73,12 +68,6 @@ public class Robot extends TimedRobot {
     }
   }
 
-  /** This function is called periodically during autonomous. */
-  @Override
-  public void autonomousPeriodic() {
-    m_robotContainer.turret.updateValues();
-  }
-
   @Override
   public void teleopInit() {
     // This makes sure that the autonomous stops running when
@@ -88,12 +77,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-  }
-
-  /** This function is called periodically during operator control. */
-  @Override
-  public void teleopPeriodic() {
-    m_robotContainer.turret.updateValues();
   }
 
   @Override

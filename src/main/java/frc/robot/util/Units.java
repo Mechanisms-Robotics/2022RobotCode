@@ -18,9 +18,8 @@ public class Units {
    * @param gearRatio Gear Ratio between Falcon and Mechanism
    * @return Falcon Counts
    */
-  public static double radsToFalcon(double rads, double gearRatio) {
-    double ticks = rads / ((2 * Math.PI) / (gearRatio * 2048.0));
-    return ticks;
+  public static int radsToFalcon(double rads, double gearRatio) {
+    return (int) (rads / ((2 * Math.PI) / (gearRatio * 2048.0)));
   }
 
   /**
@@ -39,10 +38,9 @@ public class Units {
    * @param gearRatio Gear Ratio between Falcon and Mechanism (set to 1 for Falcon RPM)
    * @return RPM of Mechanism
    */
-  public static double RPMToFalcon(double RPM, double gearRatio) {
+  public static int RPMToFalcon(double RPM, double gearRatio) {
     double motorRPM = RPM * gearRatio;
-    double sensorCounts = motorRPM * (2048.0 / 600.0);
-    return sensorCounts;
+    return (int) (motorRPM * (2048.0 / 600.0));
   }
 
   /**

@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.Units;
@@ -21,10 +22,16 @@ public class Accelerator extends SubsystemBase {
   // Accelerator speeds
   private static final double SHOOT_SPEED = 500; // RPM
   private static final double BACKUP_SPEED = -0.5; // percent
+  private static final double PREP_SPEED = -0.10;
   private static final double OUTTAKE_SPEED = -0.5; // percent
   private static final double IDLE_SPEED = -0.10; // percent
 
   private static final double GEAR_RATIO = 2.0; // 2:1
+
+  private static final double PREP_SPINUP_TIME = 0.5;
+  private static final int PREP_FINISHED_SPEED = Units.RPMToFalcon(10, GEAR_RATIO);
+  private boolean preping = false;
+  private final Timer prepTimer = new Timer();
 
   // Configure the accelerator current limits
   static {
@@ -69,6 +76,7 @@ public class Accelerator extends SubsystemBase {
 
   /** Runs the accelerator at SHOOT_SPEED */
   public void shoot() {
+    preping = false;
     acceleratorMotor.set(ControlMode.Velocity, Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO));
 
     acceleratorFollowerMotor.set(ControlMode.Velocity, Units.RPMToFalcon(SHOOT_SPEED, GEAR_RATIO));
@@ -76,17 +84,36 @@ public class Accelerator extends SubsystemBase {
 
   /** Runs the accelerator at BACKUP_SPEED */
   public void backup() {
+    preping = false;
     setOpenLoop(BACKUP_SPEED);
   }
 
   /** Runs the accelerator at OUTTAKE_SPEED */
   public void outtake() {
+    preping = false;
     setOpenLoop(OUTTAKE_SPEED);
   }
 
   /** Runs the accelerator at IDLE_SPEED */
   public void idle() {
+    preping = false;
     setOpenLoop(IDLE_SPEED);
+  }
+
+  public void prep() {
+    prepTimer.start();
+    prepTimer.reset();
+    preping = true;
+    setOpenLoop(PREP_SPEED);
+  }
+
+  public boolean isPreped() {
+    if (preping) {
+      if (prepTimer.hasElapsed(PREP_SPINUP_TIME)) {
+        return Math.abs(acceleratorMotor.getSelectedSensorVelocity()) <= PREP_SPINUP_TIME;
+      }
+    }
+    return true;
   }
 
   /**
@@ -101,6 +128,7 @@ public class Accelerator extends SubsystemBase {
 
   /** Stops the accelerator motors */
   public void stop() {
+    preping = false;
     acceleratorMotor.set(ControlMode.PercentOutput, 0.0);
     acceleratorFollowerMotor.set(ControlMode.PercentOutput, 0.0);
   }
