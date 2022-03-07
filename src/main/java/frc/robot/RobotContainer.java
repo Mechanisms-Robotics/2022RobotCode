@@ -15,6 +15,7 @@ import frc.robot.commands.auto.Tarmac5Ball;
 import frc.robot.commands.auto.TarmacFender2Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.GoalTracker;
 import frc.robot.subsystems.Hood;
@@ -35,6 +36,7 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Hood hood = new Hood();
   public final Turret turret = new Turret();
+  private final Climber climber = new Climber();
 
   // Goal Tracker
   private final GoalTracker goalTracker = new GoalTracker();
