@@ -29,6 +29,7 @@ public class Hood extends SubsystemBase {
     RANGE_TO_POSITION.put(new InterpolatingDouble(0.6), new InterpolatingDouble(0.4));
     RANGE_TO_POSITION.put(new InterpolatingDouble(1.1), new InterpolatingDouble(0.65));
     RANGE_TO_POSITION.put(new InterpolatingDouble(1.25), new InterpolatingDouble(0.7));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(1.5), new InterpolatingDouble(1.0));
     // RANGE_TO_POSITION.put(new InterpolatingDouble(1.72), new InterpolatingDouble(1.0));
     // RANGE_TO_POSITION.put(new InterpolatingDouble(2.82), new InterpolatingDouble(1.0));
     // RANGE_TO_POSITION.put(new InterpolatingDouble(3.0), new InterpolatingDouble(1.0));
