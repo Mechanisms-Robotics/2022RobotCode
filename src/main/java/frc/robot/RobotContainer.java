@@ -9,6 +9,7 @@ import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.FenderShotCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.auto.Tarmac2Ball;
 import frc.robot.commands.auto.Tarmac3Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;

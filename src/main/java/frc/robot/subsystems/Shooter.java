@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -63,9 +64,12 @@ public class Shooter extends SubsystemBase {
     SHOOTER_MOTOR_CONFIG.slot0 = shooterPID;
 
     // Configure shooter range interpolating tree map (meters, RPM)
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1500.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.6), new InterpolatingDouble(1500.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(1.1), new InterpolatingDouble(1750.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1350.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.48), new InterpolatingDouble(1400.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.6), new InterpolatingDouble(1450.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(1.1), new InterpolatingDouble(1600.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(1.25), new InterpolatingDouble(1750.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(1.5), new InterpolatingDouble(2000.0));
     // RANGE_TO_RPM.put(new InterpolatingDouble(1.72), new InterpolatingDouble(2000.0));
     // RANGE_TO_RPM.put(new InterpolatingDouble(2.82), new InterpolatingDouble(2000.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(20.0), new InterpolatingDouble(3000.0));
@@ -85,7 +89,7 @@ public class Shooter extends SubsystemBase {
     shooterMotor.configAllSettings(SHOOTER_MOTOR_CONFIG, startupCanTimeout);
     shooterMotor.setInverted(TalonFXInvertType.Clockwise);
     shooterMotor.setNeutralMode(NeutralMode.Coast);
-    shooterMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+    //shooterMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
 
     // Configure shooter follower motor
     shooterFollowerMotor.configAllSettings(SHOOTER_MOTOR_CONFIG, startupCanTimeout);
@@ -105,6 +109,7 @@ public class Shooter extends SubsystemBase {
    */
   private void setOpenLoop(double percentOutput) {
     shooterMotor.set(ControlMode.PercentOutput, percentOutput);
+    shooterFollowerMotor.set(TalonFXControlMode.Follower, 50);
   }
 
   /**
@@ -118,11 +123,13 @@ public class Shooter extends SubsystemBase {
 
     // Run shooter motor at velocity
     shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(velocity, GEAR_RATIO));
+    shooterFollowerMotor.set(TalonFXControlMode.Follower, 50);
   }
 
   /** Runs the shooter at the default RPM */
   public void shoot() {
     shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(DEFAULT_SHOOTER_VEL, GEAR_RATIO));
+    shooterFollowerMotor.set(TalonFXControlMode.Follower, 50);
   }
 
   /** Backs up the shooter in case of a jam */

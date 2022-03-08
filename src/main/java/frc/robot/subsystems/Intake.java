@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase {
 
   // Intake speeds
-  private static final double INTAKE_SPEED = 0.45; // percent
+  private static final double INTAKE_SPEED = 0.7; // percent
   private static final double OUTTAKE_SPEED = -0.25; // percent
 
   // Intake motor configuration
