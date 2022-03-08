@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import java.util.function.Supplier;
 
@@ -12,12 +13,9 @@ public class ShootCommand extends CommandBase {
   private final Shooter shooter;
   private final Accelerator accelerator;
   private final Feeder feeder;
+  private final Limelight limelight;
 
-  // Suppliers of data from the GoalTracker
-  private final Supplier<Boolean> hasTargetSupplier;
-  private final Supplier<Double> targetRangeSupplier;
-
-  private final Timer spinupTimer = new Timer();
+  private boolean spunUp = false;
 
   // The amount of time it takes to spinup
   private static final double SPINUP_TIME = 1.0; // seconds
@@ -33,14 +31,11 @@ public class ShootCommand extends CommandBase {
       Shooter shooter,
       Accelerator accelerator,
       Feeder feeder,
-      Supplier<Boolean> hasTargetSupplier,
-      Supplier<Double> targetRangeSupplier) {
+      Limelight limelight) {
     this.shooter = shooter;
     this.accelerator = accelerator;
     this.feeder = feeder;
-
-    this.hasTargetSupplier = hasTargetSupplier;
-    this.targetRangeSupplier = targetRangeSupplier;
+    this.limelight = limelight;
 
     // Add the shooter, accelerator, and feeder as a requirement
     addRequirements(shooter, accelerator, feeder);
@@ -48,22 +43,22 @@ public class ShootCommand extends CommandBase {
 
   @Override
   public void initialize() {
-    if (hasTargetSupplier.get()) {
-      shooter.shoot(targetRangeSupplier.get());
+    var target = limelight.getCurrentTarget();
+    if (target.hasTarget) {
+      shooter.shoot(target.range);
     } else {
       shooter.shoot();
     }
 
     accelerator.shoot();
-
-    spinupTimer.reset();
-    spinupTimer.start();
   }
 
   @Override
   public void execute() {
-    if (spinupTimer.hasElapsed(SPINUP_TIME)) {
+    if (spunUp) {
       feeder.shoot();
+    } else {
+      spunUp = shooter.atSpeed();
     }
   }
 

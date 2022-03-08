@@ -7,7 +7,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AimCommand;
+import frc.robot.commands.AutoFenderShotCommand;
 import frc.robot.commands.FenderShotCommand;
+import frc.robot.commands.PreAimCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Hood;
@@ -33,19 +35,9 @@ public class Fender1Ball extends SequentialCommandGroup {
       Accelerator accelerator,
       Feeder feeder) {
     addCommands(
-        new ParallelCommandGroup(
-            new AimCommand(turret, hood, () -> false, () -> 0.0, () -> 0.0, () -> true),
-            new FenderShotCommand(shooter, turret, accelerator, feeder).withTimeout(1.5)),
-        new InstantCommand(
-            () ->
-                swerve.setPose(
-                    trajectory.getInitialPose(), trajectory.getInitialState().holonomicRotation)),
-        new FunctionalCommand(
-                () -> swerve.followTrajectory(trajectory),
-                () -> {},
-                interrupted -> {},
-                swerve::isTrajectoryFinished,
-                swerve)
-            .andThen(swerve::stop));
+        new AutoFenderShotCommand(shooter, hood, turret, accelerator, feeder),
+        new InstantCommand(shooter::stop, shooter),
+        new AutoCommands.ResetPose(trajectory, swerve),
+        new AutoCommands.FollowPathCommand(trajectory, swerve));
   }
 }

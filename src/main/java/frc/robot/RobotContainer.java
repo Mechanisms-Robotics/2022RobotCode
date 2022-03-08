@@ -10,11 +10,10 @@ import frc.robot.commands.FenderShotCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.auto.Tarmac3Ball;
-import frc.robot.commands.auto.TarmacFender2Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
-import frc.robot.subsystems.GoalTracker;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -35,7 +34,7 @@ public class RobotContainer {
   public final Turret turret = new Turret();
 
   // Goal Tracker
-  private final GoalTracker goalTracker = new GoalTracker();
+  private final Limelight limelight = new Limelight();
 
   // Controllers
   private final ControllerWrapper driverController = new ControllerWrapper(0);
@@ -81,9 +80,7 @@ public class RobotContainer {
         new AimCommand(
             turret,
             hood,
-            goalTracker::hasTarget,
-            goalTracker::getTargetAngle,
-            goalTracker::getTargetRange,
+            limelight,
             fenderShotButton::get));
   }
 
@@ -96,12 +93,12 @@ public class RobotContainer {
     outtakeButton.whenHeld(new OuttakeCommand(intake, feeder, accelerator));
 
     // When the fender shot button is held, run a FenderShotCommand
-    fenderShotButton.whenHeld(new FenderShotCommand(shooter, turret, accelerator, feeder));
+    fenderShotButton.whenHeld(new FenderShotCommand(shooter, hood, turret, accelerator, feeder));
 
     // When the shoot button is pressed toggle a ShootCommand
     shootButton.whenHeld(
         new ShootCommand(
-            shooter, accelerator, feeder, goalTracker::hasTarget, goalTracker::getTargetRange));
+            shooter, accelerator, feeder, limelight));
 
     // When the auto shoot button is pressed toggle a AutoShoot command
     autoShootButton.toggleWhenPressed(
@@ -109,11 +106,9 @@ public class RobotContainer {
             shooter,
             accelerator,
             feeder,
-            goalTracker::hasTarget,
-            goalTracker::getTargetRange,
-            turret::getAimError,
-            swerve::getVelocity,
-            swerve::getAngularVelocity));
+            turret,
+            limelight,
+            swerve));
 
     // When the feeder intake button is pressed intake the feeder, when it is released stop it
     feederIntakeButton.whenHeld(new StartEndCommand(feeder::intake, feeder::stop));
@@ -133,6 +128,6 @@ public class RobotContainer {
    * @return The command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, goalTracker::hasTarget, goalTracker::getTargetAngle, goalTracker::getTargetRange);
+    return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake);
   }
 }

@@ -7,9 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
-import com.fasterxml.jackson.databind.deser.std.UntypedObjectDeserializer;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Units;
 
@@ -22,7 +20,7 @@ public class Turret extends SubsystemBase {
   private static final double TURRET_FORWARD_LIMIT = Math.toRadians(0.0); // 0 degrees
   private static final double TURRET_REVERSE_LIMIT = Math.toRadians(-270.0); // -270 degrees
   private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(0.5); // 0.5 degrees
-  private static final int TURRET_ALLOWABLE_ERROR_UNITS = Units.radsToFalcon(Math.toRadians(1.0), TURRET_GEAR_RATIO);
+  private static final int TURRET_AIM_ERROR = Units.radsToFalcon(Math.toRadians(3.0), TURRET_GEAR_RATIO);
 
   private boolean zeroed = false; // Has the turret been zeroed
 
@@ -140,18 +138,9 @@ public class Turret extends SubsystemBase {
    */
   public boolean isAimed() {
     if (turretMotor.getControlMode().equals(ControlMode.Velocity) || turretMotor.getControlMode().equals(ControlMode.MotionMagic)) {
-      return Math.abs(turretMotor.getClosedLoopError()) <= TURRET_ALLOWABLE_ERROR_UNITS;
+      return Math.abs(turretMotor.getClosedLoopError()) <= TURRET_AIM_ERROR;
     }
     return true;
-  }
-
-  /**
-   * Checks the error between the current turret angle and the desired turret angle
-   *
-   * @return The error between the current turret angle and the desired turret angle
-   */
-  public double getAimError() {
-    return Units.falconToRads(turretMotor.getClosedLoopError(), TURRET_GEAR_RATIO);
   }
 
   public double getAngle() {

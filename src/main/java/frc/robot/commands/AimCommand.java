@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hood;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Turret;
 import java.util.function.Supplier;
 
@@ -10,11 +11,7 @@ public class AimCommand extends CommandBase {
   // Subsystems
   private final Turret turret;
   private final Hood hood;
-
-  // Suppliers of data from the GoalTracker
-  private final Supplier<Boolean> hasTargetSupplier;
-  private final Supplier<Double> targetAngleSupplier;
-  private final Supplier<Double> targetRangeSupplier;
+  private final Limelight limelight;
 
   // Supplier of the boolean whether to go into fender shot mode
   private final Supplier<Boolean> fenderShotButton;
@@ -30,16 +27,12 @@ public class AimCommand extends CommandBase {
   public AimCommand(
       Turret turret,
       Hood hood,
-      Supplier<Boolean> hasTargetSupplier,
-      Supplier<Double> targetAngleSupplier,
-      Supplier<Double> targetRangeSupplier,
+      Limelight limelight,
       Supplier<Boolean> fenderShotButton) {
     this.turret = turret;
     this.hood = hood;
 
-    this.hasTargetSupplier = hasTargetSupplier;
-    this.targetAngleSupplier = targetAngleSupplier;
-    this.targetRangeSupplier = targetRangeSupplier;
+    this.limelight = limelight;
 
     this.fenderShotButton = fenderShotButton;
 
@@ -50,9 +43,10 @@ public class AimCommand extends CommandBase {
   @Override
   public void execute() {
     if (!fenderShotButton.get()) {
-      if (hasTargetSupplier.get()) {
-        turret.aim(targetAngleSupplier.get());
-        hood.aim(targetRangeSupplier.get());
+      var target = limelight.getCurrentTarget();
+      if (target.hasTarget) {
+        turret.aim(target.targetAngle);
+        hood.aim(target.range);
       }
     } else {
       turret.goToZero();
