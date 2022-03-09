@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.AimCommand;
@@ -56,6 +57,9 @@ public class RobotContainer {
   private final Button feederBackupButton = new Button(secondaryController::getRightTriggerButton);
   private final Button backupShooterButton = new Button(secondaryController::getXButton);
 
+  private final Button climberButtonUp = new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Up);
+  private final Button climberButtonDown = new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Down);
+
   private final Button gyroResetButton = new Button(driverController::getShareButton);
 
   // Swerve inputs
@@ -95,6 +99,12 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // When the intake button is pressed toggle the intake.
     intakeButton.toggleWhenPressed(new StartEndCommand(intake::intake, intake::stop));
+
+    // When the D-Pad is held up run the shooter up
+    climberButtonUp.whenHeld(new StartEndCommand(climber::up, climber::stop));
+
+    // When the D-Pad is held down run the shooter down
+    climberButtonDown.whenHeld(new StartEndCommand(climber::down, climber::stop));
 
     // When the outtake button is held run an OuttakeCommand
     outtakeButton.whenHeld(new OuttakeCommand(intake, feeder, accelerator));
