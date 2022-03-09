@@ -23,7 +23,7 @@ public class Limelight extends SubsystemBase {
     public double range;
     public double targetAngle;
   }
-  private TargetData currentTarget;
+  private final TargetData currentTarget = new TargetData();
 
   /** Constructs a GoalTracker */
   public Limelight() {
@@ -47,6 +47,9 @@ public class Limelight extends SubsystemBase {
               TARGET_HEIGHT,
               CAMERA_PITCH,
               Units.degreesToRadians(bestTarget.getPitch()));
+      SmartDashboard.putBoolean("Has Target", currentTarget.hasTarget);
+      SmartDashboard.putNumber("Target Angle", currentTarget.targetAngle);
+      SmartDashboard.putNumber("Target Range", currentTarget.range);
     } else {
       currentTarget.hasTarget = false;
     }

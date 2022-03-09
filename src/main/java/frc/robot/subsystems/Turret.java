@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Units;
 
@@ -20,9 +21,11 @@ public class Turret extends SubsystemBase {
   private static final double TURRET_FORWARD_LIMIT = Math.toRadians(0.0); // 0 degrees
   private static final double TURRET_REVERSE_LIMIT = Math.toRadians(-270.0); // -270 degrees
   private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(0.5); // 0.5 degrees
-  private static final int TURRET_AIM_ERROR = Units.radsToFalcon(Math.toRadians(3.0), TURRET_GEAR_RATIO);
+  private static final double TURRET_AIM_ERROR = Math.toRadians(3.0); // 3 degrees
 
   private boolean zeroed = false; // Has the turret been zeroed
+
+  private double desiredAngle = 0.0; // rads
 
   static {
     // Current limit configuration for the turret motor
@@ -87,27 +90,34 @@ public class Turret extends SubsystemBase {
    * @param degrees The angle between the current turret angle and the desired turret angle
    */
   public void aim(double degrees) {
+    desiredAngle =
+        MathUtil.clamp(
+            getAngle() + Math.toRadians(degrees),
+            TURRET_REVERSE_LIMIT,
+            TURRET_FORWARD_LIMIT);
+
+    SmartDashboard.putNumber("Current Angle", getAngle());
+    SmartDashboard.putNumber("Desired Angle", desiredAngle);
+
     if (isAimed()) {
       return;
     }
-    final double desiredAngle =
-            MathUtil.clamp(
-                    getAngle() + Math.toRadians(degrees),
-                    TURRET_REVERSE_LIMIT,
-                    TURRET_FORWARD_LIMIT);
+
     setPosition(desiredAngle);
   }
 
   /** Snaps the turret to the angle (radians) */
   public void snapTo(double angle) {
+    desiredAngle =
+        MathUtil.clamp(
+            angle,
+            TURRET_REVERSE_LIMIT,
+            TURRET_FORWARD_LIMIT);
+
     if (isAimed()) {
       return;
     }
-    final double desiredAngle =
-            MathUtil.clamp(
-                    angle,
-                    TURRET_REVERSE_LIMIT,
-                    TURRET_FORWARD_LIMIT);
+
     setPosition(desiredAngle);
   }
 
@@ -137,10 +147,12 @@ public class Turret extends SubsystemBase {
    * @return Is the turret aimed at the desired angle
    */
   public boolean isAimed() {
-    if (turretMotor.getControlMode().equals(ControlMode.Velocity) || turretMotor.getControlMode().equals(ControlMode.MotionMagic)) {
-      return Math.abs(turretMotor.getClosedLoopError()) <= TURRET_AIM_ERROR;
+    if (turretMotor.getControlMode().equals(ControlMode.Position) || turretMotor.getControlMode().equals(ControlMode.MotionMagic)) {
+      SmartDashboard.putBoolean("Is Aimed", Math.abs(getAngle() - desiredAngle) <= TURRET_AIM_ERROR);
+      return Math.abs(getAngle() - desiredAngle) <= TURRET_AIM_ERROR;
     }
-    return true;
+    SmartDashboard.putBoolean("Is Aimed", false);
+    return false;
   }
 
   public double getAngle() {

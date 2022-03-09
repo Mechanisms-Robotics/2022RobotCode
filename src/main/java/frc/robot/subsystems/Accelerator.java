@@ -29,7 +29,7 @@ public class Accelerator extends SubsystemBase {
   private static final double GEAR_RATIO = 2.0; // 2:1
 
   private static final double PREP_SPINUP_TIME = 0.5;
-  private static final int PREP_FINISHED_SPEED = Units.RPMToFalcon(10, GEAR_RATIO);
+  private static final int PREP_FINISHED_SPEED = Units.RPMToFalcon(50, GEAR_RATIO);
   private boolean preping = false;
   private final Timer prepTimer = new Timer();
 
@@ -110,10 +110,10 @@ public class Accelerator extends SubsystemBase {
   public boolean isPreped() {
     if (preping) {
       if (prepTimer.hasElapsed(PREP_SPINUP_TIME)) {
-        return Math.abs(acceleratorMotor.getSelectedSensorVelocity()) <= PREP_SPINUP_TIME;
+        return Math.abs(acceleratorMotor.getSelectedSensorVelocity()) <= PREP_FINISHED_SPEED;
       }
     }
-    return true;
+    return false;
   }
 
   /**

@@ -5,14 +5,17 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.AimCommand;
+import frc.robot.commands.AutoIntakeCommand;
 import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.FenderShotCommand;
 import frc.robot.commands.OuttakeCommand;
+import frc.robot.commands.PrepFeederCommand;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.auto.Tarmac2Ball;
 import frc.robot.commands.auto.Tarmac3Ball;
+import frc.robot.commands.climber.DeployIntakeCommand;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Hood;
@@ -33,6 +36,7 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Hood hood = new Hood();
   public final Turret turret = new Turret();
+  private final Climber climber = new Climber();
 
   // Goal Tracker
   private final Limelight limelight = new Limelight();
@@ -47,10 +51,14 @@ public class RobotContainer {
   private final Button fenderShotButton = new Button(driverController::getRightBumperButton);
   private final Button shootButton = new Button(driverController::getRightTriggerButton);
   private final Button autoShootButton = new Button(driverController::getLeftBumperButton);
+  private final Button deployIntakeButton = new Button(driverController::getSquareButton);
 
   private final Button feederIntakeButton = new Button(secondaryController::getRightBumperButton);
   private final Button feederBackupButton = new Button(secondaryController::getRightTriggerButton);
   private final Button backupShooterButton = new Button(secondaryController::getXButton);
+
+  private final Button climberButtonUp = new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Up);
+  private final Button climberButtonDown = new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Down);
 
   private final Button gyroResetButton = new Button(driverController::getShareButton);
 
@@ -88,7 +96,13 @@ public class RobotContainer {
   /** Configures all button bindings */
   private void configureButtonBindings() {
     // When the intake button is pressed toggle the intake.
-    intakeButton.toggleWhenPressed(new StartEndCommand(intake::intake, intake::stop));
+    intakeButton.toggleWhenPressed(new AutoIntakeCommand(intake, feeder, accelerator));
+
+    // When the D-Pad is held up run the shooter up
+    climberButtonUp.whenHeld(new StartEndCommand(climber::up, climber::stop));
+
+    // When the D-Pad is held down run the shooter down
+    climberButtonDown.whenHeld(new StartEndCommand(climber::down, climber::stop));
 
     // When the outtake button is held run an OuttakeCommand
     outtakeButton.whenHeld(new OuttakeCommand(intake, feeder, accelerator));
@@ -117,6 +131,9 @@ public class RobotContainer {
     // When the feeder backup button is pressed backup the feeder, when it is released stop it
     feederBackupButton.whenHeld(new StartEndCommand(feeder::backup, feeder::stop));
 
+    // When the deploy intake button is pressed, deploy the intake
+    deployIntakeButton.whenPressed(new DeployIntakeCommand(climber));
+
     backupShooterButton.whenHeld(new StartEndCommand(shooter::backup, shooter::stop));
 
     // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
@@ -129,6 +146,6 @@ public class RobotContainer {
    * @return The command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake);
+    return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
   }
 }

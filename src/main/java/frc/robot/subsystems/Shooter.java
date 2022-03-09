@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.InterpolatingDouble;
@@ -29,7 +30,7 @@ public class Shooter extends SubsystemBase {
   // Shooter gear ratio
   private static final double GEAR_RATIO = 1.5; // 1.5:1 reduction
 
-  private static final int SHOOTER_SPINUP_DEADBAND = Units.RPMToFalcon(50, GEAR_RATIO);
+  private static final int SHOOTER_SPINUP_DEADBAND = 50; // RPM
 
   // Range interpolating tree map
   private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> RANGE_TO_RPM =
@@ -38,6 +39,8 @@ public class Shooter extends SubsystemBase {
   // Default shooter speed
   private static final double DEFAULT_SHOOTER_VEL = 1500.0; // RPM
   private static final double BACKUP_SPEED = -0.25; // percent
+
+  private double desiredSpeed = 0; // RPM
 
   // Shooter feedforward
   private final SimpleMotorFeedforward feedforward =
@@ -89,7 +92,8 @@ public class Shooter extends SubsystemBase {
     shooterMotor.configAllSettings(SHOOTER_MOTOR_CONFIG, startupCanTimeout);
     shooterMotor.setInverted(TalonFXInvertType.Clockwise);
     shooterMotor.setNeutralMode(NeutralMode.Coast);
-    //shooterMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+    shooterMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
+    shooterMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 20);
 
     // Configure shooter follower motor
     shooterFollowerMotor.configAllSettings(SHOOTER_MOTOR_CONFIG, startupCanTimeout);
@@ -120,14 +124,22 @@ public class Shooter extends SubsystemBase {
   public void shoot(double range) {
     // Interpolate RPM given range
     final double velocity = RANGE_TO_RPM.getInterpolated(new InterpolatingDouble(range)).value;
+    desiredSpeed = velocity;
 
     // Run shooter motor at velocity
     shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(velocity, GEAR_RATIO));
     shooterFollowerMotor.set(TalonFXControlMode.Follower, 50);
   }
 
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Flywheel RPM", Units.falconToRPM(shooterMotor.getSelectedSensorVelocity(), GEAR_RATIO));
+    SmartDashboard.putBoolean("Spunnup", atSpeed());
+  }
+
   /** Runs the shooter at the default RPM */
   public void shoot() {
+    desiredSpeed = DEFAULT_SHOOTER_VEL;
     shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(DEFAULT_SHOOTER_VEL, GEAR_RATIO));
     shooterFollowerMotor.set(TalonFXControlMode.Follower, 50);
   }
@@ -139,13 +151,14 @@ public class Shooter extends SubsystemBase {
 
   /** Stops the shooter */
   public void stop() {
+    desiredSpeed = 0;
     shooterMotor.set(ControlMode.PercentOutput, 0.0);
   }
 
   public boolean atSpeed() {
     if (shooterMotor.getControlMode().equals(ControlMode.Velocity)) {
-      return Math.abs(shooterMotor.getClosedLoopError()) <= SHOOTER_SPINUP_DEADBAND;
+      return Math.abs(Units.falconToRPM(shooterMotor.getSelectedSensorVelocity(), GEAR_RATIO) - desiredSpeed) <= SHOOTER_SPINUP_DEADBAND;
     }
-    return true;
+    return false;
   }
 }

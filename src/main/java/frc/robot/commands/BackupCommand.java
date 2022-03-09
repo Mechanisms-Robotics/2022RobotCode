@@ -8,7 +8,7 @@ import frc.robot.subsystems.Feeder;
 /** This command backs up the accelerator and feeder for a set amount of time */
 public class BackupCommand extends ParallelCommandGroup {
   // Time to back it up for
-  private static final double BACKUP_TIME = 0.5; // Seconds
+  private static final double BACKUP_TIME = 0.25; // Seconds
 
   /**
    * Constructs a BackupCommand

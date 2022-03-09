@@ -77,8 +77,6 @@ public class AutoShootCommand extends CommandBase {
       } else {
         spunUp = shooter.atSpeed();
         feeder.stop();
-        accelerator.stop();
-        shooter.stop();
       }
     } else {
       shooter.stop();
