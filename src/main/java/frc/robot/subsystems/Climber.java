@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 /** This class contains all the code responsible for the behaviour of the intake class */
 public class Climber extends SubsystemBase {
   // Climber speeds
-  private static final double UP_SPEED = 0.25; // percent
+  private static final double UP_SPEED = 0.5; // percent
   private static final double DOWN_SPEED = -0.25; // percent
 
   // Climber motor configuration
@@ -34,7 +34,7 @@ public class Climber extends SubsystemBase {
 
   // Climber motor
   private final WPI_TalonFX climberMotorLeft = new WPI_TalonFX(1);
-  private final WPI_TalonFX climberMotorRight = new WPI_TalonFX(2);
+//  private final WPI_TalonFX climberMotorRight = new WPI_TalonFX(2);
 
   /** Constructs a Climber */
   public Climber() {
@@ -43,14 +43,14 @@ public class Climber extends SubsystemBase {
     climberMotorLeft.setInverted(TalonFXInvertType.Clockwise);
     climberMotorLeft.setNeutralMode(NeutralMode.Brake);
 
-    climberMotorRight.configAllSettings(CLIMBER_MOTOR_CONFIG, startupCanTimeout);
+//    climberMotorRight.configAllSettings(CLIMBER_MOTOR_CONFIG, startupCanTimeout);
 //    climberMotorRight.follow(climberMotorLeft);
-    climberMotorRight.setInverted(TalonFXInvertType.CounterClockwise);
-    climberMotorRight.setNeutralMode(NeutralMode.Brake);
+//    climberMotorRight.setInverted(TalonFXInvertType.CounterClockwise);
+//    climberMotorRight.setNeutralMode(NeutralMode.Brake);
 
     // CAN bus utilization optimization
     climberMotorLeft.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
-    climberMotorRight.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+//    climberMotorRight.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
   }
 
   /**
@@ -64,15 +64,15 @@ public class Climber extends SubsystemBase {
   
   private void setOpenLoop(double leftClimberSpeed, double rightClimberSpeed) {
     climberMotorLeft.set(ControlMode.PercentOutput, leftClimberSpeed);
-    climberMotorRight.set(ControlMode.PercentOutput, rightClimberSpeed);
+//    climberMotorRight.set(ControlMode.PercentOutput, rightClimberSpeed);
   }
 
   public boolean isBelow(int position) {
-    return  climberMotorLeft.getSelectedSensorPosition() <= position && climberMotorRight.getSelectedSensorPosition() <= position;
+    return  climberMotorLeft.getSelectedSensorPosition() <= position;// && climberMotorRight.getSelectedSensorPosition() <= position;
   }
 
   public boolean isAbove(int position) {
-    return climberMotorLeft.getSelectedSensorPosition() >= position && climberMotorRight.getSelectedSensorPosition() >= position;
+    return climberMotorLeft.getSelectedSensorPosition() >= position;// && climberMotorRight.getSelectedSensorPosition() >= position;
   }
 
   /** Runs the climber at UP_SPEED */

@@ -5,9 +5,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
 public class DeployIntakeCommand extends CommandBase {
-
-    private static final double UP_POWER = 0.50;
-    private static final double DOWN_POWER = -0.25;
     private static final double DEPLOY_WAIT_TIME = 0.25;
 
     private static final int DEPLOYED_POSITION = 20523;

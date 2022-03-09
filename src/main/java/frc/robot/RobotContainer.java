@@ -14,6 +14,7 @@ import frc.robot.commands.auto.Tarmac2Ball;
 import frc.robot.commands.auto.Tarmac3Ball;
 import frc.robot.commands.auto.Tarmac5Ball;
 import frc.robot.commands.auto.TarmacFender2Ball;
+import frc.robot.commands.climber.DeployIntakeCommand;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Climber;
@@ -52,6 +53,7 @@ public class RobotContainer {
   private final Button fenderShotButton = new Button(driverController::getRightBumperButton);
   private final Button shootButton = new Button(driverController::getRightTriggerButton);
   private final Button autoShootButton = new Button(driverController::getLeftBumperButton);
+  private final Button deployIntakeButton = new Button(driverController::getSquareButton);
 
   private final Button feederIntakeButton = new Button(secondaryController::getRightBumperButton);
   private final Button feederBackupButton = new Button(secondaryController::getRightTriggerButton);
@@ -134,6 +136,9 @@ public class RobotContainer {
 
     // When the feeder backup button is pressed backup the feeder, when it is released stop it
     feederBackupButton.whenHeld(new StartEndCommand(feeder::backup, feeder::stop));
+
+    // When the deploy intake button is pressed, deploy the intake
+    deployIntakeButton.whenPressed(new DeployIntakeCommand(climber));
 
     backupShooterButton.whenHeld(new StartEndCommand(shooter::backup, shooter::stop));
 
