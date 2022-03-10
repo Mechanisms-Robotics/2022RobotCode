@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -8,9 +10,11 @@ import frc.robot.commands.AimCommand;
 import frc.robot.commands.AutoIntakeCommand;
 import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.FenderShotCommand;
+import frc.robot.commands.LowGoalCommand;
 import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.PrepFeederCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.auto.Tarmac2Ball;
 import frc.robot.commands.auto.Tarmac3Ball;
 import frc.robot.commands.climber.DeployIntakeCommand;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
@@ -34,7 +38,7 @@ public class RobotContainer {
   private final Feeder feeder = new Feeder();
   private final Accelerator accelerator = new Accelerator();
   private final Shooter shooter = new Shooter();
-  private final Hood hood = new Hood();
+  public final Hood hood = new Hood();
   public final Turret turret = new Turret();
   private final Climber climber = new Climber();
 
@@ -49,6 +53,7 @@ public class RobotContainer {
   private final Button intakeButton = new Button(driverController::getLeftTriggerButton);
   private final Button outtakeButton = new Button(driverController::getTriangleButton);
   private final Button fenderShotButton = new Button(driverController::getRightBumperButton);
+  private final Button lowGoalButton = new Button(driverController::getXButton);
   private final Button shootButton = new Button(driverController::getRightTriggerButton);
   private final Button autoShootButton = new Button(driverController::getLeftBumperButton);
   private final Button deployIntakeButton = new Button(driverController::getSquareButton);
@@ -77,6 +82,11 @@ public class RobotContainer {
 
     // Configure default commands
     configureDefaultCommands();
+
+    autoChooser.setDefaultOption(Autos.TARMAC_3_BALL.name(), Autos.TARMAC_3_BALL);
+    autoChooser.addOption(Autos.TARMAC_2_BALL.name(), Autos.TARMAC_2_BALL);
+    autoChooser.addOption(Autos.TARMAC_3_BALL.name(), Autos.TARMAC_3_BALL);
+    SmartDashboard.putData(autoChooser);
   }
 
   /** Configures all default commands */
@@ -110,6 +120,9 @@ public class RobotContainer {
     // When the fender shot button is held, run a FenderShotCommand
     fenderShotButton.whenHeld(new FenderShotCommand(shooter, hood, turret, accelerator, feeder));
 
+    // When the low goal button is held, run a LowGoalCommand
+    lowGoalButton.whenHeld(new LowGoalCommand(shooter, hood, turret, accelerator, feeder));
+
     // When the shoot button is pressed toggle a ShootCommand
     shootButton.whenHeld(
         new ShootCommand(
@@ -140,12 +153,21 @@ public class RobotContainer {
     gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
   }
 
-  /**
-   * Gets the command to run in autonomous
-   *
-   * @return The command to run in autonomous
-   */
+  public enum Autos {
+    TARMAC_2_BALL,
+    TARMAC_3_BALL
+  }
+
+  private SendableChooser<Autos> autoChooser = new SendableChooser<>();
+
   public Command getAutonomousCommand() {
-    return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+    switch (autoChooser.getSelected()) {
+      case TARMAC_2_BALL:
+        return new Tarmac2Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+      case TARMAC_3_BALL:
+        return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+      default:
+        return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+    }
   }
 }

@@ -82,6 +82,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     m_robotContainer.turret.zero();
+    m_robotContainer.hood.aim(0.0);
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
