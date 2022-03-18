@@ -97,6 +97,7 @@ public class RobotContainer {
     // Set the turret default command to a AimCommand
     turret.setDefaultCommand(
         new AimCommand(
+            swerve,
             turret,
             hood,
             limelight,
