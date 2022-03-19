@@ -68,7 +68,7 @@ public class AimCommand extends CommandBase {
       calculateTargetAngle(target);
       if (target.hasTarget) {
         hood.aim(target.range);
-        turret.aim(target.targetAngle);
+        turret.aim(target.targetAngle, swerve.getSpeeds(), target.range);
       }
     } else {
       turret.goToZero();

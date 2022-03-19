@@ -8,6 +8,11 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Units;
@@ -22,6 +27,13 @@ public class Turret extends SubsystemBase {
   private static final double TURRET_REVERSE_LIMIT = Math.toRadians(-270.0); // -270 degrees
   private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(0.5); // 0.5 degrees
   private static final double TURRET_AIM_ERROR = Math.toRadians(3.0); // 3 degrees
+  private static final double TURRET_AIM_MOVEMENT_SCALAR = 0.125;
+
+  private static final Transform2d ROBOT_TO_TURRET =
+      new Transform2d(
+          new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0.0)),
+          new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(-90.0)));
+  private static final Transform2d TURRET_TO_ROBOT = ROBOT_TO_TURRET.inverse();
 
   private boolean zeroed = false; // Has the turret been zeroed
 
@@ -89,12 +101,14 @@ public class Turret extends SubsystemBase {
    *
    * @param degrees The angle between the current turret angle and the desired turret angle
    */
-  public void aim(double degrees) {
-    desiredAngle =
+  public void aim(double degrees, ChassisSpeeds velocity, double range) {
+    this.desiredAngle =
         MathUtil.clamp(
-            getAngle() + Math.toRadians(degrees),
+            adjustAngleForVelocity(Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO) + Math.toRadians(degrees), velocity, range),
             TURRET_REVERSE_LIMIT,
             TURRET_FORWARD_LIMIT);
+
+    setPosition(this.desiredAngle);
 
     SmartDashboard.putNumber("Current Angle", getAngle());
     SmartDashboard.putNumber("Desired Angle", desiredAngle);
@@ -153,6 +167,30 @@ public class Turret extends SubsystemBase {
     }
     SmartDashboard.putBoolean("Is Aimed", false);
     return false;
+  }
+
+  /**
+   * Adjusts an angle based on the velocity of the robot and a range to the target
+   *
+   * @param angle The angle to adjust
+   * @param velocity The velocity of the robot
+   * @param range The range to the target
+   * @return The adjusted angle
+   */
+  private double adjustAngleForVelocity(double angle, ChassisSpeeds velocity, double range) {
+    // Split up the velocity into translational and rotational velocities
+    Translation2d translationalVelocity =
+        new Translation2d(velocity.vxMetersPerSecond, velocity.vyMetersPerSecond);
+    double rotationalVelocity = velocity.omegaRadiansPerSecond;
+
+    // Rotate the translational velocity vector so the x axis points at the target
+    translationalVelocity.rotateBy(TURRET_TO_ROBOT.getRotation().rotateBy(new Rotation2d(angle)));
+
+    // Calculate the angle offset, add it to the angle and return that
+    double offset =
+        (TURRET_AIM_MOVEMENT_SCALAR * translationalVelocity.getY())
+            / range;
+    return angle + offset;
   }
 
   public double getAngle() {
