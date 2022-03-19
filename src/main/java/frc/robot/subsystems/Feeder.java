@@ -9,6 +9,8 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** This class contains all the code responsible for the behaviour of the Feeder subsystem */
@@ -18,10 +20,10 @@ public class Feeder extends SubsystemBase {
   private static final TalonFXConfiguration FEEDER_MOTOR_CONFIG = new TalonFXConfiguration();
 
   // Feeder speeds
-  private static final double SHOOT_SPEED = 0.75; // percent
+  private static final double SHOOT_SPEED = 1.0; // percent
   private static final double INTAKE_SPEED = 0.75; // percent
   private static final double OUTTAKE_SPEED = -1.0; // percent
-  private static final double BACKUP_SPEED = -0.5; // percent
+  private static final double BACKUP_SPEED = -0.15; // percent
 
   // Configure the feeder current limit
   static {
@@ -37,6 +39,9 @@ public class Feeder extends SubsystemBase {
   // Feeder motor
   private final WPI_TalonFX feederMotor = new WPI_TalonFX(30);
 
+  // Proximity sensor
+  private final DigitalInput proximitySensor = new DigitalInput(0);
+
   /** Constructs a Feeder */
   public Feeder() {
     // Configure feeder motor
@@ -45,6 +50,11 @@ public class Feeder extends SubsystemBase {
     feederMotor.setNeutralMode(NeutralMode.Coast);
     feederMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
     feederMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
+  }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putBoolean("Proximity Sensor", !proximitySensor.get());
   }
 
   /**
@@ -74,6 +84,14 @@ public class Feeder extends SubsystemBase {
   /** Runs the feeder at BACKUP_SPEED */
   public void backup() {
     setOpenLoop(BACKUP_SPEED);
+  }
+
+  public void autoIntake() {
+    if (!proximitySensor.get()) {
+      intake();
+    } else {
+      stop();
+    }
   }
 
   /** Stops the feeder */

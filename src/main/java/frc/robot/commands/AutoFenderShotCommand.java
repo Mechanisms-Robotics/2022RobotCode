@@ -52,6 +52,8 @@ public class AutoFenderShotCommand extends CommandBase {
         if (shooter.atSpeed()) {
             // Runs the feeder in shoot mode
             feeder.shoot();
+        } else {
+            feeder.stop();
         }
     }
 

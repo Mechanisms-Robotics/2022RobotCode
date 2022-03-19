@@ -15,8 +15,6 @@ public class ShootCommand extends CommandBase {
   private final Feeder feeder;
   private final Limelight limelight;
 
-  private boolean spunUp = false;
-
   // The amount of time it takes to spinup
   private static final double SPINUP_TIME = 1.0; // seconds
 
@@ -55,10 +53,10 @@ public class ShootCommand extends CommandBase {
 
   @Override
   public void execute() {
-    if (spunUp) {
+    if (shooter.atSpeed()) {
       feeder.shoot();
     } else {
-      spunUp = shooter.atSpeed();
+      feeder.stop();
     }
   }
 

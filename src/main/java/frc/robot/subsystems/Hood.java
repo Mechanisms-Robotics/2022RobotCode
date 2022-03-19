@@ -18,6 +18,7 @@ public class Hood extends SubsystemBase {
   private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
       RANGE_TO_POSITION = new InterpolatingTreeMap<>();
 
+
   /** Constructs a Hood */
   public Hood() {
     // Set the bounds of the servo
@@ -27,6 +28,7 @@ public class Hood extends SubsystemBase {
     // measured from fender to inside of bumper
     RANGE_TO_POSITION.put(new InterpolatingDouble(0.0), new InterpolatingDouble(-0.375));
     RANGE_TO_POSITION.put(new InterpolatingDouble(0.05), new InterpolatingDouble(-0.25));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.3), new InterpolatingDouble(0.25));
     RANGE_TO_POSITION.put(new InterpolatingDouble(0.6), new InterpolatingDouble(0.4));
     RANGE_TO_POSITION.put(new InterpolatingDouble(1.1), new InterpolatingDouble(0.65));
     RANGE_TO_POSITION.put(new InterpolatingDouble(1.25), new InterpolatingDouble(0.7));

@@ -26,9 +26,9 @@ public class AimCommand extends CommandBase {
   // The position of the hood for the fender shot
   private static final double FENDER_HOOD_POSITION = -0.25;
 
-  private Rotation2d lastVisionTargetAngle;
-  private Pose2d swerevPoseAtLastVisionUpdate;
-  private Rotation2d targetAngle;
+  private Rotation2d lastVisionTargetAngle = new Rotation2d();
+  private Pose2d swerevPoseAtLastVisionUpdate = new Pose2d();
+  private Rotation2d targetAngle = new Rotation2d(); // Relative to field
 
   // Coordinator System Transforms
   // TODO: Calculate Translation offset of the turret
@@ -70,7 +70,6 @@ public class AimCommand extends CommandBase {
         hood.aim(target.range);
         turret.aim(target.targetAngle);
       }
-
     } else {
       turret.goToZero();
       hood.setHoodRawPosition(FENDER_HOOD_POSITION);
@@ -85,8 +84,8 @@ public class AimCommand extends CommandBase {
 
   private void calculateTargetAngle(Limelight.TargetData data) {
     if (data.hasTarget) {
-      final Rotation2d currentTurretAngle = new Rotation2d(turret.getAngle()).rotateBy(new Rotation2d(data.targetAngle));
-      this.lastVisionTargetAngle = currentTurretAngle.rotateBy(TURRET_TO_ROBOT.getRotation());
+      final Rotation2d currentTargetAngle = new Rotation2d(turret.getAngle()).rotateBy(new Rotation2d(data.targetAngle));
+      this.lastVisionTargetAngle = currentTargetAngle.rotateBy(TURRET_TO_ROBOT.getRotation());
       this.targetAngle = this.lastVisionTargetAngle;
       this.swerevPoseAtLastVisionUpdate = swerve.getPose();
     } else {

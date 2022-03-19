@@ -30,7 +30,7 @@ public class Shooter extends SubsystemBase {
   // Shooter gear ratio
   private static final double GEAR_RATIO = 1.5; // 1.5:1 reduction
 
-  private static final int SHOOTER_SPINUP_DEADBAND = 50; // RPM
+  private static final int SHOOTER_SPINUP_DEADBAND = 150; // RPM
 
   // Range interpolating tree map
   private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> RANGE_TO_RPM =
