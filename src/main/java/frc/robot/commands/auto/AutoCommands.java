@@ -46,11 +46,32 @@ public final class AutoCommands {
     }
 
     public static class ShootWithPreAim extends SequentialCommandGroup {
-        private static final double SHOOT_TIME = 3.0;
+        private static final double DEFAULT_SHOOT_TIME = 2.0;
+
+        public ShootWithPreAim(Feeder feeder, Accelerator accelerator, double shootTime) {
+            addCommands(
+                new ParallelDeadlineGroup(
+                    new WaitCommand(shootTime),
+                    new InstantCommand(
+                        () -> {
+                            accelerator.shoot();
+                            feeder.shoot();
+                        }
+                    )
+                ),
+                new InstantCommand(
+                    () -> {
+                        accelerator.stop();
+                        feeder.stop();
+                    }
+                )
+            );
+        }
+
         public ShootWithPreAim(Feeder feeder, Accelerator accelerator) {
             addCommands(
                 new ParallelDeadlineGroup(
-                    new WaitCommand(SHOOT_TIME),
+                    new WaitCommand(DEFAULT_SHOOT_TIME),
                     new InstantCommand(
                         () -> {
                             accelerator.shoot();
