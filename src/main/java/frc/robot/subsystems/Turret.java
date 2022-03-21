@@ -104,7 +104,7 @@ public class Turret extends SubsystemBase {
   public void aim(double degrees, ChassisSpeeds velocity, double range) {
     this.desiredAngle =
         MathUtil.clamp(
-            adjustAngleForVelocity(Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO) + Math.toRadians(degrees), velocity, range),
+            Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO) + Math.toRadians(degrees),
             TURRET_REVERSE_LIMIT,
             TURRET_FORWARD_LIMIT);
 

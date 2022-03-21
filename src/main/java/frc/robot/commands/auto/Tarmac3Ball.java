@@ -49,8 +49,7 @@ public class Tarmac3Ball extends SequentialCommandGroup {
             new PreAimCommand(hood, turret, shooter, SECOND_SHOT_ANGLE, SECOND_SHOT_RANGE),
             new AutoCommands.IntakeWhileDriving(trajectory, swerve, intake, feeder, accelerator)
         ),
-       new AutoCommands.ShootWithPreAim(feeder, accelerator),
-       new InstantCommand(shooter::stop, shooter)
+       new AutoCommands.ShootWithPreAim(feeder, accelerator)
     );
   }
 }

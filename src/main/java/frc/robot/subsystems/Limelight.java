@@ -52,6 +52,7 @@ public class Limelight extends SubsystemBase {
       SmartDashboard.putNumber("Target Range", currentTarget.range);
     } else {
       currentTarget.hasTarget = false;
+      SmartDashboard.putBoolean("Has Target", currentTarget.hasTarget);
     }
   }
 
