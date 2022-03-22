@@ -4,6 +4,7 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.LowGoalCommand;
 import frc.robot.commands.PreAimCommand;
 import frc.robot.commands.auto.AutoCommands.IntakeWhileDriving;
 import frc.robot.subsystems.Accelerator;
@@ -23,6 +24,9 @@ public class Tarmac2BallHide extends SequentialCommandGroup {
 
   private static final double FIRST_SHOT_ANGLE = Math.toRadians(-75.0);
   private static final double FIRST_SHOT_RANGE = 0.6;
+
+  private static final double SECOND_SHOT_ANGLE = Math.toRadians(0.0);
+  private static final double SECOND_SHOT_RANGE = 20.0; // Low goal, hood all the way forward
 
   // TODO: find maxVel and maxAccel
   private static final PathPlannerTrajectory trajectory1 =
@@ -48,8 +52,11 @@ public class Tarmac2BallHide extends SequentialCommandGroup {
           new PreAimCommand(hood, turret, shooter, FIRST_SHOT_ANGLE, FIRST_SHOT_RANGE)
         ),
         new AutoCommands.ShootWithPreAim(feeder, accelerator, 3.0),
-        new IntakeWhileDriving(trajectory2, swerve, intake, feeder, accelerator),
-        // TODO: Outtake
+        new ParallelCommandGroup(
+          new AutoCommands.IntakeWhileDriving(trajectory2, swerve, intake, feeder, accelerator),
+          new PreAimCommand(hood, turret, shooter, SECOND_SHOT_ANGLE, SECOND_SHOT_RANGE)
+        ),
+        new LowGoalCommand(shooter, hood, turret, accelerator, feeder).withTimeout(3.0),
         new AutoCommands.FollowPathCommand(trajectory3, swerve)
     );
   }

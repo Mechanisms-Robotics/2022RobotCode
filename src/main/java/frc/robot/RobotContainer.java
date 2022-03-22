@@ -15,7 +15,10 @@ import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.PrepFeederCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.auto.Tarmac2Ball;
+import frc.robot.commands.auto.Tarmac2BallHide;
 import frc.robot.commands.auto.Tarmac3Ball;
+import frc.robot.commands.auto.Tarmac5Ball;
+import frc.robot.commands.auto.Tarmac6Ball;
 import frc.robot.commands.climber.DeployIntakeCommand;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
@@ -156,7 +159,10 @@ public class RobotContainer {
 
   public enum Autos {
     TARMAC_2_BALL,
-    TARMAC_3_BALL
+    TARMAC_2_BALL_HIDE,
+    TARMAC_3_BALL,
+    TARMAC_5_BALL,
+    TARMAC_6_BALL
   }
 
   private SendableChooser<Autos> autoChooser = new SendableChooser<>();
@@ -165,8 +171,14 @@ public class RobotContainer {
     switch (autoChooser.getSelected()) {
       case TARMAC_2_BALL:
         return new Tarmac2Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+      case TARMAC_2_BALL_HIDE:
+        return new Tarmac2BallHide(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
       case TARMAC_3_BALL:
         return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+      case TARMAC_5_BALL:
+        return new Tarmac5Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+      case TARMAC_6_BALL:
+        return new Tarmac6Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
       default:
         return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
     }
