@@ -16,8 +16,8 @@ import frc.robot.subsystems.Swerve;
 public final class AutoCommands {
 
     public static class ResetPose extends InstantCommand {
-        public ResetPose(PathPlannerTrajectory tarjectory, Swerve swerve) {
-            super(() -> swerve.setPose(tarjectory.getInitialPose(), tarjectory.getInitialState().holonomicRotation));
+        public ResetPose(PathPlannerTrajectory trajectory, Swerve swerve) {
+            super(() -> swerve.setPose(trajectory.getInitialPose(), trajectory.getInitialState().holonomicRotation));
         }
     }
 

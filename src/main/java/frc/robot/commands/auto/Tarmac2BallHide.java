@@ -18,8 +18,8 @@ import frc.robot.subsystems.Turret;
 /** Basic 1 ball auto, fender shot, then taxi */
 public class Tarmac2BallHide extends SequentialCommandGroup {
 
-  private static final double MAX_VEL = 1.0; // m/s
-  private static final double MAX_ACCEL = 2.0; // m/s^2
+  private static final double MAX_VEL = 2.0; // m/s
+  private static final double MAX_ACCEL = 4.0; // m/s^2
 
   private static final double FIRST_SHOT_ANGLE = Math.toRadians(-75.0);
   private static final double FIRST_SHOT_RANGE = 0.6;
@@ -29,6 +29,8 @@ public class Tarmac2BallHide extends SequentialCommandGroup {
       PathPlanner.loadPath("Tarmac2Ball", MAX_VEL, MAX_ACCEL);
   private static final PathPlannerTrajectory trajectory2 =
       PathPlanner.loadPath("Tarmac2BallHide", MAX_VEL, MAX_ACCEL);
+  private static final PathPlannerTrajectory trajectory3 =
+          PathPlanner.loadPath("TarmacPrepPickup", MAX_VEL, MAX_ACCEL);
 
   public Tarmac2BallHide(
       Swerve swerve,
@@ -45,9 +47,10 @@ public class Tarmac2BallHide extends SequentialCommandGroup {
           new AutoCommands.IntakeWhileDriving(trajectory1, swerve, intake, feeder, accelerator),
           new PreAimCommand(hood, turret, shooter, FIRST_SHOT_ANGLE, FIRST_SHOT_RANGE)
         ),
-        new AutoCommands.ShootWithPreAim(feeder, accelerator),
-        new IntakeWhileDriving(trajectory2, swerve, intake, feeder, accelerator)
+        new AutoCommands.ShootWithPreAim(feeder, accelerator, 3.0),
+        new IntakeWhileDriving(trajectory2, swerve, intake, feeder, accelerator),
         // TODO: Outtake
+        new AutoCommands.FollowPathCommand(trajectory3, swerve)
     );
   }
 }

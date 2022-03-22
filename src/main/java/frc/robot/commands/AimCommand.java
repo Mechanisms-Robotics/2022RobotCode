@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hood;
@@ -29,7 +28,7 @@ public class AimCommand extends CommandBase {
 
   private Rotation2d lastVisionTargetAngle = new Rotation2d();
   private Rotation2d fieldVisionTargetAngle = new Rotation2d();
-  private Pose2d swerevPoseAtLastVisionUpdate = new Pose2d();
+  private Pose2d swervePoseAtLastVisionUpdate = new Pose2d();
   private Rotation2d targetAngle = new Rotation2d(); // Relative to field
   private double lastTargetRange = 0.0;
 
@@ -74,6 +73,9 @@ public class AimCommand extends CommandBase {
       if (target.hasTarget) {
         hood.aim(target.range);
         turret.aim(target.targetAngle, swerve.getSpeeds(), target.range);
+      } else {
+        hood.aim(this.lastTargetRange);
+        turret.aim(this.targetAngle.getDegrees(), swerve.getSpeeds(), this.lastTargetRange);
       }
     } else {
       turret.goToZero();
@@ -86,20 +88,19 @@ public class AimCommand extends CommandBase {
     turret.stop();
   }
 
-
   private void calculateTargetAngle(Limelight.TargetData data) {
     if (data.hasTarget) {
       final Rotation2d currentTargetAngle = new Rotation2d(turret.getAngle()).rotateBy(Rotation2d.fromDegrees(data.targetAngle));
       this.lastVisionTargetAngle = currentTargetAngle.rotateBy(TURRET_TO_ROBOT.getRotation()).rotateBy(swerve.getHeading());
       this.targetAngle = this.lastVisionTargetAngle;
       this.lastTargetRange = data.range;
-      this.swerevPoseAtLastVisionUpdate = swerve.getPose();
+      this.swervePoseAtLastVisionUpdate = swerve.getPose();
     } else {
       final Pose2d goalPose = new Pose2d(new Translation2d(this.lastTargetRange, this.lastVisionTargetAngle), new Rotation2d());
       final Pose2d currentSwervePose = swerve.getPose();
 
       final Transform2d lastTransform = new Transform2d(
-          new Pose2d(this.swerevPoseAtLastVisionUpdate.getTranslation(), new Rotation2d()),
+          new Pose2d(this.swervePoseAtLastVisionUpdate.getTranslation(), new Rotation2d()),
           goalPose
       );
 
@@ -109,14 +110,16 @@ public class AimCommand extends CommandBase {
       );
 
       // acos((a^2 + b^2 - c^2) / 2ab) = theta
-      double a = Math.abs(this.swerevPoseAtLastVisionUpdate.getTranslation().getDistance(goalPose.getTranslation()));
-      double b = Math.abs(this.swerevPoseAtLastVisionUpdate.getTranslation().getDistance(currentSwervePose.getTranslation()));
+      double a = Math.abs(this.swervePoseAtLastVisionUpdate.getTranslation().getDistance(goalPose.getTranslation()));
+      double b = Math.abs(this.swervePoseAtLastVisionUpdate.getTranslation().getDistance(currentSwervePose.getTranslation()));
       double c = Math.abs(currentSwervePose.getTranslation().getDistance(goalPose.getTranslation()));
       Rotation2d deltaAngle = new Rotation2d(Math.acos((Math.pow(a, 2) + Math.pow(b, 2) - Math.pow(c, 2)) / (2 * a * b)));
 
+      this.lastTargetRange = c;
       SmartDashboard.putNumber("Last to Current Rotation", deltaAngle.getDegrees());
       this.targetAngle = this.lastVisionTargetAngle.rotateBy(deltaAngle);
     }
     SmartDashboard.putNumber("Current Target Angle", targetAngle.getDegrees());
   }
+
 }
