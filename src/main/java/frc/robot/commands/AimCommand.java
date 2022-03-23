@@ -29,8 +29,6 @@ public class AimCommand extends CommandBase {
 
   private final Timer lastSeenTimer;
   private static final double SNAP_TIME = 3.0;
-
-  private double snapAngle = Turret.TURRET_REVERSE_LIMIT;
   private boolean prevHasTarget = false;
 
 //  private Rotation2d lastVisionTargetAngle = new Rotation2d();
@@ -88,13 +86,13 @@ public class AimCommand extends CommandBase {
         lastSeenTimer.reset();
         lastSeenTimer.start();
 
+        turret.snapAround();
+
         prevHasTarget = false;
 //        hood.aim(this.lastTargetRange);
 //        turret.aim(this.targetAngle.getDegrees(), swerve.getSpeeds(), this.lastTargetRange);
       } else if (lastSeenTimer.hasElapsed(SNAP_TIME)) {
-        turret.snapTo(snapAngle);
-
-        snapAngle = (snapAngle == Turret.TURRET_REVERSE_LIMIT) ? Turret.TURRET_FORWARD_LIMIT : Turret.TURRET_REVERSE_LIMIT;
+        turret.snapAround();
 
         lastSeenTimer.stop();
         lastSeenTimer.reset();

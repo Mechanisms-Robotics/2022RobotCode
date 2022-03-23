@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import frc.robot.commands.SetIntakeCommand.IntakeMode;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
@@ -17,8 +18,12 @@ public class AutoIntakeCommand extends ParallelCommandGroup {
   public AutoIntakeCommand(Intake intake, Feeder feeder, Accelerator accelerator) {
     // Add commands to the ParallelCommandGroup
     addCommands(
+        new SetIntakeCommand(intake, IntakeMode.DEPLOY),
         // StartEndCommand to start then stop the intake
-        new StartEndCommand(intake::intake, intake::stop),
+        new StartEndCommand(intake::intake, () -> {
+          intake.stop();
+          intake.retract();
+        }),
         // StartEndCommand to start then stop the feeder
         new PrepFeederCommand(feeder, accelerator).andThen(new BackupCommand(accelerator, feeder)));
     // new StartEndCommand(accelerator::idle, accelerator::stop));

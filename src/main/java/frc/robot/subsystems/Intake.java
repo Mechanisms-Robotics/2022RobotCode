@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Units;
 
@@ -24,6 +25,8 @@ public class Intake extends SubsystemBase {
 
   private static final int INTAKE_RETRACTED_POSITION = 0; // TODO: get values
   private static final int INTAKE_DEPLOYED_POSITION = 0;
+
+  private static final int INTAKE_ALLOWABLE_ERROR = 100; // ticks
 
   private static final int INTAKE_RETRACTED_GEAR_RATIO = 88; // TODO: validate gear ratio
 
@@ -41,34 +44,41 @@ public class Intake extends SubsystemBase {
     INTAKE_MOTOR_CONFIG.supplyCurrLimit = intakeCurrentLimit;
     INTAKE_RETRACT_MOTOR_CONFIG = INTAKE_MOTOR_CONFIG;
 
-    final SlotConfiguration intakeRetractMMPID = new SlotConfiguration();
-    intakeRetractMMPID.kP = 0.1;
-    INTAKE_RETRACT_MOTOR_CONFIG.slot1 = intakeRetractMMPID;
-    INTAKE_RETRACT_MOTOR_CONFIG.motionCruiseVelocity = 0.0; // TODO: Find values
-    INTAKE_RETRACT_MOTOR_CONFIG.motionAcceleration = 0.0;
-    INTAKE_RETRACT_MOTOR_CONFIG.motionCurveStrength = 0;
-  }
+    final SlotConfiguration intakeRetractPID = new SlotConfiguration();
+    intakeRetractPID.kP = 0.0;
+    intakeRetractPID.allowableClosedloopError = INTAKE_ALLOWABLE_ERROR;
 
-  private boolean deployed = false;
+    INTAKE_RETRACT_MOTOR_CONFIG.slot1 = intakeRetractPID;
+
+    INTAKE_RETRACT_MOTOR_CONFIG.reverseSoftLimitThreshold = INTAKE_RETRACTED_POSITION;
+    INTAKE_RETRACT_MOTOR_CONFIG.forwardSoftLimitThreshold = INTAKE_DEPLOYED_POSITION;
+    INTAKE_RETRACT_MOTOR_CONFIG.reverseSoftLimitEnable = true;
+    INTAKE_RETRACT_MOTOR_CONFIG.forwardSoftLimitEnable = true;
+
+    INTAKE_RETRACT_MOTOR_CONFIG.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_2Ms;
+    INTAKE_RETRACT_MOTOR_CONFIG.velocityMeasurementWindow = 4;
+  }
 
   // Intake motor
   private final WPI_TalonFX intakeMotor = new WPI_TalonFX(20);
-  private final WPI_TalonFX intakeRetractMotor = new WPI_TalonFX(21); // TODO: rename motor
+  private final WPI_TalonFX intakeRetractMotor = new WPI_TalonFX(21);
 
   /** Constructs an Intake */
   public Intake() {
     // Configure intake motor
     intakeMotor.configAllSettings(INTAKE_MOTOR_CONFIG, startupCanTimeout);
-    intakeRetractMotor.configAllSettings(INTAKE_MOTOR_CONFIG, startupCanTimeout);
     intakeMotor.setInverted(TalonFXInvertType.Clockwise);
-    intakeRetractMotor.setInverted(TalonFXInvertType.Clockwise);
     intakeMotor.setNeutralMode(NeutralMode.Coast);
-    intakeRetractMotor.setNeutralMode(NeutralMode.Coast);
+
+    intakeRetractMotor.configAllSettings(INTAKE_MOTOR_CONFIG, startupCanTimeout);
+    intakeRetractMotor.setInverted(TalonFXInvertType.Clockwise);
+    intakeRetractMotor.setNeutralMode(NeutralMode.Brake);
+
 
     // CAN bus utilization optimization
     intakeMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
     intakeMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
-    intakeRetractMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
+
     intakeRetractMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
   }
 
@@ -82,15 +92,15 @@ public class Intake extends SubsystemBase {
   }
 
   public void deploy() {
-    if (!deployed) {
-      intakeRetractMotor.set(ControlMode.MotionMagic, INTAKE_DEPLOYED_POSITION);
-    }
+    // TODO: Change to closed loop
+    intakeRetractMotor.set(ControlMode.PercentOutput, -0.15);
+//    intakeRetractMotor.set(ControlMode.Position, INTAKE_DEPLOYED_POSITION);
   }
 
   public void retract() {
-    if (deployed) {
-      intakeRetractMotor.set(ControlMode.MotionMagic, INTAKE_RETRACTED_POSITION);
-    }
+    // TODO: Change to closed loop
+    intakeRetractMotor.set(ControlMode.PercentOutput, 0.15);
+//    intakeRetractMotor.set(ControlMode.Position, INTAKE_RETRACTED_POSITION);
   }
 
   /** Runs the intake at INTAKE_SPEED */

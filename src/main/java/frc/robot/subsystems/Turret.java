@@ -135,6 +135,17 @@ public class Turret extends SubsystemBase {
     setPosition(desiredAngle);
   }
 
+  /**
+   * Snaps to limit farthest from current angle
+   */
+  public void snapAround() {
+    if (Math.abs(TURRET_FORWARD_LIMIT - getAngle()) >= Math.abs(TURRET_REVERSE_LIMIT - getAngle())) {
+      snapTo(TURRET_FORWARD_LIMIT);
+    } else {
+      snapTo(TURRET_REVERSE_LIMIT);
+    }
+  }
+
   /** Sets the turret to the zero position */
   public void goToZero() {
     setPosition(0.0);
