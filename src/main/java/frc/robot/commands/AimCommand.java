@@ -1,11 +1,6 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Limelight;
@@ -26,6 +21,11 @@ public class AimCommand extends CommandBase {
 
   // The position of the hood for the fender shot
   private static final double FENDER_HOOD_POSITION = -0.25;
+
+  private boolean snapAroundEnabled;
+
+  private Supplier<Boolean> snapAroundToggleButton;
+  private boolean prevSnapAroundToggle = false;
 
   private final Timer lastSeenTimer;
   private static final double SNAP_TIME = 3.0;
@@ -55,6 +55,35 @@ public class AimCommand extends CommandBase {
       Turret turret,
       Hood hood,
       Limelight limelight,
+      Supplier<Boolean> fenderShotButton,
+      Supplier<Boolean> snapAroundDisableButton) {
+    this.turret = turret;
+    this.hood = hood;
+    this.swerve = swerve;
+
+    this.limelight = limelight;
+
+    this.fenderShotButton = fenderShotButton;
+
+    this.snapAroundEnabled = true;
+    this.snapAroundToggleButton = snapAroundDisableButton;
+
+    this.lastSeenTimer = new Timer();
+
+    // Add the shooter, hood, turret, and goalTracker as requirements
+    addRequirements(turret);
+  }
+
+  /**
+   * Constructs an AimCommand
+   *
+   * @param turret Instance of Turret
+   */
+  public AimCommand(
+      Swerve swerve,
+      Turret turret,
+      Hood hood,
+      Limelight limelight,
       Supplier<Boolean> fenderShotButton) {
     this.turret = turret;
     this.hood = hood;
@@ -64,6 +93,8 @@ public class AimCommand extends CommandBase {
 
     this.fenderShotButton = fenderShotButton;
 
+    this.snapAroundEnabled = true;
+    this.snapAroundToggleButton = () -> false;
     this.lastSeenTimer = new Timer();
 
     // Add the shooter, hood, turret, and goalTracker as requirements
@@ -72,6 +103,18 @@ public class AimCommand extends CommandBase {
 
   @Override
   public void execute() {
+    if (snapAroundToggleButton.get() && !prevSnapAroundToggle) {
+      snapAroundEnabled = !snapAroundEnabled;
+
+      if (snapAroundEnabled) {
+        turret.enableSnapAround();
+      } else {
+        turret.disableSnapAround();
+      }
+    }
+
+    prevSnapAroundToggle = snapAroundToggleButton.get();
+
     if (!fenderShotButton.get()) {
       var target = limelight.getCurrentTarget();
 //      calculateTargetAngle(target);

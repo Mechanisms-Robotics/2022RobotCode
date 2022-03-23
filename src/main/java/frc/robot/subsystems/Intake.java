@@ -32,7 +32,7 @@ public class Intake extends SubsystemBase {
 
   // Intake motor configuration
   private static final TalonFXConfiguration INTAKE_MOTOR_CONFIG = new TalonFXConfiguration();
-  private static final TalonFXConfiguration INTAKE_RETRACT_MOTOR_CONFIG;
+  private static final TalonFXConfiguration INTAKE_RETRACT_MOTOR_CONFIG = new TalonFXConfiguration();
 
   // Configure the intake current limit
   static {
@@ -41,8 +41,10 @@ public class Intake extends SubsystemBase {
     intakeCurrentLimit.triggerThresholdCurrent = 18; // Amps
     intakeCurrentLimit.triggerThresholdTime = 0.25; // sec
     intakeCurrentLimit.enable = true;
+
     INTAKE_MOTOR_CONFIG.supplyCurrLimit = intakeCurrentLimit;
-    INTAKE_RETRACT_MOTOR_CONFIG = INTAKE_MOTOR_CONFIG;
+    INTAKE_MOTOR_CONFIG.reverseSoftLimitEnable = false;
+    INTAKE_MOTOR_CONFIG.forwardSoftLimitEnable = false;
 
     final SlotConfiguration intakeRetractPID = new SlotConfiguration();
     intakeRetractPID.kP = 0.0;
@@ -70,7 +72,7 @@ public class Intake extends SubsystemBase {
     intakeMotor.setInverted(TalonFXInvertType.Clockwise);
     intakeMotor.setNeutralMode(NeutralMode.Coast);
 
-    intakeRetractMotor.configAllSettings(INTAKE_MOTOR_CONFIG, startupCanTimeout);
+    intakeRetractMotor.configAllSettings(INTAKE_RETRACT_MOTOR_CONFIG, startupCanTimeout);
     intakeRetractMotor.setInverted(TalonFXInvertType.Clockwise);
     intakeRetractMotor.setNeutralMode(NeutralMode.Brake);
 

@@ -35,6 +35,7 @@ public class Turret extends SubsystemBase {
           new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(-90.0)));
   private static final Transform2d TURRET_TO_ROBOT = ROBOT_TO_TURRET.inverse();
 
+  private boolean snapAroundEnabled = true;
   private boolean zeroed = false; // Has the turret been zeroed
 
   private double desiredAngle = 0.0; // rads
@@ -139,11 +140,29 @@ public class Turret extends SubsystemBase {
    * Snaps to limit farthest from current angle
    */
   public void snapAround() {
+    if (!snapAroundEnabled) {
+      return;
+    }
+
     if (Math.abs(TURRET_FORWARD_LIMIT - getAngle()) >= Math.abs(TURRET_REVERSE_LIMIT - getAngle())) {
       snapTo(TURRET_FORWARD_LIMIT);
     } else {
       snapTo(TURRET_REVERSE_LIMIT);
     }
+  }
+
+  /**
+   * Enables snap around functionality
+   */
+  public void enableSnapAround() {
+    this.snapAroundEnabled = true;
+  }
+
+  /**
+   * Disables snap around functionality
+   */
+  public void disableSnapAround() {
+    this.snapAroundEnabled = false;
   }
 
   /** Sets the turret to the zero position */

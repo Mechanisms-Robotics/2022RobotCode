@@ -64,6 +64,7 @@ public class RobotContainer {
   private final Button feederIntakeButton = new Button(secondaryController::getRightBumperButton);
   private final Button feederBackupButton = new Button(secondaryController::getRightTriggerButton);
   private final Button backupShooterButton = new Button(secondaryController::getXButton);
+  private final Button toggleSnapAround = new Button(secondaryController::getTriangleButton);
 
   private final Button climberButtonUp = new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Up);
   private final Button climberButtonDown = new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Down);
@@ -104,7 +105,8 @@ public class RobotContainer {
             turret,
             hood,
             limelight,
-            fenderShotButton::get));
+            fenderShotButton::get,
+            toggleSnapAround::get));
   }
 
   /** Configures all button bindings */
