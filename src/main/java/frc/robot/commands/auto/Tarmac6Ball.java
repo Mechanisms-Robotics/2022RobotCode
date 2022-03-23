@@ -49,20 +49,16 @@ public class Tarmac6Ball extends SequentialCommandGroup {
     addCommands(
         new ParallelCommandGroup(
             new AutoCommands.ResetPose(trajectory1, swerve),
-            new PreAimCommand(hood, turret, shooter, FIRST_SHOT_ANGLE, FIRST_SHOT_RANGE)
-        ),
+            new PreAimCommand(hood, turret, shooter, FIRST_SHOT_ANGLE, FIRST_SHOT_RANGE)),
         new WaitCommand(1.0),
         new ShootWithPreAim(feeder, accelerator, 2.0),
         new ParallelCommandGroup(
             new PreAimCommand(hood, turret, shooter, SECOND_SHOT_ANGLE, SECOND_SHOT_RANGE),
-            new AutoCommands.IntakeWhileDriving(trajectory1, swerve, intake, feeder, accelerator)
-        ),
+            new AutoCommands.IntakeWhileDriving(trajectory1, swerve, intake, feeder, accelerator)),
         new ShootWithPreAim(feeder, accelerator, 3.0),
         new ParallelCommandGroup(
             new PreAimCommand(hood, turret, shooter, THIRD_SHOT_ANGLE, THIRD_SHOT_RANGE),
-            new AutoCommands.IntakeWhileDriving(trajectory2, swerve, intake, feeder, accelerator)
-        ),
-        new ShootWithPreAim(feeder, accelerator, 3.0)
-    );
+            new AutoCommands.IntakeWhileDriving(trajectory2, swerve, intake, feeder, accelerator)),
+        new ShootWithPreAim(feeder, accelerator, 3.0));
   }
 }

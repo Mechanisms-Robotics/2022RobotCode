@@ -12,9 +12,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.Units;
-
-import java.util.concurrent.locks.ReentrantLock;
 
 /** This class contains all the code responsible for the behaviour of the intake class */
 public class Intake extends SubsystemBase {
@@ -32,7 +29,8 @@ public class Intake extends SubsystemBase {
 
   // Intake motor configuration
   private static final TalonFXConfiguration INTAKE_MOTOR_CONFIG = new TalonFXConfiguration();
-  private static final TalonFXConfiguration INTAKE_RETRACT_MOTOR_CONFIG = new TalonFXConfiguration();
+  private static final TalonFXConfiguration INTAKE_RETRACT_MOTOR_CONFIG =
+      new TalonFXConfiguration();
 
   // Configure the intake current limit
   static {
@@ -76,7 +74,6 @@ public class Intake extends SubsystemBase {
     intakeRetractMotor.setInverted(TalonFXInvertType.Clockwise);
     intakeRetractMotor.setNeutralMode(NeutralMode.Brake);
 
-
     // CAN bus utilization optimization
     intakeMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
     intakeMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
@@ -96,13 +93,13 @@ public class Intake extends SubsystemBase {
   public void deploy() {
     // TODO: Change to closed loop
     intakeRetractMotor.set(ControlMode.PercentOutput, -0.15);
-//    intakeRetractMotor.set(ControlMode.Position, INTAKE_DEPLOYED_POSITION);
+    //    intakeRetractMotor.set(ControlMode.Position, INTAKE_DEPLOYED_POSITION);
   }
 
   public void retract() {
     // TODO: Change to closed loop
     intakeRetractMotor.set(ControlMode.PercentOutput, 0.15);
-//    intakeRetractMotor.set(ControlMode.Position, INTAKE_RETRACTED_POSITION);
+    //    intakeRetractMotor.set(ControlMode.Position, INTAKE_RETRACTED_POSITION);
   }
 
   /** Runs the intake at INTAKE_SPEED */

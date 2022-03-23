@@ -12,7 +12,6 @@ import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.FenderShotCommand;
 import frc.robot.commands.LowGoalCommand;
 import frc.robot.commands.OuttakeCommand;
-import frc.robot.commands.PrepFeederCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.auto.Tarmac2Ball;
 import frc.robot.commands.auto.Tarmac2BallHide;
@@ -24,9 +23,9 @@ import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Feeder;
-import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Turret;
@@ -66,8 +65,10 @@ public class RobotContainer {
   private final Button backupShooterButton = new Button(secondaryController::getXButton);
   private final Button toggleSnapAround = new Button(secondaryController::getTriangleButton);
 
-  private final Button climberButtonUp = new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Up);
-  private final Button climberButtonDown = new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Down);
+  private final Button climberButtonUp =
+      new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Up);
+  private final Button climberButtonDown =
+      new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Down);
 
   private final Button gyroResetButton = new Button(driverController::getShareButton);
 
@@ -101,12 +102,7 @@ public class RobotContainer {
     // Set the turret default command to a AimCommand
     turret.setDefaultCommand(
         new AimCommand(
-            swerve,
-            turret,
-            hood,
-            limelight,
-            fenderShotButton::get,
-            toggleSnapAround::get));
+            swerve, turret, hood, limelight, fenderShotButton::get, toggleSnapAround::get));
   }
 
   /** Configures all button bindings */
@@ -130,19 +126,11 @@ public class RobotContainer {
     lowGoalButton.whenHeld(new LowGoalCommand(shooter, hood, turret, accelerator, feeder));
 
     // When the shoot button is pressed toggle a ShootCommand
-    shootButton.whenHeld(
-        new ShootCommand(
-            shooter, accelerator, feeder, limelight));
+    shootButton.whenHeld(new ShootCommand(shooter, accelerator, feeder, limelight));
 
     // When the auto shoot button is pressed toggle a AutoShoot command
     autoShootButton.toggleWhenPressed(
-        new AutoShootCommand(
-            shooter,
-            accelerator,
-            feeder,
-            turret,
-            limelight,
-            swerve));
+        new AutoShootCommand(shooter, accelerator, feeder, turret, limelight, swerve));
 
     // When the feeder intake button is pressed intake the feeder, when it is released stop it
     feederIntakeButton.whenHeld(new StartEndCommand(feeder::intake, feeder::stop));
@@ -174,7 +162,8 @@ public class RobotContainer {
       case TARMAC_2_BALL:
         return new Tarmac2Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
       case TARMAC_2_BALL_HIDE:
-        return new Tarmac2BallHide(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+        return new Tarmac2BallHide(
+            swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
       case TARMAC_3_BALL:
         return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
       case TARMAC_5_BALL:

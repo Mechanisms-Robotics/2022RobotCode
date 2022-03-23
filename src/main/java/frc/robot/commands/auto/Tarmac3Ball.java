@@ -2,14 +2,11 @@ package frc.robot.commands.auto;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.AutoFenderShotCommand;
 import frc.robot.commands.PreAimCommand;
 import frc.robot.commands.auto.AutoCommands.ShootWithPreAim;
-import frc.robot.commands.climber.DeployIntakeCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Feeder;
@@ -46,16 +43,13 @@ public class Tarmac3Ball extends SequentialCommandGroup {
       Climber climber) {
     addCommands(
         new ParallelCommandGroup(
-          new AutoCommands.ResetPose(trajectory, swerve),
-          new PreAimCommand(hood, turret, shooter, FIRST_SHOT_ANGLE, FIRST_SHOT_RANGE)
-        ),
+            new AutoCommands.ResetPose(trajectory, swerve),
+            new PreAimCommand(hood, turret, shooter, FIRST_SHOT_ANGLE, FIRST_SHOT_RANGE)),
         new WaitCommand(1.0),
         new ShootWithPreAim(feeder, accelerator, 2.0),
         new ParallelCommandGroup(
             new PreAimCommand(hood, turret, shooter, SECOND_SHOT_ANGLE, SECOND_SHOT_RANGE),
-            new AutoCommands.IntakeWhileDriving(trajectory, swerve, intake, feeder, accelerator)
-        ),
-        new AutoCommands.ShootWithPreAim(feeder, accelerator, 6.0)
-    );
+            new AutoCommands.IntakeWhileDriving(trajectory, swerve, intake, feeder, accelerator)),
+        new AutoCommands.ShootWithPreAim(feeder, accelerator, 6.0));
   }
 }

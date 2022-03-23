@@ -15,7 +15,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
@@ -136,7 +135,8 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Flywheel RPM", Units.falconToRPM(shooterMotor.getSelectedSensorVelocity(), GEAR_RATIO));
+    SmartDashboard.putNumber(
+        "Flywheel RPM", Units.falconToRPM(shooterMotor.getSelectedSensorVelocity(), GEAR_RATIO));
     SmartDashboard.putBoolean("Spunnup", atSpeed());
   }
 
@@ -166,7 +166,10 @@ public class Shooter extends SubsystemBase {
 
   public boolean atSpeed() {
     if (shooterMotor.getControlMode().equals(ControlMode.Velocity)) {
-      return Math.abs(Units.falconToRPM(shooterMotor.getSelectedSensorVelocity(), GEAR_RATIO) - desiredSpeed) <= SHOOTER_SPINUP_DEADBAND;
+      return Math.abs(
+              Units.falconToRPM(shooterMotor.getSelectedSensorVelocity(), GEAR_RATIO)
+                  - desiredSpeed)
+          <= SHOOTER_SPINUP_DEADBAND;
     }
     return false;
   }

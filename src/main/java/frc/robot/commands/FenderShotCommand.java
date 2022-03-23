@@ -12,13 +12,13 @@ public class FenderShotCommand extends AutoFenderShotCommand {
   /**
    * Constructs a ShootCommand
    *
-   * @param shooter     Instance of Shooter
-   * @param turret      Instants of the Turret
+   * @param shooter Instance of Shooter
+   * @param turret Instants of the Turret
    * @param accelerator Instance of Accelerator
-   * @param feeder      Instance of Feeder
+   * @param feeder Instance of Feeder
    */
-  public FenderShotCommand(Shooter shooter, Hood hood, Turret turret, Accelerator accelerator,
-                           Feeder feeder) {
+  public FenderShotCommand(
+      Shooter shooter, Hood hood, Turret turret, Accelerator accelerator, Feeder feeder) {
     super(shooter, hood, turret, accelerator, feeder);
   }
 

@@ -105,7 +105,8 @@ public class Turret extends SubsystemBase {
   public void aim(double degrees, ChassisSpeeds velocity, double range) {
     this.desiredAngle =
         MathUtil.clamp(
-            Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO) + Math.toRadians(degrees),
+            Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO)
+                + Math.toRadians(degrees),
             TURRET_REVERSE_LIMIT,
             TURRET_FORWARD_LIMIT);
 
@@ -123,11 +124,7 @@ public class Turret extends SubsystemBase {
 
   /** Snaps the turret to the angle (radians) */
   public void snapTo(double angle) {
-    desiredAngle =
-        MathUtil.clamp(
-            angle,
-            TURRET_REVERSE_LIMIT,
-            TURRET_FORWARD_LIMIT);
+    desiredAngle = MathUtil.clamp(angle, TURRET_REVERSE_LIMIT, TURRET_FORWARD_LIMIT);
 
     if (isAimed()) {
       return;
@@ -136,31 +133,26 @@ public class Turret extends SubsystemBase {
     setPosition(desiredAngle);
   }
 
-  /**
-   * Snaps to limit farthest from current angle
-   */
+  /** Snaps to limit farthest from current angle */
   public void snapAround() {
     if (!snapAroundEnabled) {
       return;
     }
 
-    if (Math.abs(TURRET_FORWARD_LIMIT - getAngle()) >= Math.abs(TURRET_REVERSE_LIMIT - getAngle())) {
+    if (Math.abs(TURRET_FORWARD_LIMIT - getAngle())
+        >= Math.abs(TURRET_REVERSE_LIMIT - getAngle())) {
       snapTo(TURRET_FORWARD_LIMIT);
     } else {
       snapTo(TURRET_REVERSE_LIMIT);
     }
   }
 
-  /**
-   * Enables snap around functionality
-   */
+  /** Enables snap around functionality */
   public void enableSnapAround() {
     this.snapAroundEnabled = true;
   }
 
-  /**
-   * Disables snap around functionality
-   */
+  /** Disables snap around functionality */
   public void disableSnapAround() {
     this.snapAroundEnabled = false;
   }
@@ -191,8 +183,10 @@ public class Turret extends SubsystemBase {
    * @return Is the turret aimed at the desired angle
    */
   public boolean isAimed() {
-    if (turretMotor.getControlMode().equals(ControlMode.Position) || turretMotor.getControlMode().equals(ControlMode.MotionMagic)) {
-      SmartDashboard.putBoolean("Is Aimed", Math.abs(getAngle() - desiredAngle) <= TURRET_AIM_ERROR);
+    if (turretMotor.getControlMode().equals(ControlMode.Position)
+        || turretMotor.getControlMode().equals(ControlMode.MotionMagic)) {
+      SmartDashboard.putBoolean(
+          "Is Aimed", Math.abs(getAngle() - desiredAngle) <= TURRET_AIM_ERROR);
       return Math.abs(getAngle() - desiredAngle) <= TURRET_AIM_ERROR;
     }
     SmartDashboard.putBoolean("Is Aimed", false);
@@ -217,9 +211,7 @@ public class Turret extends SubsystemBase {
     translationalVelocity.rotateBy(TURRET_TO_ROBOT.getRotation().rotateBy(new Rotation2d(angle)));
 
     // Calculate the angle offset, add it to the angle and return that
-    double offset =
-        (TURRET_AIM_MOVEMENT_SCALAR * translationalVelocity.getY())
-            / range;
+    double offset = (TURRET_AIM_MOVEMENT_SCALAR * translationalVelocity.getY()) / range;
     return angle + offset;
   }
 

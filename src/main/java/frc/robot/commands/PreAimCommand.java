@@ -13,7 +13,8 @@ public class PreAimCommand extends CommandBase {
   protected final Turret turret;
   protected final Shooter shooter;
 
-  public PreAimCommand(Hood hood, Turret turret, Shooter shooter, double preAimAngle, double preAimRange) {
+  public PreAimCommand(
+      Hood hood, Turret turret, Shooter shooter, double preAimAngle, double preAimRange) {
     this.preAimAngle = preAimAngle;
     this.preAimRange = preAimRange;
     this.hood = hood;

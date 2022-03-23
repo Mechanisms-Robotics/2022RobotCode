@@ -59,20 +59,22 @@ public class Climber extends SubsystemBase {
    * @param percentOutput The percentage to run the climber motors at
    */
   private void setOpenLoop(double percentOutput) {
-    setOpenLoop(percentOutput, percentOutput);    
+    setOpenLoop(percentOutput, percentOutput);
   }
-  
+
   private void setOpenLoop(double leftClimberSpeed, double rightClimberSpeed) {
     climberMotorLeft.set(ControlMode.PercentOutput, leftClimberSpeed);
     climberMotorRight.set(ControlMode.PercentOutput, rightClimberSpeed);
   }
 
   public boolean isBelow(int position) {
-    return  climberMotorLeft.getSelectedSensorPosition() <= position && climberMotorRight.getSelectedSensorPosition() <= position;
+    return climberMotorLeft.getSelectedSensorPosition() <= position
+        && climberMotorRight.getSelectedSensorPosition() <= position;
   }
 
   public boolean isAbove(int position) {
-    return climberMotorLeft.getSelectedSensorPosition() >= position && climberMotorRight.getSelectedSensorPosition() >= position;
+    return climberMotorLeft.getSelectedSensorPosition() >= position
+        && climberMotorRight.getSelectedSensorPosition() >= position;
   }
 
   /** Runs the climber at UP_SPEED */

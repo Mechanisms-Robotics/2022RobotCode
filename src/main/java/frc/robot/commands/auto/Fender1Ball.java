@@ -2,14 +2,9 @@ package frc.robot.commands.auto;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.AimCommand;
 import frc.robot.commands.AutoFenderShotCommand;
-import frc.robot.commands.FenderShotCommand;
-import frc.robot.commands.PreAimCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Hood;

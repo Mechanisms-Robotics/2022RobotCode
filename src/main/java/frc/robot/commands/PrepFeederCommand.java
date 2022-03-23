@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 
-public class PrepFeederCommand  extends CommandBase {
+public class PrepFeederCommand extends CommandBase {
 
   private final Feeder feeder;
   private final Accelerator accelerator;

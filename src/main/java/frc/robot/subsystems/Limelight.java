@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.common.hardware.VisionLEDMode;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 /** This class contains all the code responsible for tracking the goal using the Limelight. */
 public class Limelight extends SubsystemBase {
@@ -23,6 +22,7 @@ public class Limelight extends SubsystemBase {
     public double range;
     public double targetAngle;
   }
+
   private final TargetData currentTarget = new TargetData();
 
   /** Constructs a GoalTracker */
@@ -59,7 +59,6 @@ public class Limelight extends SubsystemBase {
   public TargetData getCurrentTarget() {
     return currentTarget;
   }
-
 
   /** Turns on the limelight's LEDs */
   public void turnOnLEDs() {

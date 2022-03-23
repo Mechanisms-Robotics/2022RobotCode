@@ -22,7 +22,8 @@ public class LowGoalCommand extends CommandBase {
    * @param accelerator Instance of Accelerator
    * @param feeder Instance of Feeder
    */
-  public LowGoalCommand(Shooter shooter, Hood hood, Turret turret, Accelerator accelerator, Feeder feeder) {
+  public LowGoalCommand(
+      Shooter shooter, Hood hood, Turret turret, Accelerator accelerator, Feeder feeder) {
     this.shooter = shooter;
     this.turret = turret;
     this.accelerator = accelerator;

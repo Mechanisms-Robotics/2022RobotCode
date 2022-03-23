@@ -1,12 +1,10 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
-import java.util.function.Supplier;
 
 /** This command runs the shooter, accelerator, and feeder to shoot a ball */
 public class ShootCommand extends CommandBase {
@@ -26,10 +24,7 @@ public class ShootCommand extends CommandBase {
    * @param feeder Instance of Feeder
    */
   public ShootCommand(
-      Shooter shooter,
-      Accelerator accelerator,
-      Feeder feeder,
-      Limelight limelight) {
+      Shooter shooter, Accelerator accelerator, Feeder feeder, Limelight limelight) {
     this.shooter = shooter;
     this.accelerator = accelerator;
     this.feeder = feeder;

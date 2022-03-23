@@ -18,7 +18,6 @@ public class Hood extends SubsystemBase {
   private static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
       RANGE_TO_POSITION = new InterpolatingTreeMap<>();
 
-
   /** Constructs a Hood */
   public Hood() {
     // Set the bounds of the servo

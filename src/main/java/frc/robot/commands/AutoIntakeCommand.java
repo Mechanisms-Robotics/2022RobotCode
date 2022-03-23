@@ -20,10 +20,12 @@ public class AutoIntakeCommand extends ParallelCommandGroup {
     addCommands(
         new SetIntakeCommand(intake, IntakeMode.DEPLOY),
         // StartEndCommand to start then stop the intake
-        new StartEndCommand(intake::intake, () -> {
-          intake.stop();
-          intake.retract();
-        }),
+        new StartEndCommand(
+            intake::intake,
+            () -> {
+              intake.stop();
+              intake.retract();
+            }),
         // StartEndCommand to start then stop the feeder
         new PrepFeederCommand(feeder, accelerator).andThen(new BackupCommand(accelerator, feeder)));
     // new StartEndCommand(accelerator::idle, accelerator::stop));

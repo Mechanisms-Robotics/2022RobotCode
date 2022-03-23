@@ -33,7 +33,8 @@ public class TrajectoryController {
   public TrajectoryController(SwerveDriveKinematics kinematics) {
     this.kinematics = kinematics;
 
-    ProfiledPIDController thetaController = new ProfiledPIDController(THETA_GAIN, 0.0, 0.0, HEADING_PROFILE_CONSTRAINTS);
+    ProfiledPIDController thetaController =
+        new ProfiledPIDController(THETA_GAIN, 0.0, 0.0, HEADING_PROFILE_CONSTRAINTS);
     thetaController.enableContinuousInput(-Math.PI, Math.PI); // Thanks mendax1234
 
     this.controller =

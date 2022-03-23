@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
@@ -9,14 +8,11 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Turret;
 
-import java.util.function.Supplier;
-
 /** This command runs the shooter, accelerator, and feeder to shoot a ball */
 public class AutoShootCommand extends CommandBase {
   private final Shooter shooter;
   private final Accelerator accelerator;
   private final Feeder feeder;
-
 
   // FOR READ ONLY
   private final Turret turret;
@@ -43,8 +39,7 @@ public class AutoShootCommand extends CommandBase {
       Feeder feeder,
       Turret turret,
       Limelight limelight,
-      Swerve swerve
-      ) {
+      Swerve swerve) {
     this.shooter = shooter;
     this.accelerator = accelerator;
     this.feeder = feeder;
@@ -68,7 +63,8 @@ public class AutoShootCommand extends CommandBase {
 
       if (spunUp) {
         final boolean validSwerveSpeed = Math.abs(swerve.getVelocity()) <= MAX_VELOCITY;
-        final boolean validSwerveRotationSpeed = Math.abs(swerve.getAngularVelocity()) <= MAX_ANGULAR_VELOCITY;
+        final boolean validSwerveRotationSpeed =
+            Math.abs(swerve.getAngularVelocity()) <= MAX_ANGULAR_VELOCITY;
         if (validSwerveSpeed && validSwerveRotationSpeed && turret.isAimed()) {
           feeder.shoot();
         } else {
