@@ -20,12 +20,7 @@ public class Intake extends SubsystemBase {
   private static final double INTAKE_SPEED = 0.5; // percent
   private static final double OUTTAKE_SPEED = -0.25; // percent
 
-  private static final int INTAKE_RETRACTED_POSITION = 0; // TODO: get values
-  private static final int INTAKE_DEPLOYED_POSITION = 0;
-
-  private static final int INTAKE_ALLOWABLE_ERROR = 100; // ticks
-
-  private static final int INTAKE_RETRACTED_GEAR_RATIO = 88; // TODO: validate gear ratio
+  private static final int INTAKE_ALLOWABLE_ERROR = 3000; // ticks
 
   // Intake motor configuration
   private static final TalonFXConfiguration INTAKE_MOTOR_CONFIG = new TalonFXConfiguration();
@@ -49,11 +44,8 @@ public class Intake extends SubsystemBase {
     intakeRetractPID.allowableClosedloopError = INTAKE_ALLOWABLE_ERROR;
 
     INTAKE_RETRACT_MOTOR_CONFIG.slot1 = intakeRetractPID;
-
-    INTAKE_RETRACT_MOTOR_CONFIG.reverseSoftLimitThreshold = INTAKE_RETRACTED_POSITION;
-    INTAKE_RETRACT_MOTOR_CONFIG.forwardSoftLimitThreshold = INTAKE_DEPLOYED_POSITION;
-    INTAKE_RETRACT_MOTOR_CONFIG.reverseSoftLimitEnable = true;
-    INTAKE_RETRACT_MOTOR_CONFIG.forwardSoftLimitEnable = true;
+    INTAKE_RETRACT_MOTOR_CONFIG.reverseSoftLimitEnable = false;
+    INTAKE_RETRACT_MOTOR_CONFIG.forwardSoftLimitEnable = false;
 
     INTAKE_RETRACT_MOTOR_CONFIG.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_2Ms;
     INTAKE_RETRACT_MOTOR_CONFIG.velocityMeasurementWindow = 4;
@@ -92,14 +84,18 @@ public class Intake extends SubsystemBase {
 
   public void deploy() {
     // TODO: Change to closed loop
-    intakeRetractMotor.set(ControlMode.PercentOutput, -0.15);
+    intakeRetractMotor.set(ControlMode.PercentOutput, -0.25);
     //    intakeRetractMotor.set(ControlMode.Position, INTAKE_DEPLOYED_POSITION);
   }
 
   public void retract() {
     // TODO: Change to closed loop
-    intakeRetractMotor.set(ControlMode.PercentOutput, 0.15);
+    intakeRetractMotor.set(ControlMode.PercentOutput, 0.35);
     //    intakeRetractMotor.set(ControlMode.Position, INTAKE_RETRACTED_POSITION);
+  }
+
+  public double getVelocity() {
+    return intakeRetractMotor.getSelectedSensorVelocity();
   }
 
   /** Runs the intake at INTAKE_SPEED */
@@ -112,8 +108,21 @@ public class Intake extends SubsystemBase {
     setOpenLoop(OUTTAKE_SPEED);
   }
 
+  public void coast() {
+    intakeRetractMotor.setNeutralMode(NeutralMode.Coast);
+  }
+
+  public void brake() {
+    intakeRetractMotor.setNeutralMode(NeutralMode.Brake);
+  }
+
   /** Stops the intake */
   public void stop() {
     intakeMotor.set(ControlMode.PercentOutput, 0.0);
+  }
+
+  /** Stops the intake */
+  public void stopRetractMotor() {
+    intakeRetractMotor.set(ControlMode.PercentOutput, 0.0);
   }
 }

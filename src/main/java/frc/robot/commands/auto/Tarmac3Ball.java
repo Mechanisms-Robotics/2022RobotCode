@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.PreAimCommand;
+import frc.robot.commands.SetIntakeCommand;
+import frc.robot.commands.SetIntakeCommand.IntakeMode;
 import frc.robot.commands.auto.AutoCommands.ShootWithPreAim;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Climber;
@@ -22,11 +24,11 @@ public class Tarmac3Ball extends SequentialCommandGroup {
   private static final double MAX_VEL = 2.0; // m/s
   private static final double MAX_ACCEL = 4.0; // m/s^2
 
-  private static final double FIRST_SHOT_ANGLE = Math.toRadians(-105.0);
-  private static final double FIRST_SHOT_RANGE = 0.6; // meters
+  private static final double FIRST_SHOT_ANGLE = -1.83; // rads
+  private static final double FIRST_SHOT_RANGE = 0.25; // meters
 
-  private static final double SECOND_SHOT_ANGLE = Math.toRadians(-15.0);
-  private static final double SECOND_SHOT_RANGE = 0.6; // meters
+  private static final double SECOND_SHOT_ANGLE = -0.14;
+  private static final double SECOND_SHOT_RANGE = 0.19; // meters
 
   // TODO: find maxVel and maxAccel
   private static final PathPlannerTrajectory trajectory =
@@ -44,8 +46,9 @@ public class Tarmac3Ball extends SequentialCommandGroup {
     addCommands(
         new ParallelCommandGroup(
             new AutoCommands.ResetPose(trajectory, swerve),
+            new SetIntakeCommand(intake, IntakeMode.DEPLOY),
             new PreAimCommand(hood, turret, shooter, FIRST_SHOT_ANGLE, FIRST_SHOT_RANGE)),
-        new WaitCommand(1.0),
+        new WaitCommand(0.625),
         new ShootWithPreAim(feeder, accelerator, 2.0),
         new ParallelCommandGroup(
             new PreAimCommand(hood, turret, shooter, SECOND_SHOT_ANGLE, SECOND_SHOT_RANGE),

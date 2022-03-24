@@ -12,6 +12,8 @@ import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.FenderShotCommand;
 import frc.robot.commands.LowGoalCommand;
 import frc.robot.commands.OuttakeCommand;
+import frc.robot.commands.SetIntakeCommand;
+import frc.robot.commands.SetIntakeCommand.IntakeMode;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.auto.Tarmac2Ball;
 import frc.robot.commands.auto.Tarmac2BallHide;
@@ -58,7 +60,7 @@ public class RobotContainer {
   private final Button lowGoalButton = new Button(driverController::getXButton);
   private final Button shootButton = new Button(driverController::getRightTriggerButton);
   private final Button autoShootButton = new Button(driverController::getLeftBumperButton);
-  private final Button deployIntakeButton = new Button(driverController::getSquareButton);
+  private final Button retractIntake = new Button(driverController::getSquareButton);
 
   private final Button feederIntakeButton = new Button(secondaryController::getRightBumperButton);
   private final Button feederBackupButton = new Button(secondaryController::getRightTriggerButton);
@@ -90,7 +92,11 @@ public class RobotContainer {
 
     autoChooser.setDefaultOption(Autos.TARMAC_3_BALL.name(), Autos.TARMAC_3_BALL);
     autoChooser.addOption(Autos.TARMAC_2_BALL.name(), Autos.TARMAC_2_BALL);
+    autoChooser.addOption(Autos.TARMAC_2_BALL_HIDE.name(), Autos.TARMAC_2_BALL_HIDE);
     autoChooser.addOption(Autos.TARMAC_3_BALL.name(), Autos.TARMAC_3_BALL);
+    autoChooser.addOption(Autos.TARMAC_5_BALL.name(), Autos.TARMAC_5_BALL);
+    autoChooser.addOption(Autos.TARMAC_6_BALL.name(), Autos.TARMAC_6_BALL);
+
     SmartDashboard.putData(autoChooser);
   }
 
@@ -109,6 +115,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // When the intake button is pressed toggle the intake.
     intakeButton.toggleWhenPressed(new AutoIntakeCommand(intake, feeder, accelerator));
+    retractIntake.whenPressed(new SetIntakeCommand(intake, IntakeMode.RETRACT));
 
     // When the D-Pad is held up run the shooter up
     climberButtonUp.whenHeld(new StartEndCommand(climber::up, climber::stop));
@@ -138,8 +145,8 @@ public class RobotContainer {
     // When the feeder backup button is pressed backup the feeder, when it is released stop it
     feederBackupButton.whenHeld(new StartEndCommand(feeder::backup, feeder::stop));
 
-    // When the deploy intake button is pressed, deploy the intake
-    deployIntakeButton.whenPressed(new DeployIntakeCommand(climber));
+    // When the retract intake button is pressed, retract the intake
+    retractIntake.whenPressed(new DeployIntakeCommand(climber));
 
     backupShooterButton.whenHeld(new StartEndCommand(shooter::backup, shooter::stop));
 

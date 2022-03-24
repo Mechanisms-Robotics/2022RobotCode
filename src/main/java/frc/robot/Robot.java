@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    m_robotContainer.turret.enableSnapAround();
+    m_robotContainer.turret.disableSnapAround();
   }
 
   @Override
