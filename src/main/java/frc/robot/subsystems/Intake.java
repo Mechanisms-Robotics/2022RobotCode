@@ -26,9 +26,6 @@ public class Intake extends SubsystemBase {
 
   private static final int INTAKE_ALLOWABLE_ERROR = 3000; // ticks
 
-  // Logging
-  private DataLog log = DataLogManager.getLog();
-
   // Intake motor configuration
   private static final TalonFXConfiguration INTAKE_MOTOR_CONFIG = new TalonFXConfiguration();
   private static final TalonFXConfiguration INTAKE_RETRACT_MOTOR_CONFIG =
@@ -76,6 +73,7 @@ public class Intake extends SubsystemBase {
     // CAN bus utilization optimization
     intakeMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
     intakeMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+    intakeRetractMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
 
     intakeRetractMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
   }
