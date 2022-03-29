@@ -11,6 +11,10 @@ import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** This class contains all the code responsible for the behaviour of the intake class */
@@ -21,6 +25,9 @@ public class Intake extends SubsystemBase {
   private static final double OUTTAKE_SPEED = -0.25; // percent
 
   private static final int INTAKE_ALLOWABLE_ERROR = 3000; // ticks
+
+  // Logging
+  private DataLog log = DataLogManager.getLog();
 
   // Intake motor configuration
   private static final TalonFXConfiguration INTAKE_MOTOR_CONFIG = new TalonFXConfiguration();
@@ -78,20 +85,22 @@ public class Intake extends SubsystemBase {
    *
    * @param percentOutput The percentage to run the intake motor at
    */
-  private void setOpenLoop(double percentOutput) {
+  private void setWheelOpenLoop(double percentOutput) {
     intakeMotor.set(ControlMode.PercentOutput, percentOutput);
   }
 
+  private void setRetractOpenLoop(double percentOutput) {
+    intakeRetractMotor.set(ControlMode.PercentOutput, percentOutput);
+  }
+
   public void deploy() {
-    // TODO: Change to closed loop
-    intakeRetractMotor.set(ControlMode.PercentOutput, -0.25);
-    //    intakeRetractMotor.set(ControlMode.Position, INTAKE_DEPLOYED_POSITION);
+    final double retractSpeed = -0.25;
+    setRetractOpenLoop(retractSpeed);
   }
 
   public void retract() {
-    // TODO: Change to closed loop
-    intakeRetractMotor.set(ControlMode.PercentOutput, 0.35);
-    //    intakeRetractMotor.set(ControlMode.Position, INTAKE_RETRACTED_POSITION);
+    final double deploySpeed = 0.35;
+    setRetractOpenLoop(deploySpeed);
   }
 
   public double getVelocity() {
@@ -100,12 +109,12 @@ public class Intake extends SubsystemBase {
 
   /** Runs the intake at INTAKE_SPEED */
   public void intake() {
-    setOpenLoop(INTAKE_SPEED);
+    setWheelOpenLoop(INTAKE_SPEED);
   }
 
   /** Runs the intake at OUTTAKE_SPEED */
   public void outtake() {
-    setOpenLoop(OUTTAKE_SPEED);
+    setWheelOpenLoop(OUTTAKE_SPEED);
   }
 
   public void coast() {
@@ -118,11 +127,11 @@ public class Intake extends SubsystemBase {
 
   /** Stops the intake */
   public void stop() {
-    intakeMotor.set(ControlMode.PercentOutput, 0.0);
+    setWheelOpenLoop(0.0);
   }
 
   /** Stops the intake */
   public void stopRetractMotor() {
-    intakeRetractMotor.set(ControlMode.PercentOutput, 0.0);
+    setRetractOpenLoop(0.0);
   }
 }
