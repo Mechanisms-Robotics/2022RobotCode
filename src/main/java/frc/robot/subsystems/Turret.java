@@ -102,7 +102,7 @@ public class Turret extends SubsystemBase {
    *
    * @param degrees The angle between the current turret angle and the desired turret angle
    */
-  public void aim(double degrees, ChassisSpeeds velocity, double range) {
+  public void aim(double degrees) {
     this.desiredAngle =
         MathUtil.clamp(
             Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO)

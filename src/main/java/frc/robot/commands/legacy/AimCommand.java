@@ -123,7 +123,7 @@ public class AimCommand extends CommandBase {
       //      SmartDashboard.putNumber("Target Angle", this.targetAngle.getDegrees());
       if (target.hasTarget) {
         hood.aim(target.range);
-        turret.aim(target.targetAngle, swerve.getSpeeds(), target.range);
+        turret.aim(target.targetAngle);
 
         prevHasTarget = target.hasTarget;
       } else if (prevHasTarget) {

@@ -40,7 +40,9 @@ public class Feeder extends SubsystemBase {
   private final WPI_TalonFX feederMotor = new WPI_TalonFX(30);
 
   // Proximity sensor
-  private final DigitalInput proximitySensor = new DigitalInput(0);
+  private final DigitalInput entrySensor = new DigitalInput(0);
+  private final DigitalInput lowSensor = new DigitalInput(1);
+  private final DigitalInput highSensor = new DigitalInput(2);
 
   /** Constructs a Feeder */
   public Feeder() {
@@ -54,7 +56,9 @@ public class Feeder extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Proximity Sensor", !proximitySensor.get());
+    SmartDashboard.putBoolean("Entry Sensor", !entrySensor.get());
+    SmartDashboard.putBoolean("Low Sensor", !lowSensor.get());
+    SmartDashboard.putBoolean("High Sensor", !highSensor.get());
   }
 
   /**
@@ -86,12 +90,31 @@ public class Feeder extends SubsystemBase {
     setOpenLoop(BACKUP_SPEED);
   }
 
-  public void autoIntake() {
-    if (!proximitySensor.get()) {
-      intake();
-    } else {
-      stop();
-    }
+  /**
+   * Returns whether the entry sensor is triggered or not
+   *
+   * @return Whether the entry sensor is triggered or not
+   */
+  public boolean getEntrySensor() {
+    return !entrySensor.get();
+  }
+
+  /**
+   * Returns whether the low sensor is triggered or not
+   *
+   * @return Whether the low sensor is triggered or not
+   */
+  public boolean getLowSensor() {
+    return !lowSensor.get();
+  }
+
+  /**
+   * Returns whether the high sensor is triggered or not
+   *
+   * @return Whether the high sensor is triggered or not
+   */
+  public boolean getHighSensor() {
+    return !highSensor.get();
   }
 
   /** Stops the feeder */

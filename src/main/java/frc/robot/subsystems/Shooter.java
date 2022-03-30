@@ -38,6 +38,7 @@ public class Shooter extends SubsystemBase {
   // Default shooter speed
   private static final double DEFAULT_SHOOTER_VEL = 1400.0; // RPM
   private static final double LOW_GOAL_SHOT_VEL = 650.0; // RPM
+  private static final double EJECT_VEL = 650.0; // RPM
   private static final double BACKUP_SPEED = -0.25; // percent
 
   private double desiredSpeed = 0; // RPM
@@ -150,6 +151,15 @@ public class Shooter extends SubsystemBase {
   public void shootLowGoal() {
     desiredSpeed = LOW_GOAL_SHOT_VEL; // RPM
     shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(LOW_GOAL_SHOT_VEL, GEAR_RATIO));
+    shooterFollowerMotor.set(TalonFXControlMode.Follower, 50);
+  }
+
+  /**
+   * Runs the shooter at EJECT_VEL RPM
+   */
+  public void eject() {
+    desiredSpeed = EJECT_VEL; // RPM
+    shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(EJECT_VEL, GEAR_RATIO));
     shooterFollowerMotor.set(TalonFXControlMode.Follower, 50);
   }
 

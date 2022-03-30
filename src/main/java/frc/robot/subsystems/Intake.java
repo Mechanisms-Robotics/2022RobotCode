@@ -62,6 +62,9 @@ public class Intake extends SubsystemBase {
   private final WPI_TalonFX intakeMotor = new WPI_TalonFX(20);
   private final WPI_TalonFX intakeRetractMotor = new WPI_TalonFX(21);
 
+  // Intake state
+  private boolean deployed = false;
+
   /** Constructs an Intake */
   public Intake() {
     // Configure intake motor
@@ -103,8 +106,49 @@ public class Intake extends SubsystemBase {
     setRetractOpenLoop(deploySpeed);
   }
 
-  public double getVelocity() {
+  /**
+   * Gets the velocity of the intake retraction motor
+   *
+   * @return The velocity of the intake retraction motor
+   */
+  public double getRetractVelocity() {
     return intakeRetractMotor.getSelectedSensorVelocity();
+  }
+
+  /**
+   * Returns whether the intake is deployed or not
+   *
+   * @return Whether the intake is deployed or not
+   */
+  public boolean isDeployed() {
+    return this.deployed;
+  }
+
+  /**
+   * Returns whether the intnake is stowed or not
+   *
+   * @return Whether the intake is stowed or not
+   */
+  public boolean isStowed() {
+    return !this.deployed;
+  }
+
+  /**
+   * Sets whether the intake is deployed or not
+   *
+   * @param deployed Whether the intake is deployed or not
+   */
+  public void setDeployed(boolean deployed) {
+    this.deployed = deployed;
+  }
+
+  /**
+   * Sets whether the intake is stowed or not
+   *
+   * @param stowed Whether the intake is stowed or not
+   */
+  public void setStowed(boolean stowed) {
+    this.deployed = !stowed;
   }
 
   /** Runs the intake at INTAKE_SPEED */
@@ -130,8 +174,13 @@ public class Intake extends SubsystemBase {
     setWheelOpenLoop(0.0);
   }
 
-  /** Stops the intake */
-  public void stopRetractMotor() {
+  /** Stops the intake retraction motor */
+  public void stopRetraction() {
     setRetractOpenLoop(0.0);
+  }
+
+  /** Stops the intake retraction motor */
+  public void stopDeploying() {
+    stopRetraction();
   }
 }
