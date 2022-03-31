@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Units;
@@ -27,7 +26,6 @@ public class Turret extends SubsystemBase {
   public static final double TURRET_REVERSE_LIMIT = Math.toRadians(-270.0); // -270 degrees
   private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(0.5); // 0.5 degrees
   private static final double TURRET_AIM_ERROR = Math.toRadians(3.0); // 3 degrees
-  private static final double TURRET_AIM_MOVEMENT_SCALAR = 0.125;
 
   private static final Transform2d ROBOT_TO_TURRET =
       new Transform2d(
@@ -35,7 +33,6 @@ public class Turret extends SubsystemBase {
           new Pose2d(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(-90.0)));
   private static final Transform2d TURRET_TO_ROBOT = ROBOT_TO_TURRET.inverse();
 
-  private boolean snapAroundEnabled = true;
   private boolean zeroed = false; // Has the turret been zeroed
 
   private double desiredAngle = 0.0; // rads
@@ -103,6 +100,28 @@ public class Turret extends SubsystemBase {
    * @param degrees The angle between the current turret angle and the desired turret angle
    */
   public void aim(double degrees) {
+
+    // Forward and reverse limit converted to degrees
+    double forwardLimitDegrees = Math.toDegrees(TURRET_FORWARD_LIMIT);
+    double reverseLimitDegrees = Math.toDegrees(TURRET_REVERSE_LIMIT);
+
+    // If the desired angle is past one of the limits by more than half of the dead zone wrap it
+    if (degrees > forwardLimitDegrees
+        && (degrees - forwardLimitDegrees) > (360 + reverseLimitDegrees) / 2.0) {
+      // Wrap the angle around to the reverse limit
+      double wrappedAngle = -360 + degrees;
+
+      // Snap to the wrapped angle
+      snapTo(wrappedAngle);
+    } else if (degrees < reverseLimitDegrees
+        && (degrees - reverseLimitDegrees) > (360 + reverseLimitDegrees) / 2.0) {
+      // Wrap the angle around to the forward limit
+      double wrappedAngle = (degrees - reverseLimitDegrees);
+
+      // Snap to the wrapped angle
+      snapTo(wrappedAngle);
+    }
+
     this.desiredAngle =
         MathUtil.clamp(
             Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO)
@@ -130,31 +149,7 @@ public class Turret extends SubsystemBase {
       return;
     }
 
-    setPosition(desiredAngle);
-  }
-
-  /** Snaps to limit farthest from current angle */
-  public void snapAround() {
-    if (!snapAroundEnabled) {
-      return;
-    }
-
-    if (Math.abs(TURRET_FORWARD_LIMIT - getAngle())
-        >= Math.abs(TURRET_REVERSE_LIMIT - getAngle())) {
-      snapTo(TURRET_FORWARD_LIMIT);
-    } else {
-      snapTo(TURRET_REVERSE_LIMIT);
-    }
-  }
-
-  /** Enables snap around functionality */
-  public void enableSnapAround() {
-    this.snapAroundEnabled = true;
-  }
-
-  /** Disables snap around functionality */
-  public void disableSnapAround() {
-    this.snapAroundEnabled = false;
+    setPositionMM(desiredAngle);
   }
 
   /** Sets the turret to the zero position */
@@ -173,7 +168,23 @@ public class Turret extends SubsystemBase {
       return;
     }
 
+    // Set the selected PID to the position PID
+    turretMotor.selectProfileSlot(1, 0);
+
     // PID the turret motor to the desired position
+    turretMotor.set(ControlMode.Position, Units.radsToFalcon(rads, TURRET_GEAR_RATIO));
+  }
+
+  private void setPositionMM(double rads) {
+    // If the turret has not been zeroed return
+    if (!zeroed) {
+      return;
+    }
+
+    // Set the selected PID to Motion Magic
+    turretMotor.selectProfileSlot(1, 1);
+
+    // PID the turret to the desired position using motion magic
     turretMotor.set(ControlMode.MotionMagic, Units.radsToFalcon(rads, TURRET_GEAR_RATIO));
   }
 
@@ -191,28 +202,6 @@ public class Turret extends SubsystemBase {
     }
     SmartDashboard.putBoolean("Is Aimed", false);
     return false;
-  }
-
-  /**
-   * Adjusts an angle based on the velocity of the robot and a range to the target
-   *
-   * @param angle The angle to adjust
-   * @param velocity The velocity of the robot
-   * @param range The range to the target
-   * @return The adjusted angle
-   */
-  private double adjustAngleForVelocity(double angle, ChassisSpeeds velocity, double range) {
-    // Split up the velocity into translational and rotational velocities
-    Translation2d translationalVelocity =
-        new Translation2d(velocity.vxMetersPerSecond, velocity.vyMetersPerSecond);
-    double rotationalVelocity = velocity.omegaRadiansPerSecond;
-
-    // Rotate the translational velocity vector so the x axis points at the target
-    translationalVelocity.rotateBy(TURRET_TO_ROBOT.getRotation().rotateBy(new Rotation2d(angle)));
-
-    // Calculate the angle offset, add it to the angle and return that
-    double offset = (TURRET_AIM_MOVEMENT_SCALAR * translationalVelocity.getY()) / range;
-    return angle + offset;
   }
 
   public double getAngle() {

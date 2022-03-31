@@ -62,7 +62,6 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_robotContainer.turret.disableSnapAround();
     m_robotContainer.turret.zero();
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -82,13 +81,10 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-
-    m_robotContainer.turret.disableSnapAround();
   }
 
   @Override
   public void testInit() {
-    m_robotContainer.turret.disableSnapAround();
     m_robotContainer.turret.zero();
     m_robotContainer.hood.aim(0.0);
     // Cancels all running commands at the start of test mode.
