@@ -4,8 +4,8 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.LowGoalCommand;
-import frc.robot.commands.PreAimCommand;
+import frc.robot.commands.auto.AutoCommands.PreAimCommand;
+import frc.robot.commands.intake.IntakeDeployCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Feeder;
@@ -46,6 +46,7 @@ public class Tarmac2BallHide extends SequentialCommandGroup {
       Climber climber) {
     addCommands(
         new AutoCommands.ResetPose(trajectory1, swerve),
+        new IntakeDeployCommand(intake),
         new ParallelCommandGroup(
             new AutoCommands.IntakeWhileDriving(trajectory1, swerve, intake, feeder, accelerator),
             new PreAimCommand(hood, turret, shooter, FIRST_SHOT_ANGLE, FIRST_SHOT_RANGE)),
@@ -53,7 +54,7 @@ public class Tarmac2BallHide extends SequentialCommandGroup {
         new ParallelCommandGroup(
             new AutoCommands.IntakeWhileDriving(trajectory2, swerve, intake, feeder, accelerator),
             new PreAimCommand(hood, turret, shooter, SECOND_SHOT_ANGLE, SECOND_SHOT_RANGE)),
-        new LowGoalCommand(shooter, hood, turret, accelerator, feeder).withTimeout(3.0),
+        //        new LowGoalCommand(shooter, hood, turret, accelerator, feeder).withTimeout(3.0),
         new AutoCommands.FollowPathCommand(trajectory3, swerve));
   }
 }

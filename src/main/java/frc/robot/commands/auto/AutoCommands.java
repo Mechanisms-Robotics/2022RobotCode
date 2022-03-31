@@ -1,16 +1,22 @@
 package frc.robot.commands.auto;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.AutoIntakeCommand;
+import frc.robot.commands.feeder.FeederIntakeCommand;
+import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Turret;
 
 public final class AutoCommands {
 
@@ -45,7 +51,38 @@ public final class AutoCommands {
         Accelerator accelerator) {
       super(
           new FollowPathCommand(trajectory, swerve),
-          new AutoIntakeCommand(intake, feeder, accelerator));
+          new ParallelCommandGroup(new IntakeCommand(intake), new FeederIntakeCommand(feeder)));
+    }
+  }
+
+  public static class PreAimCommand extends CommandBase {
+
+    protected final double preAimAngle;
+    protected final double preAimRange;
+    protected final Hood hood;
+    protected final Turret turret;
+    protected final Shooter shooter;
+
+    public PreAimCommand(
+        Hood hood, Turret turret, Shooter shooter, double preAimAngle, double preAimRange) {
+      this.preAimAngle = preAimAngle;
+      this.preAimRange = preAimRange;
+      this.hood = hood;
+      this.turret = turret;
+      this.shooter = shooter;
+      addRequirements(turret, hood, shooter);
+    }
+
+    @Override
+    public void initialize() {
+      hood.aim(preAimRange);
+      turret.snapTo(preAimAngle);
+      shooter.shoot(preAimRange);
+    }
+
+    @Override
+    public boolean isFinished() {
+      return turret.isAimed() && shooter.atSpeed();
     }
   }
 

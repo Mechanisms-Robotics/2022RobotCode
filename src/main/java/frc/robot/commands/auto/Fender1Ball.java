@@ -4,7 +4,6 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.AutoFenderShotCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Hood;
@@ -30,7 +29,7 @@ public class Fender1Ball extends SequentialCommandGroup {
       Accelerator accelerator,
       Feeder feeder) {
     addCommands(
-        new AutoFenderShotCommand(shooter, hood, turret, accelerator, feeder),
+        //        new AutoFenderShotCommand(shooter, hood, turret, accelerator, feeder),
         new InstantCommand(shooter::stop, shooter),
         new AutoCommands.ResetPose(trajectory, swerve),
         new AutoCommands.FollowPathCommand(trajectory, swerve));

@@ -4,9 +4,8 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.PreAimCommand;
-import frc.robot.commands.SetIntakeCommand;
-import frc.robot.commands.SetIntakeCommand.IntakeMode;
+import frc.robot.commands.auto.AutoCommands.PreAimCommand;
+import frc.robot.commands.intake.IntakeDeployCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Feeder;
@@ -40,7 +39,7 @@ public class Tarmac2Ball extends SequentialCommandGroup {
       Climber climber) {
     addCommands(
         new AutoCommands.ResetPose(trajectory, swerve),
-        new SetIntakeCommand(intake, IntakeMode.DEPLOY),
+        new IntakeDeployCommand(intake),
         new ParallelCommandGroup(
             new AutoCommands.IntakeWhileDriving(trajectory, swerve, intake, feeder, accelerator),
             new PreAimCommand(hood, turret, shooter, FIRST_SHOT_ANGLE, FIRST_SHOT_RANGE)),
