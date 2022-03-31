@@ -7,7 +7,7 @@ import frc.robot.commands.turret.TurretAimCommand;
 import org.junit.Test;
 
 public class TurretAimCommandTest {
-  public static final double DELTA = 1e-2; // acceptable deviation range
+  public static final double DELTA = 1e-1; // acceptable deviation range
 
   @Test
   public void testAngle1() {
@@ -76,6 +76,6 @@ public class TurretAimCommandTest {
     Rotation2d currentTurretAngle = new Rotation2d();
 
     double angle = TurretAimCommand.calculateGoalAngle(robotPose, currentTurretAngle);
-    assertEquals(63.564577062185286, angle, DELTA);
+    assertEquals(-63.564577062185286, angle, DELTA);
   }
 }

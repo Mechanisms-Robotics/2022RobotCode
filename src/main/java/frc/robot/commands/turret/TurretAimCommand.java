@@ -68,15 +68,25 @@ public class TurretAimCommand extends CommandBase {
    *
    * @return Turret angle to goal
    */
-  public static double calculateGoalAngle(final Pose2d robotPose, final Rotation2d currentTurretAngle) {
+  public static double calculateGoalAngle(
+      final Pose2d robotPose, final Rotation2d currentTurretAngle) {
+    // Vector from the robot to the goal
     final Translation2d robotToGoal =
-      GOAL_POSITION.transformBy(
-        new Transform2d(robotPose.getTranslation().unaryMinus(),
-          new Rotation2d())).getTranslation();
+        GOAL_POSITION
+            .transformBy(new Transform2d(robotPose.getTranslation().unaryMinus(), new Rotation2d()))
+            .getTranslation();
 
-    final Rotation2d angleToGoal = new Rotation2d(robotToGoal.getX(), robotToGoal.getY());
-    final Rotation2d feildTurretAngle = currentTurretAngle.rotateBy(TURRET_TO_ROBOT).rotateBy(robotPose.getRotation());
-    final Rotation2d turretToGoalAngle = angleToGoal.minus(feildTurretAngle);
-    return turretToGoalAngle.getDegrees();
+    // Angle of the goal relative to the field
+    final Rotation2d fieldAngle = new Rotation2d(robotToGoal.getX(), robotToGoal.getY());
+
+    // Angle of the goal relative to the turret zero
+    final Rotation2d turretAngle =
+        currentTurretAngle.rotateBy(TURRET_TO_ROBOT).rotateBy(robotPose.getRotation());
+
+    // Angle of the goal as an offset from the current turret angle
+    Rotation2d angleOffset = fieldAngle.minus(turretAngle);
+
+    // Return the angle offset
+    return angleOffset.getDegrees();
   }
 }
