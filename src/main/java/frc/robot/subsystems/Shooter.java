@@ -154,9 +154,7 @@ public class Shooter extends SubsystemBase {
     shooterFollowerMotor.set(TalonFXControlMode.Follower, 50);
   }
 
-  /**
-   * Runs the shooter at EJECT_VEL RPM
-   */
+  /** Runs the shooter at EJECT_VEL RPM */
   public void eject() {
     desiredSpeed = EJECT_VEL; // RPM
     shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(EJECT_VEL, GEAR_RATIO));
