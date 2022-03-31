@@ -30,7 +30,10 @@ public class ShooterAimCommand extends CommandBase {
    * @param shooter An instance of Shooter
    */
   public ShooterAimCommand(
-      Shooter shooter, Supplier<Boolean> hasTargetSupplier, Supplier<Double> targetRangeSupplier, Supplier<Pose2d> robotPoseSupplier) {
+      Shooter shooter,
+      Supplier<Boolean> hasTargetSupplier,
+      Supplier<Double> targetRangeSupplier,
+      Supplier<Pose2d> robotPoseSupplier) {
     // Set shooter
     this.shooter = shooter;
 

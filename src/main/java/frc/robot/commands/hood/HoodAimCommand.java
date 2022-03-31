@@ -30,7 +30,10 @@ public class HoodAimCommand extends CommandBase {
    * @param hood Instance of Hood
    */
   public HoodAimCommand(
-      Hood hood, Supplier<Boolean> hasTargetSupplier, Supplier<Double> targetRangeSupplier, Supplier<Pose2d> robotPoseSupplier) {
+      Hood hood,
+      Supplier<Boolean> hasTargetSupplier,
+      Supplier<Double> targetRangeSupplier,
+      Supplier<Pose2d> robotPoseSupplier) {
     // Set hood
     this.hood = hood;
 
