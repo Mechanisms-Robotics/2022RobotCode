@@ -66,7 +66,7 @@ public class TurretAimCommandTest {
     Rotation2d currentTurretAngle = new Rotation2d();
 
     double angle = TurretAimCommand.calculateGoalAngle(robotPose, currentTurretAngle);
-    assertEquals(122.324334152, angle, DELTA);
+    assertEquals(-122.34, angle, DELTA);
   }
 
   @Test
