@@ -24,7 +24,7 @@ public class TurretAimCommand extends CommandBase {
   // Transforms
   private static final Pose2d GOAL_POSITION =
       new Pose2d(new Translation2d(8.23, 4.12), new Rotation2d());
-  private static final Rotation2d ROBOT_TO_TURRET = Rotation2d.fromDegrees(-90.0);
+  private static final Rotation2d TURRET_TO_ROBOT = Rotation2d.fromDegrees(-90.0);
 
   /**
    * Constructs a TurretAimCommand
@@ -68,60 +68,15 @@ public class TurretAimCommand extends CommandBase {
    *
    * @return Turret angle to goal
    */
-  public static double calculateGoalAngle(Pose2d robotPose, Rotation2d currentTurretAngle) {
-    // Unit vector and vector to goal
-    Translation2d unitVec = new Translation2d(1.0, 0.0);
-    Translation2d goalVec =
-        GOAL_POSITION
-            .transformBy(new Transform2d(robotPose.getTranslation().unaryMinus(), new Rotation2d()))
-            .getTranslation();
+  public static double calculateGoalAngle(final Pose2d robotPose, final Rotation2d currentTurretAngle) {
+    final Translation2d robotToGoal =
+      GOAL_POSITION.transformBy(
+        new Transform2d(robotPose.getTranslation().unaryMinus(),
+          new Rotation2d())).getTranslation();
 
-    // Calculate the angle between them
-    Rotation2d fieldAngle =
-        new Rotation2d(
-            Math.acos(
-                ((unitVec.getX() * goalVec.getX()) + (unitVec.getY() * goalVec.getY()))
-                    / (unitVec.getNorm() * goalVec.getNorm())));
-
-    // Rotate that so the angle is relative to the robot
-    Rotation2d robotAngle = robotPose.getRotation().rotateBy(fieldAngle);
-
-    // Rotate that so the angle is relative to the turret
-    Rotation2d turretAngle = robotAngle.rotateBy(ROBOT_TO_TURRET);
-
-    // Rotate that so the angle is an offset from the current turret angle
-    Rotation2d angleOffset = turretAngle.rotateBy(currentTurretAngle);
-
-    // Wrap the angle depending on which quadrant we are in
-    angleOffset =
-        wrapAngle(
-            angleOffset,
-            robotPose.getY() > GOAL_POSITION.getY(),
-            robotPose.getX() > GOAL_POSITION.getX());
-
-    // Return the angle offset
-    return angleOffset.getDegrees();
-  }
-
-  /**
-   * Wraps angle depending on which quadrant it is in
-   *
-   * @param angle The angle to wrap
-   * @param above Whether we are above the origin
-   * @param right Whether we are to the right of the origin
-   * @return The wrapped angle
-   */
-  private static Rotation2d wrapAngle(Rotation2d angle, boolean above, boolean right) {
-    if (above && !right) {
-      // If we are in the top left quadrant invert the angle
-      return angle.unaryMinus();
-    }
-    if (right && !above) {
-      // If we are in the bottom right subtract the angle from 180
-      return Rotation2d.fromDegrees(180.0).minus(angle);
-    }
-
-    // If we are in the bottom left or top right quadrant just return the angle
-    return angle;
+    final Rotation2d angleToGoal = new Rotation2d(robotToGoal.getX(), robotToGoal.getY());
+    final Rotation2d feildTurretAngle = currentTurretAngle.rotateBy(TURRET_TO_ROBOT).rotateBy(robotPose.getRotation());
+    final Rotation2d turretToGoalAngle = angleToGoal.minus(feildTurretAngle);
+    return turretToGoalAngle.getDegrees();
   }
 }
