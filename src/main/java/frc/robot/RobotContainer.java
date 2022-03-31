@@ -139,7 +139,7 @@ public class RobotContainer {
     shootButton.whileHeld(
         new ParallelCommandGroup(
             new FeederShootCommand(feeder),
-            new AcceleratorShootCommand(accelerator),s
+            new AcceleratorShootCommand(accelerator),
             new ShooterShootCommand(
                 shooter,
                 () -> limelight.getCurrentTarget().hasTarget,
