@@ -69,9 +69,9 @@ public class Shooter extends SubsystemBase {
     // Configure shooter range interpolating tree map (meters, RPM)
     RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1350.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(0.3), new InterpolatingDouble(1350.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.48), new InterpolatingDouble(1400.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.48), new InterpolatingDouble(1350.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(0.6), new InterpolatingDouble(1450.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.8), new InterpolatingDouble(1500.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.8), new InterpolatingDouble(1450.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(0.95), new InterpolatingDouble(1550.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(1.25), new InterpolatingDouble(1750.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(1.5), new InterpolatingDouble(2000.0));

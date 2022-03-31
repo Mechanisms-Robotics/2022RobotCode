@@ -115,6 +115,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // When the intake button is pressed toggle the intake.
     intakeButton.toggleWhenPressed(new AutoIntakeCommand(intake, feeder, accelerator));
+
+    // When the retract intake button is pressed retract the int
     retractIntake.whenPressed(new SetIntakeCommand(intake, IntakeMode.RETRACT));
 
     // When the D-Pad is held up run the shooter up
@@ -144,9 +146,6 @@ public class RobotContainer {
 
     // When the feeder backup button is pressed backup the feeder, when it is released stop it
     feederBackupButton.whenHeld(new StartEndCommand(feeder::backup, feeder::stop));
-
-    // When the retract intake button is pressed, retract the intake
-    retractIntake.whenPressed(new DeployIntakeCommand(climber));
 
     backupShooterButton.whenHeld(new StartEndCommand(shooter::backup, shooter::stop));
 
