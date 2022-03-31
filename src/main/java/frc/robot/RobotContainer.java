@@ -140,19 +140,21 @@ public class RobotContainer {
 
     // When the D-Pad is held up run the shooter up
     climberButtonUp.whenHeld(new StartEndCommand(climber::up, climber::stop));
+    // climberButtonUp.whenPressed(new ClimberDeployCommand(climber));
 
     // When the D-Pad is held down run the shooter down
     climberButtonDown.whenHeld(new StartEndCommand(climber::down, climber::stop));
+    // climberButtonDown.whenPressed(new ClimberClimbCommand(climber));
 
     // While the shoot button is held shoot
     shootButton.whileHeld(
         new ParallelCommandGroup(
-            new FeederShootCommand(feeder),
-            new AcceleratorShootCommand(accelerator),
             new ShooterShootCommand(
                 shooter,
                 () -> limelight.getCurrentTarget().hasTarget,
-                () -> limelight.getCurrentTarget().range)));
+                () -> limelight.getCurrentTarget().range),
+            new AcceleratorShootCommand(accelerator),
+            new FeederShootCommand(feeder, shooter::atSpeed)));
 
     // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
     gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
