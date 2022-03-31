@@ -4,13 +4,15 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -63,7 +65,7 @@ public class Swerve extends SubsystemBase {
       new SwerveDriveKinematics(
           flModuleLocation, frModuleLocation, blModuleLocation, brModuleLocation);
 
-  private final SwerveDriveOdometry poseEstimator;
+  public final SwerveDrivePoseEstimator poseEstimator;
 
   private final ShuffleboardTab tab = Shuffleboard.getTab("Swerve");
   private final ShuffleboardLayout poseLayout =
@@ -134,7 +136,15 @@ public class Swerve extends SubsystemBase {
 
   /** Constructs the Swerve subsystem. */
   public Swerve() {
-    poseEstimator = new SwerveDriveOdometry(kinematics, getHeading(), new Pose2d());
+    // TODO: Tune standard deviations
+    poseEstimator =
+        new SwerveDrivePoseEstimator(
+            getHeading(),
+            new Pose2d(),
+            kinematics,
+            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5.0)),
+            VecBuilder.fill(Units.degreesToRadians(0.01)),
+            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30.0)));
 
     gyro.setFusedHeading(0.0);
     this.register();
@@ -229,7 +239,7 @@ public class Swerve extends SubsystemBase {
   /** Zeros the gyro heading. */
   public void zeroHeading() {
     final var zeroRotation = new Rotation2d();
-    final var currentTranslation = poseEstimator.getPoseMeters().getTranslation();
+    final var currentTranslation = poseEstimator.getEstimatedPosition().getTranslation();
     setHeading(zeroRotation);
     poseEstimator.resetPosition(new Pose2d(currentTranslation, zeroRotation), zeroRotation);
   }
@@ -285,7 +295,7 @@ public class Swerve extends SubsystemBase {
    * @return A Pose2d that represents the position of the robot
    */
   public Pose2d getPose() {
-    return poseEstimator.getPoseMeters();
+    return poseEstimator.getEstimatedPosition();
   }
 
   public void setPose(Pose2d pose, Rotation2d heading) {

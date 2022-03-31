@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.PoseEstimateCommand;
 import frc.robot.commands.accelerator.AcceleratorShootCommand;
 import frc.robot.commands.auto.Tarmac2Ball;
 import frc.robot.commands.auto.Tarmac2BallHide;
@@ -116,6 +117,14 @@ public class RobotContainer {
             turret,
             () -> limelight.getCurrentTarget().hasTarget,
             () -> limelight.getCurrentTarget().targetAngle));
+
+    // Set the default limelight command to a PoseEstimateCommand
+    limelight.setDefaultCommand(
+        new PoseEstimateCommand(
+            limelight,
+            swerve.poseEstimator,
+            turret::getAngle,
+            () -> swerve.getHeading().getDegrees()));
   }
 
   /** Configures all button bindings */
