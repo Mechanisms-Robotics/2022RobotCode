@@ -11,8 +11,8 @@ public class TurretEjectCommand extends CommandBase {
   private final Turret turret;
 
   // Suppliers for hasTarget and targetAngle
-  private Supplier<Boolean> hasTargetSupplier;
-  private Supplier<Double> targetAngleSupplier;
+  private final Supplier<Boolean> hasTargetSupplier;
+  private final Supplier<Double> targetAngleSupplier;
 
   // How much to aim away from the target
   private static final double EJECT_OFFSET = 45.0; // degrees
@@ -40,8 +40,15 @@ public class TurretEjectCommand extends CommandBase {
   public void execute() {
     // Check if we have a target
     if (hasTargetSupplier.get()) {
-      // If we have a vision target aim the turret away from it by EJECT_OFFSET
-      turret.aim(targetAngleSupplier.get() + EJECT_OFFSET);
+      // If we have a target calculate which way we should aim away
+      double offset =
+          Math.abs(Turret.TURRET_FORWARD_LIMIT - turret.getAngle())
+                  < Math.abs(Turret.TURRET_REVERSE_LIMIT - turret.getAngle())
+              ? -EJECT_OFFSET
+              : EJECT_OFFSET;
+
+      // Aim the turret away from it by offset
+      turret.aim(targetAngleSupplier.get() + offset);
     }
   }
 }
