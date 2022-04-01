@@ -25,8 +25,10 @@ import frc.robot.commands.intake.IntakeDeployCommand;
 import frc.robot.commands.intake.IntakeStowCommand;
 import frc.robot.commands.shooter.ShooterAimCommand;
 import frc.robot.commands.shooter.ShooterBackupCommand;
+import frc.robot.commands.shooter.ShooterEjectCommand;
 import frc.robot.commands.shooter.ShooterShootCommand;
 import frc.robot.commands.turret.TurretAimCommand;
+import frc.robot.commands.turret.TurretEjectCommand;
 import frc.robot.subsystems.Accelerator;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Feeder;
@@ -63,6 +65,7 @@ public class RobotContainer {
   private final Button shootButton = new Button(driverController::getRightTriggerButton);
   private final Button retractIntake = new Button(driverController::getSquareButton);
   private final Button backupButton = new Button(driverController::getTriangleButton);
+  private final Button ejectButton = new Button(driverController::getCircleButton);
 
   private final Button climberButtonUp =
       new Button(
@@ -160,6 +163,17 @@ public class RobotContainer {
             new ShooterBackupCommand(shooter),
             new AcceleratorBackupCommand(accelerator),
             new FeederBackupCommand(feeder)));
+
+    // While the eject button is held run eject on the turret and shooter
+    ejectButton.whileHeld(
+        new ParallelCommandGroup(
+            new TurretEjectCommand(
+                turret,
+                () -> limelight.getCurrentTarget().hasTarget,
+                () -> limelight.getCurrentTarget().targetAngle),
+            new ShooterEjectCommand(shooter),
+            new AcceleratorShootCommand(accelerator),
+            new FeederShootCommand(feeder, shooter::atSpeed)));
 
     // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
     gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
