@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.accelerator.AcceleratorBackupCommand;
 import frc.robot.commands.accelerator.AcceleratorShootCommand;
 import frc.robot.commands.auto.Tarmac2Ball;
 import frc.robot.commands.auto.Tarmac2BallHide;
@@ -15,6 +16,7 @@ import frc.robot.commands.auto.Tarmac3Ball;
 import frc.robot.commands.auto.Tarmac5Ball;
 import frc.robot.commands.auto.Tarmac6Ball;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
+import frc.robot.commands.feeder.FeederBackupCommand;
 import frc.robot.commands.feeder.FeederIntakeCommand;
 import frc.robot.commands.feeder.FeederShootCommand;
 import frc.robot.commands.hood.HoodAimCommand;
@@ -22,6 +24,8 @@ import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.IntakeDeployCommand;
 import frc.robot.commands.intake.IntakeStowCommand;
 import frc.robot.commands.limelight.PoseEstimateCommand;
+import frc.robot.commands.shooter.ShooterAimCommand;
+import frc.robot.commands.shooter.ShooterBackupCommand;
 import frc.robot.commands.shooter.ShooterShootCommand;
 import frc.robot.commands.turret.TurretAimCommand;
 import frc.robot.subsystems.Accelerator;
@@ -59,11 +63,18 @@ public class RobotContainer {
   private final Button intakeButton = new Button(driverController::getLeftTriggerButton);
   private final Button shootButton = new Button(driverController::getRightTriggerButton);
   private final Button retractIntake = new Button(driverController::getSquareButton);
+  private final Button backupButton = new Button(driverController::getTriangleButton);
 
   private final Button climberButtonUp =
-      new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Up);
+      new Button(
+          () ->
+              (driverController.getPOV() == ControllerWrapper.Direction.Up)
+                  || (secondaryController.getPOV() == ControllerWrapper.Direction.Up));
   private final Button climberButtonDown =
-      new Button(() -> secondaryController.getPOV() == ControllerWrapper.Direction.Down);
+      new Button(
+          () ->
+              (driverController.getPOV() == ControllerWrapper.Direction.Down)
+                  || (secondaryController.getPOV() == ControllerWrapper.Direction.Down));
 
   private final Button gyroResetButton = new Button(driverController::getShareButton);
 
@@ -100,9 +111,15 @@ public class RobotContainer {
     // Set the swerve default command to a DriveTeleopCommand
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, inputRotation, true, swerve));
 
+    // Set the feeder default command to a FeederIntakeCommand
+    feeder.setDefaultCommand(new FeederIntakeCommand(feeder));
+
     // Set the shooter default command to ShooterAimCommand
-    // shooter.setDefaultCommand(new ShooterAimCommand(shooter, () ->
-    // limelight.getCurrentTarget().hasTarget, () -> limelight.getCurrentTarget().range));
+    shooter.setDefaultCommand(
+        new ShooterAimCommand(
+            shooter,
+            () -> limelight.getCurrentTarget().hasTarget,
+            () -> limelight.getCurrentTarget().range));
 
     // Set the hood default command to a HoodAimCommand
     hood.setDefaultCommand(
@@ -133,20 +150,10 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // When the intake button is start intaking
     intakeButton.toggleWhenPressed(
-        new SequentialCommandGroup(
-            new IntakeDeployCommand(intake),
-            new ParallelCommandGroup(new IntakeCommand(intake), new FeederIntakeCommand(feeder))));
+        new SequentialCommandGroup(new IntakeDeployCommand(intake), new IntakeCommand(intake)));
 
     // When the retract button is pressed stow the intake
     retractIntake.whenPressed(new IntakeStowCommand(intake));
-
-    // When the D-Pad is held up run the shooter up
-    climberButtonUp.whenHeld(new StartEndCommand(climber::up, climber::stop));
-    // climberButtonUp.whenPressed(new ClimberDeployCommand(climber));
-
-    // When the D-Pad is held down run the shooter down
-    climberButtonDown.whenHeld(new StartEndCommand(climber::down, climber::stop));
-    // climberButtonDown.whenPressed(new ClimberClimbCommand(climber));
 
     // While the shoot button is held shoot
     shootButton.whileHeld(
@@ -159,8 +166,23 @@ public class RobotContainer {
             new AcceleratorShootCommand(accelerator),
             new FeederShootCommand(feeder, shooter::atSpeed)));
 
+    // While the backup button is held backup the shooter, accelerator, and feeder
+    backupButton.whileHeld(
+        new ParallelCommandGroup(
+            new ShooterBackupCommand(shooter),
+            new AcceleratorBackupCommand(accelerator),
+            new FeederBackupCommand(feeder)));
+
     // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
     gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
+
+    // When the D-Pad is held up run the shooter up
+    climberButtonUp.whenHeld(new StartEndCommand(climber::up, climber::stop));
+    // climberButtonUp.whenPressed(new ClimberDeployCommand(climber));
+
+    // When the D-Pad is held down run the shooter down
+    climberButtonDown.whenHeld(new StartEndCommand(climber::down, climber::stop));
+    // climberButtonDown.whenPressed(new ClimberClimbCommand(climber));
   }
 
   public enum Autos {
