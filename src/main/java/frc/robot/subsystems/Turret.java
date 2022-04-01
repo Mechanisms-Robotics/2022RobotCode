@@ -23,8 +23,8 @@ public class Turret extends SubsystemBase {
   private static final TalonFXConfiguration TURRET_MOTOR_CONFIG = new TalonFXConfiguration();
 
   private static final double TURRET_GEAR_RATIO = 50.0; // 50:1
-  public static final double TURRET_FORWARD_LIMIT = Math.toRadians(0.0); // 0 degrees
-  public static final double TURRET_REVERSE_LIMIT = Math.toRadians(-270.0); // -270 degrees
+  public static final double TURRET_FORWARD_LIMIT = 0.75; // 0.75 radians
+  public static final double TURRET_REVERSE_LIMIT = -5.5; // -5.5 radians
   private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(0.5); // 0.5 degrees
   private static final double TURRET_AIM_ERROR = Math.toRadians(3.0); // 3 degrees
   private static final double TURRET_AIM_MOVEMENT_SCALAR = 0.125;
@@ -95,6 +95,11 @@ public class Turret extends SubsystemBase {
     turretMotor.selectProfileSlot(1, 0);
 
     turretMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
+  }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Turret Angle", getAngle());
   }
 
   /**
