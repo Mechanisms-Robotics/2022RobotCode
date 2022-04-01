@@ -33,7 +33,7 @@ public class FeederIntakeCommand extends CommandBase {
       ballDetected = true;
     }
 
-    if (ballDetected && !feeder.getLowSensor()) {
+    if (ballDetected && !feeder.getLowSensor() && !feeder.getHighSensor()) {
       // If we've detected a ball and there isn't one in front of the low sensor
 
       // Run the feeder
