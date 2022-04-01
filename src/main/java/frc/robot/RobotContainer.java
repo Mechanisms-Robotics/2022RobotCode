@@ -21,6 +21,7 @@ import frc.robot.commands.hood.HoodAimCommand;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.IntakeDeployCommand;
 import frc.robot.commands.intake.IntakeStowCommand;
+import frc.robot.commands.shooter.ShooterAimCommand;
 import frc.robot.commands.shooter.ShooterShootCommand;
 import frc.robot.commands.turret.TurretAimCommand;
 import frc.robot.subsystems.Accelerator;
@@ -99,9 +100,12 @@ public class RobotContainer {
     // Set the swerve default command to a DriveTeleopCommand
     swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, inputRotation, true, swerve));
 
+    // Set the feeder default command to a FeederIntakeCommand
+    feeder.setDefaultCommand(new FeederIntakeCommand(feeder));
+
     // Set the shooter default command to ShooterAimCommand
-    // shooter.setDefaultCommand(new ShooterAimCommand(shooter, () ->
-    // limelight.getCurrentTarget().hasTarget, () -> limelight.getCurrentTarget().range));
+    shooter.setDefaultCommand(new ShooterAimCommand(shooter, () ->
+        limelight.getCurrentTarget().hasTarget, () -> limelight.getCurrentTarget().range));
 
     // Set the hood default command to a HoodAimCommand
     hood.setDefaultCommand(
@@ -124,7 +128,9 @@ public class RobotContainer {
     intakeButton.toggleWhenPressed(
         new SequentialCommandGroup(
             new IntakeDeployCommand(intake),
-            new ParallelCommandGroup(new IntakeCommand(intake), new FeederIntakeCommand(feeder))));
+            new IntakeCommand(intake)
+        )
+    );
 
     // When the retract button is pressed stow the intake
     retractIntake.whenPressed(new IntakeStowCommand(intake));
@@ -138,12 +144,12 @@ public class RobotContainer {
     // While the shoot button is held shoot
     shootButton.whileHeld(
         new ParallelCommandGroup(
-            new FeederShootCommand(feeder),
-            new AcceleratorShootCommand(accelerator),
             new ShooterShootCommand(
                 shooter,
                 () -> limelight.getCurrentTarget().hasTarget,
-                () -> limelight.getCurrentTarget().range)));
+                () -> limelight.getCurrentTarget().range),
+            new AcceleratorShootCommand(accelerator),
+            new FeederShootCommand(feeder, shooter::atSpeed)));
 
     // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
     gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
