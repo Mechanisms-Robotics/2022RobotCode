@@ -22,10 +22,11 @@ public class Turret extends SubsystemBase {
   private static final TalonFXConfiguration TURRET_MOTOR_CONFIG = new TalonFXConfiguration();
 
   private static final double TURRET_GEAR_RATIO = 50.0; // 50:1
-  public static final double TURRET_FORWARD_LIMIT = 0.75; // 0.75 radians
-  public static final double TURRET_REVERSE_LIMIT = -5.5; // -5.5 radians
+  public static final double TURRET_FORWARD_LIMIT = Math.toRadians(45.0); // 45 degrees
+  public static final double TURRET_REVERSE_LIMIT = Math.toRadians(-315); // -315 degrees
   private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(0.5); // 0.5 degrees
   private static final double TURRET_AIM_ERROR = Math.toRadians(3.0); // 3 degrees
+  private static final double SNAP_AROUND_ERROR = Math.toRadians(3.0); // 3 degrees
 
   private static final Transform2d ROBOT_TO_TURRET =
       new Transform2d(
@@ -94,9 +95,13 @@ public class Turret extends SubsystemBase {
     turretMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
   }
 
+  /**
+   * Outputs data to SmartDashboard
+   */
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Turret Angle", getAngle());
+    SmartDashboard.putNumber("Desired Angle", this.desiredAngle);
   }
 
   /**
@@ -110,21 +115,11 @@ public class Turret extends SubsystemBase {
     double forwardLimitDegrees = Math.toDegrees(TURRET_FORWARD_LIMIT);
     double reverseLimitDegrees = Math.toDegrees(TURRET_REVERSE_LIMIT);
 
-    // If the desired angle is past one of the limits by more than half of the dead zone wrap it
-    if (degrees > forwardLimitDegrees
-        && (degrees - forwardLimitDegrees) > (360 + reverseLimitDegrees) / 2.0) {
-      // Wrap the angle around to the reverse limit
-      double wrappedAngle = -360 + degrees;
-
-      // Snap to the wrapped angle
-      snapTo(wrappedAngle);
-    } else if (degrees < reverseLimitDegrees
-        && (degrees - reverseLimitDegrees) > (360 + reverseLimitDegrees) / 2.0) {
-      // Wrap the angle around to the forward limit
-      double wrappedAngle = (degrees - reverseLimitDegrees);
-
-      // Snap to the wrapped angle
-      snapTo(wrappedAngle);
+    // If we are SNAP_AROUND_ERROR past one of our limits snap to the other limit
+    if (degrees - forwardLimitDegrees > SNAP_AROUND_ERROR) {
+      snapTo(TURRET_REVERSE_LIMIT);
+    } else if (degrees - reverseLimitDegrees > SNAP_AROUND_ERROR) {
+      snapTo(TURRET_FORWARD_LIMIT);
     }
 
     this.desiredAngle =
@@ -135,9 +130,6 @@ public class Turret extends SubsystemBase {
             TURRET_FORWARD_LIMIT);
 
     setPosition(this.desiredAngle);
-
-    SmartDashboard.putNumber("Current Angle", getAngle());
-    SmartDashboard.putNumber("Desired Angle", desiredAngle);
 
     if (isAimed()) {
       return;
