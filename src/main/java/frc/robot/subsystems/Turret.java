@@ -95,9 +95,7 @@ public class Turret extends SubsystemBase {
     turretMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
   }
 
-  /**
-   * Outputs data to SmartDashboard
-   */
+  /** Outputs data to SmartDashboard */
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Turret Angle", getAngle());

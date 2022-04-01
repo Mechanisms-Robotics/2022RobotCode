@@ -3,6 +3,7 @@ import static org.junit.Assert.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.commands.turret.TurretAimCommand;
 import org.junit.Test;
 
@@ -10,72 +11,74 @@ public class TurretAimCommandTest {
   public static final double DELTA = 1e-1; // acceptable deviation range
 
   @Test
-  public void testAngle1() {
+  public void testMovingWithVision1() {
+    Rotation2d angle = Rotation2d.fromDegrees(26.667731675599);
+    double range = 2.4954558701768;
+    Rotation2d turretAngle = new Rotation2d();
+    Pose2d robotPose = new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90.0));
+    ChassisSpeeds velocity = new ChassisSpeeds(0.0, 0.0, 0.0);
+
+    double movingGoalAngle =
+        TurretAimCommand.calculateMovingGoalAngle(angle, range, turretAngle, robotPose, velocity);
+    assertEquals(26.667731675599, movingGoalAngle, DELTA);
+  }
+
+  @Test
+  public void testMovingWithVision2() {
+    Rotation2d angle = Rotation2d.fromDegrees(26.667731675599);
+    double range = 2.4954558701768;
+    Rotation2d turretAngle = new Rotation2d();
+    Pose2d robotPose = new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90.0));
+    ChassisSpeeds velocity = new ChassisSpeeds(1.0, 0.0, 0.0);
+
+    double movingGoalAngle =
+        TurretAimCommand.calculateMovingGoalAngle(angle, range, turretAngle, robotPose, velocity);
+    assertEquals(48.81407483429, movingGoalAngle, DELTA);
+  }
+
+  @Test
+  public void testMovingWithVision3() {
+    Rotation2d angle = Rotation2d.fromDegrees(-32.324334152);
+    double range = 2.0945882650297;
+    Rotation2d turretAngle = Rotation2d.fromDegrees(0.0);
+    Pose2d robotPose = new Pose2d(new Translation2d(), Rotation2d.fromDegrees(270.0));
+    ChassisSpeeds velocity = new ChassisSpeeds(0.5, 0.5, 0.0);
+
+    double movingGoalAngle =
+        TurretAimCommand.calculateMovingGoalAngle(angle, range, turretAngle, robotPose, velocity);
+    assertEquals(-11.677502601, movingGoalAngle, DELTA);
+  }
+
+  @Test
+  public void testMovingWithoutVision1() {
+    Rotation2d turretAngle = Rotation2d.fromDegrees(0.0);
     Pose2d robotPose = new Pose2d(new Translation2d(6.0, 3.0), Rotation2d.fromDegrees(90.0));
+    ChassisSpeeds velocity = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-    Rotation2d currentTurretAngle = new Rotation2d();
-
-    double angle = TurretAimCommand.calculateGoalAngle(robotPose, currentTurretAngle);
-    assertEquals(26.6677317, angle, DELTA);
+    double movingGoalAngle =
+        TurretAimCommand.calculateMovingGoalAngle(turretAngle, robotPose, velocity);
+    assertEquals(26.667731675599, movingGoalAngle, DELTA);
   }
 
   @Test
-  public void testAngle2() {
-    Pose2d robotPose = new Pose2d(new Translation2d(6.0, 5.0), Rotation2d.fromDegrees(90.0));
+  public void testMovingWithoutVision2() {
+    Rotation2d turretAngle = Rotation2d.fromDegrees(0.0);
+    Pose2d robotPose = new Pose2d(new Translation2d(6.0, 3.0), Rotation2d.fromDegrees(90.0));
+    ChassisSpeeds velocity = new ChassisSpeeds(1.0, 1.0, 0.0);
 
-    Rotation2d currentTurretAngle = new Rotation2d();
-
-    double angle = TurretAimCommand.calculateGoalAngle(robotPose, currentTurretAngle);
-    assertEquals(-21.5351258, angle, DELTA);
+    double movingGoalAngle =
+        TurretAimCommand.calculateMovingGoalAngle(turretAngle, robotPose, velocity);
+    assertEquals(-7.5563440564395, movingGoalAngle, DELTA);
   }
 
   @Test
-  public void testAngle3() {
-    Pose2d robotPose = new Pose2d(new Translation2d(6.0, 5.0), Rotation2d.fromDegrees(115.0));
-
-    Rotation2d currentTurretAngle = new Rotation2d();
-
-    double angle = TurretAimCommand.calculateGoalAngle(robotPose, currentTurretAngle);
-    assertEquals(-46.5351258, angle, DELTA);
-  }
-
-  @Test
-  public void testAngle4() {
-    Pose2d robotPose = new Pose2d(new Translation2d(6.0, 5.0), Rotation2d.fromDegrees(80.0));
-
-    Rotation2d currentTurretAngle = new Rotation2d();
-
-    double angle = TurretAimCommand.calculateGoalAngle(robotPose, currentTurretAngle);
-    assertEquals(-11.5351258, angle, DELTA);
-  }
-
-  @Test
-  public void testAngle5() {
-    Pose2d robotPose = new Pose2d(new Translation2d(6.0, 5.0), Rotation2d.fromDegrees(0.0));
-
-    Rotation2d currentTurretAngle = new Rotation2d();
-
-    double angle = TurretAimCommand.calculateGoalAngle(robotPose, currentTurretAngle);
-    assertEquals(68.4648742, angle, DELTA);
-  }
-
-  @Test
-  public void testAngle6() {
-    Pose2d robotPose = new Pose2d(new Translation2d(10.0, 3.0), Rotation2d.fromDegrees(0.0));
-
-    Rotation2d currentTurretAngle = new Rotation2d();
-
-    double angle = TurretAimCommand.calculateGoalAngle(robotPose, currentTurretAngle);
-    assertEquals(-122.34, angle, DELTA);
-  }
-
-  @Test
-  public void testAngle7() {
+  public void testMovingWithoutVision3() {
+    Rotation2d turretAngle = Rotation2d.fromDegrees(0.0);
     Pose2d robotPose = new Pose2d(new Translation2d(10.0, 5.0), Rotation2d.fromDegrees(0.0));
+    ChassisSpeeds velocity = new ChassisSpeeds(-1.0, 1.0, 0.0);
 
-    Rotation2d currentTurretAngle = new Rotation2d();
-
-    double angle = TurretAimCommand.calculateGoalAngle(robotPose, currentTurretAngle);
-    assertEquals(-63.564577062185286, angle, DELTA);
+    double movingGoalAngle =
+        TurretAimCommand.calculateMovingGoalAngle(turretAngle, robotPose, velocity);
+    assertEquals(-13.719345264, movingGoalAngle, DELTA);
   }
 }

@@ -139,7 +139,9 @@ public class RobotContainer {
             turret,
             () -> limelight.getCurrentTarget().hasTarget,
             () -> limelight.getCurrentTarget().targetAngle,
-            swerve.poseEstimator::getEstimatedPosition));
+            () -> limelight.getCurrentTarget().range,
+            swerve.poseEstimator::getEstimatedPosition,
+            swerve::getSpeeds));
 
     // Set the default limelight command to a PoseEstimateCommand
     limelight.setDefaultCommand(
