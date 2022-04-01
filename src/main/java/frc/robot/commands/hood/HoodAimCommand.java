@@ -1,8 +1,10 @@
 package frc.robot.commands.hood;
 
+import static frc.robot.commands.shooter.ShooterAimCommand.calculateMovingGoalRange;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Hood;
 import java.util.function.Supplier;
@@ -13,16 +15,15 @@ public class HoodAimCommand extends CommandBase {
   // Instance of Hood
   private final Hood hood;
 
-  // Suppliers of hasTarget and targetRange
+  // Suppliers for hasTarget, targetAngle, and targetRange
   private final Supplier<Boolean> hasTargetSupplier;
+  private final Supplier<Double> targetAngleSupplier;
   private final Supplier<Double> targetRangeSupplier;
 
-  // Supplier of robotPose
+  // Supplier of currentTurretAngle, robotPose, and robotVelocity
+  private final Supplier<Double> currentTurretAngleSupplier;
   private final Supplier<Pose2d> robotPoseSupplier;
-
-  // Position of the goal on the field
-  private static final Pose2d GOAL_POSITION =
-      new Pose2d(new Translation2d(8.23, 4.12), new Rotation2d());
+  private final Supplier<ChassisSpeeds> robotVelocitySupplier;
 
   /**
    * Constructs a HoodAimCommand
@@ -32,17 +33,23 @@ public class HoodAimCommand extends CommandBase {
   public HoodAimCommand(
       Hood hood,
       Supplier<Boolean> hasTargetSupplier,
+      Supplier<Double> targetAngleSupplier,
       Supplier<Double> targetRangeSupplier,
-      Supplier<Pose2d> robotPoseSupplier) {
+      Supplier<Double> currentTurretAngleSupplier,
+      Supplier<Pose2d> robotPoseSupplier,
+      Supplier<ChassisSpeeds> robotVelocitySupplier) {
     // Set hood
     this.hood = hood;
 
-    // Set hasTarget and targetRange suppliers
+    // Set hasTarget, targetAngle, and targetRange suppliers
     this.hasTargetSupplier = hasTargetSupplier;
+    this.targetAngleSupplier = targetAngleSupplier;
     this.targetRangeSupplier = targetRangeSupplier;
 
-    // Set robotPose supplier
+    // Set currentTurretAngle, robotPose, and robotVelocity
+    this.currentTurretAngleSupplier = currentTurretAngleSupplier;
     this.robotPoseSupplier = robotPoseSupplier;
+    this.robotVelocitySupplier = robotVelocitySupplier;
 
     // Add the hood as a requirement
     addRequirements(hood);
@@ -52,20 +59,20 @@ public class HoodAimCommand extends CommandBase {
   @Override
   public void execute() {
     if (hasTargetSupplier.get()) {
-      // If we have a target aim the hood at it
-      hood.aim(targetRangeSupplier.get());
+      // If we have a target aim the hood at it accounting for movement
+      hood.aim(
+          calculateMovingGoalRange(
+              Rotation2d.fromDegrees(targetAngleSupplier.get()),
+              targetRangeSupplier.get(),
+              new Rotation2d(currentTurretAngleSupplier.get()),
+              robotPoseSupplier.get(),
+              robotVelocitySupplier.get()));
     } else {
-      // If we don't have a target estimate a range to the goal and aim the hood
-      hood.aim(calculateRange());
+      // If we don't have a target estimate a range to the goal and account for movement
+      hood.aim(
+          calculateMovingGoalRange(
+              robotPoseSupplier.get(),
+              robotVelocitySupplier.get()));
     }
-  }
-
-  /**
-   * Calculates the range to the goal based off of an estimated robot pose
-   *
-   * @return Estimated range to the goal
-   */
-  private double calculateRange() {
-    return GOAL_POSITION.minus(robotPoseSupplier.get()).getTranslation().getNorm();
   }
 }

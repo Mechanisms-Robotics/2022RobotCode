@@ -122,16 +122,22 @@ public class RobotContainer {
         new ShooterAimCommand(
             shooter,
             () -> limelight.getCurrentTarget().hasTarget,
+            () -> limelight.getCurrentTarget().targetAngle,
             () -> limelight.getCurrentTarget().range,
-            swerve.poseEstimator::getEstimatedPosition));
+            turret::getAngle,
+            swerve.poseEstimator::getEstimatedPosition,
+            swerve::getSpeeds));
 
     // Set the hood default command to a HoodAimCommand
     hood.setDefaultCommand(
         new HoodAimCommand(
             hood,
             () -> limelight.getCurrentTarget().hasTarget,
+            () -> limelight.getCurrentTarget().targetAngle,
             () -> limelight.getCurrentTarget().range,
-            swerve.poseEstimator::getEstimatedPosition));
+            turret::getAngle,
+            swerve.poseEstimator::getEstimatedPosition,
+            swerve::getSpeeds));
 
     // Set the turret default command to a TurretAimCommand
     turret.setDefaultCommand(
@@ -167,8 +173,11 @@ public class RobotContainer {
             new ShooterShootCommand(
                 shooter,
                 () -> limelight.getCurrentTarget().hasTarget,
+                () -> limelight.getCurrentTarget().targetAngle,
                 () -> limelight.getCurrentTarget().range,
-                swerve.poseEstimator::getEstimatedPosition),
+                turret::getAngle,
+                swerve.poseEstimator::getEstimatedPosition,
+                swerve::getSpeeds),
             new AcceleratorShootCommand(accelerator),
             new FeederShootCommand(feeder, shooter::atSpeed)));
 

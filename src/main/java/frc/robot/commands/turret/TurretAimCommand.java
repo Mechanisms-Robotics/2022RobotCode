@@ -32,7 +32,12 @@ public class TurretAimCommand extends CommandBase {
   /**
    * Constructs a TurretAimCommand
    *
-   * @param turret An instance of Turret
+   * @param turret Instance of turret
+   * @param hasTargetSupplier Supplier of hasTarget
+   * @param targetAngleSupplier Supplier of targetAngle
+   * @param targetRangeSupplier Supplier of targetRange
+   * @param robotPoseSupplier Supplier of robotPose
+   * @param robotVelocitySupplier Supplier of robotVelocity
    */
   public TurretAimCommand(
       Turret turret,
@@ -65,7 +70,7 @@ public class TurretAimCommand extends CommandBase {
       // If we have a vision target aim the turret at it compensating for robot movement
       turret.aim(
           calculateMovingGoalAngle(
-              new Rotation2d(targetAngleSupplier.get()),
+              Rotation2d.fromDegrees(targetAngleSupplier.get()),
               targetRangeSupplier.get(),
               new Rotation2d(turret.getAngle()),
               robotPoseSupplier.get(),

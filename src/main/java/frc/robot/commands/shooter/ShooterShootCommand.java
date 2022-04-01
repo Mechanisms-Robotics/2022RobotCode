@@ -1,8 +1,11 @@
 package frc.robot.commands.shooter;
 
+import static frc.robot.commands.shooter.ShooterAimCommand.calculateMovingGoalRange;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Shooter;
 import java.util.function.Supplier;
@@ -13,36 +16,46 @@ public class ShooterShootCommand extends CommandBase {
   // Instance of Shooter
   private final Shooter shooter;
 
-  // Suppliers for hasTarget and targetRange
+  // Suppliers for hasTarget, targetAngle, and targetRange
   private final Supplier<Boolean> hasTargetSupplier;
+  private final Supplier<Double> targetAngleSupplier;
   private final Supplier<Double> targetRangeSupplier;
 
-  // Supplier of robotPose
+  // Supplier of currentTurretAngle, robotPose, and robotVelocity
+  private final Supplier<Double> currentTurretAngleSupplier;
   private final Supplier<Pose2d> robotPoseSupplier;
-
-  // Position of the goal on the field
-  private static final Pose2d GOAL_POSITION =
-      new Pose2d(new Translation2d(8.23, 4.12), new Rotation2d());
+  private final Supplier<ChassisSpeeds> robotVelocitySupplier;
 
   /**
-   * Constructs a ShooterAimCommand
+   * Constructs a ShooterShootCommand
    *
-   * @param shooter An instance of Shooter
+   * @param shooter Instance of shooter
+   * @param hasTargetSupplier Supplier of hasTarget
+   * @param targetAngleSupplier Supplier of targetAngle
+   * @param targetRangeSupplier Supplier of targetRange
+   * @param robotPoseSupplier Supplier of robotPose
+   * @param robotVelocitySupplier Supplier of robotVelocity
    */
   public ShooterShootCommand(
       Shooter shooter,
       Supplier<Boolean> hasTargetSupplier,
+      Supplier<Double> targetAngleSupplier,
       Supplier<Double> targetRangeSupplier,
-      Supplier<Pose2d> robotPoseSupplier) {
+      Supplier<Double> currentTurretAngleSupplier,
+      Supplier<Pose2d> robotPoseSupplier,
+      Supplier<ChassisSpeeds> robotVelocitySupplier) {
     // Set shooter
     this.shooter = shooter;
 
-    // Set hasTarget and targetRange suppliers
+    // Set hasTarget, targetAngle, and targetRange suppliers
     this.hasTargetSupplier = hasTargetSupplier;
+    this.targetAngleSupplier = targetAngleSupplier;
     this.targetRangeSupplier = targetRangeSupplier;
 
-    // Set robotPose supplier
+    // Set currentTurretAngle, robotPose, and robotVelocity
+    this.currentTurretAngleSupplier = currentTurretAngleSupplier;
     this.robotPoseSupplier = robotPoseSupplier;
+    this.robotVelocitySupplier = robotVelocitySupplier;
 
     // Add the shooter as a requirement
     addRequirements(shooter);
@@ -53,11 +66,20 @@ public class ShooterShootCommand extends CommandBase {
   public void execute() {
     // Check if we have a target
     if (hasTargetSupplier.get()) {
-      // If we have a vision target run the shooter RPM based off range
-      shooter.shoot(targetRangeSupplier.get());
+      // If we have a vision target run the shooter RPM based off range accounting for movement
+      shooter.shoot(
+          calculateMovingGoalRange(
+              Rotation2d.fromDegrees(targetAngleSupplier.get()),
+              targetRangeSupplier.get(),
+              new Rotation2d(currentTurretAngleSupplier.get()),
+              robotPoseSupplier.get(),
+              robotVelocitySupplier.get()));
     } else {
-      // If there is no target estimate the range to the target, run the shooter RPM based off that
-      shooter.shoot(calculateRange());
+      // If there is no target estimate the range to the target, and account for movement
+      shooter.shoot(
+          calculateMovingGoalRange(
+              robotPoseSupplier.get(),
+              robotVelocitySupplier.get()));
     }
   }
 
@@ -70,14 +92,5 @@ public class ShooterShootCommand extends CommandBase {
   public void end(boolean interrupted) {
     // Stop the shooter
     shooter.stop();
-  }
-
-  /**
-   * Calculates the range to the goal based off of an estimated robot pose
-   *
-   * @return Estimated range to the goal
-   */
-  private double calculateRange() {
-    return GOAL_POSITION.minus(robotPoseSupplier.get()).getTranslation().getNorm();
   }
 }
