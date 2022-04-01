@@ -119,7 +119,8 @@ public class RobotContainer {
         new ShooterAimCommand(
             shooter,
             () -> limelight.getCurrentTarget().hasTarget,
-            () -> limelight.getCurrentTarget().range));
+            () -> limelight.getCurrentTarget().range,
+            swerve.poseEstimator::getEstimatedPosition));
 
     // Set the hood default command to a HoodAimCommand
     hood.setDefaultCommand(
