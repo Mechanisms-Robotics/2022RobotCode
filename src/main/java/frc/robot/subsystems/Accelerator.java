@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -20,7 +21,7 @@ public class Accelerator extends SubsystemBase {
   private static final TalonFXConfiguration ACCELERATOR_MOTOR_CONFIG = new TalonFXConfiguration();
 
   // Accelerator speeds
-  private static final double SHOOT_SPEED = 1000; // RPM
+  private static final double SHOOT_SPEED = 750; // RPM
   private static final double BACKUP_SPEED = -0.5; // percent
   private static final double PREP_SPEED = -0.10;
   private static final double OUTTAKE_SPEED = -0.5; // percent
@@ -72,6 +73,19 @@ public class Accelerator extends SubsystemBase {
     // CAN Bus Usage Optimisation.
     acceleratorFollowerMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
     acceleratorFollowerMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255);
+  }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Accelerator RPM", Units.falconToRPM(acceleratorMotor.getSelectedSensorVelocity(), GEAR_RATIO));
+  }
+
+  /** Runs the accelerator at a specified rpm */
+  public void shoot(double rpm) {
+    preping = false;
+    acceleratorMotor.set(ControlMode.Velocity, Units.RPMToFalcon(rpm, GEAR_RATIO));
+
+    acceleratorFollowerMotor.set(ControlMode.Velocity, Units.RPMToFalcon(rpm, GEAR_RATIO));
   }
 
   /** Runs the accelerator at SHOOT_SPEED */

@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.InterpolatingDouble;
 import frc.robot.util.InterpolatingTreeMap;
 
@@ -26,15 +27,18 @@ public class Hood extends SubsystemBase {
     // Configure hood range interpolating tree map (meters, hood position)
     // measured from fender to inside of bumper
     RANGE_TO_POSITION.put(new InterpolatingDouble(0.0), new InterpolatingDouble(0.0));
-    RANGE_TO_POSITION.put(new InterpolatingDouble(0.05), new InterpolatingDouble(0.0));
-    RANGE_TO_POSITION.put(new InterpolatingDouble(0.3), new InterpolatingDouble(0.4));
-    RANGE_TO_POSITION.put(new InterpolatingDouble(0.6), new InterpolatingDouble(0.4));
-    RANGE_TO_POSITION.put(new InterpolatingDouble(1.1), new InterpolatingDouble(1.0));
-    RANGE_TO_POSITION.put(new InterpolatingDouble(1.25), new InterpolatingDouble(1.0));
-    RANGE_TO_POSITION.put(new InterpolatingDouble(1.5), new InterpolatingDouble(1.0));
-    // RANGE_TO_POSITION.put(new InterpolatingDouble(1.72), new InterpolatingDouble(1.0));
-    // RANGE_TO_POSITION.put(new InterpolatingDouble(2.82), new InterpolatingDouble(1.0));
-    // RANGE_TO_POSITION.put(new InterpolatingDouble(3.0), new InterpolatingDouble(1.0));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.25), new InterpolatingDouble(0.25));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.4), new InterpolatingDouble(0.256));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.48), new InterpolatingDouble(0.256));
+
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.69), new InterpolatingDouble(0.5));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.77), new InterpolatingDouble(0.525));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.87), new InterpolatingDouble(0.625));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(1.0), new InterpolatingDouble(0.75));
+
+    RANGE_TO_POSITION.put(new InterpolatingDouble(1.15), new InterpolatingDouble(1.0));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(1.4), new InterpolatingDouble(1.0));
+
     RANGE_TO_POSITION.put(new InterpolatingDouble(20.0), new InterpolatingDouble(1.0));
   }
 
@@ -60,6 +64,8 @@ public class Hood extends SubsystemBase {
     // Set speed is the speed of the pwm pulse not the speed of the servo
     // PWM speed commands the servo position.
     hoodServo.setSpeed(rawPosition);
+
+    SmartDashboard.putNumber("Hood Position", rawPosition);
 
     // Update current position
     currentPos = rawPosition;

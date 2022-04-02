@@ -123,6 +123,12 @@ public class RobotContainer {
             () -> limelight.getCurrentTarget().hasTarget,
             () -> limelight.getCurrentTarget().range));
 
+    // Set the accelerator default command to AcceleratorShootCommand
+    accelerator.setDefaultCommand(
+        new AcceleratorShootCommand(
+            accelerator,
+            shooter::getRPM));
+
     // Set the hood default command to a HoodAimCommand
     hood.setDefaultCommand(
         new HoodAimCommand(
@@ -154,7 +160,7 @@ public class RobotContainer {
                 shooter,
                 () -> limelight.getCurrentTarget().hasTarget,
                 () -> limelight.getCurrentTarget().range),
-            new AcceleratorShootCommand(accelerator),
+            new AcceleratorShootCommand(accelerator, shooter::getRPM),
             new FeederShootCommand(feeder, shooter::atSpeed)));
 
     // While the backup button is held backup the shooter, accelerator, and feeder
@@ -172,7 +178,7 @@ public class RobotContainer {
                 () -> limelight.getCurrentTarget().hasTarget,
                 () -> limelight.getCurrentTarget().targetAngle),
             new ShooterEjectCommand(shooter),
-            new AcceleratorShootCommand(accelerator),
+            new AcceleratorShootCommand(accelerator, shooter::getRPM),
             new FeederShootCommand(feeder, shooter::atSpeed)));
 
     // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading

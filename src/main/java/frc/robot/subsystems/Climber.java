@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 /** This class contains all the code responsible for the behaviour of the intake class */
 public class Climber extends SubsystemBase {
   // Climber speeds
-  private static final double UP_SPEED = 0.5; // percent
-  private static final double DOWN_SPEED = -0.25; // percent
+  private static final double UP_SPEED = 0.75; // percent
+  private static final double DOWN_SPEED = -0.5; // percent
 
   // Climber motor configuration
   private static final TalonFXConfiguration CLIMBER_MOTOR_CONFIG = new TalonFXConfiguration();

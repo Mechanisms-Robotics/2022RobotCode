@@ -69,15 +69,18 @@ public class Shooter extends SubsystemBase {
 
     // Configure shooter range interpolating tree map (meters, RPM)
     RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1350.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.3), new InterpolatingDouble(1350.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.48), new InterpolatingDouble(1400.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.6), new InterpolatingDouble(1450.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.8), new InterpolatingDouble(1500.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.95), new InterpolatingDouble(1550.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(1.25), new InterpolatingDouble(1750.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(1.5), new InterpolatingDouble(2000.0));
-    // RANGE_TO_RPM.put(new InterpolatingDouble(1.72), new InterpolatingDouble(2000.0));
-    // RANGE_TO_RPM.put(new InterpolatingDouble(2.82), new InterpolatingDouble(2000.0));
+
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.25), new InterpolatingDouble(1350.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.4), new InterpolatingDouble(1375.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.48), new InterpolatingDouble(1375.0));
+
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.69), new InterpolatingDouble(1500.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.77), new InterpolatingDouble(1500.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.87), new InterpolatingDouble(1550.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(1.0), new InterpolatingDouble(1650.0));
+
+    RANGE_TO_RPM.put(new InterpolatingDouble(1.15), new InterpolatingDouble(1750.0));
+
     RANGE_TO_RPM.put(new InterpolatingDouble(20.0), new InterpolatingDouble(3000.0));
 
     // Configure shooter velocity measurement
@@ -180,5 +183,9 @@ public class Shooter extends SubsystemBase {
           <= SHOOTER_SPINUP_DEADBAND;
     }
     return false;
+  }
+
+  public double getRPM() {
+    return Units.falconToRPM(shooterMotor.getSelectedSensorVelocity(), GEAR_RATIO);
   }
 }
