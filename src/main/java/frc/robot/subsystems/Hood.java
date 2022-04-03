@@ -26,14 +26,14 @@ public class Hood extends SubsystemBase {
 
     // Configure hood range interpolating tree map (meters, hood position)
     // measured from fender to inside of bumper
-    RANGE_TO_POSITION.put(new InterpolatingDouble(0.0), new InterpolatingDouble(0.0));
-    RANGE_TO_POSITION.put(new InterpolatingDouble(0.25), new InterpolatingDouble(0.25));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.0), new InterpolatingDouble(-0.5));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.25), new InterpolatingDouble(0.256));
     RANGE_TO_POSITION.put(new InterpolatingDouble(0.4), new InterpolatingDouble(0.256));
     RANGE_TO_POSITION.put(new InterpolatingDouble(0.48), new InterpolatingDouble(0.256));
 
     RANGE_TO_POSITION.put(new InterpolatingDouble(0.69), new InterpolatingDouble(0.5));
-    RANGE_TO_POSITION.put(new InterpolatingDouble(0.77), new InterpolatingDouble(0.525));
-    RANGE_TO_POSITION.put(new InterpolatingDouble(0.87), new InterpolatingDouble(0.625));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.77), new InterpolatingDouble(0.75));
+    RANGE_TO_POSITION.put(new InterpolatingDouble(0.87), new InterpolatingDouble(0.75));
     RANGE_TO_POSITION.put(new InterpolatingDouble(1.0), new InterpolatingDouble(0.75));
 
     RANGE_TO_POSITION.put(new InterpolatingDouble(1.15), new InterpolatingDouble(1.0));

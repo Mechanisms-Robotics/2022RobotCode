@@ -11,8 +11,11 @@ public class ShooterShootCommand extends CommandBase {
   private final Shooter shooter;
 
   // Suppliers for hasTarget and targetRange
-  private Supplier<Boolean> hasTargetSupplier;
-  private Supplier<Double> targetRangeSupplier;
+  private final Supplier<Boolean> hasTargetSupplier;
+  private final Supplier<Double> targetRangeSupplier;
+
+  // Supplier for fender button
+  private final Supplier<Boolean> fenderShotButtonSupplier;
 
   /**
    * Constructs a ShooterShootCommand
@@ -20,13 +23,16 @@ public class ShooterShootCommand extends CommandBase {
    * @param shooter An instance of Shooter
    */
   public ShooterShootCommand(
-      Shooter shooter, Supplier<Boolean> hasTargetSupplier, Supplier<Double> targetRangeSupplier) {
+      Shooter shooter, Supplier<Boolean> hasTargetSupplier, Supplier<Double> targetRangeSupplier, Supplier<Boolean> fenderShotButtonSupplier) {
     // Set shooter
     this.shooter = shooter;
 
     // Set hasTarget and targetRange suppliers
     this.hasTargetSupplier = hasTargetSupplier;
     this.targetRangeSupplier = targetRangeSupplier;
+
+    // Set fender shot button supplier
+    this.fenderShotButtonSupplier = fenderShotButtonSupplier;
 
     // Add the shooter as a requirement
     addRequirements(shooter);
@@ -35,6 +41,12 @@ public class ShooterShootCommand extends CommandBase {
   /** Runs periodically while the command is running */
   @Override
   public void execute() {
+    // Check if fender shot button is pressed
+    if (fenderShotButtonSupplier.get()) {
+      shooter.shoot(0.0);
+      return;
+    }
+
     // Check if we have a target
     if (hasTargetSupplier.get()) {
       // If we have a vision target run the shooter RPM based off range

@@ -26,7 +26,7 @@ public class Turret extends SubsystemBase {
   public static final double TURRET_FORWARD_LIMIT = 0.75; // 0.75 radians
   public static final double TURRET_REVERSE_LIMIT = -5.5; // -5.5 radians
   private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(0.5); // 0.5 degrees
-  private static final double TURRET_AIM_ERROR = Math.toRadians(3.0); // 3 degrees
+  public static final double TURRET_AIM_ERROR = Math.toRadians(3.0); // 3 degrees
   private static final double TURRET_AIM_MOVEMENT_SCALAR = 0.125;
 
   private static final Transform2d ROBOT_TO_TURRET =
@@ -39,6 +39,9 @@ public class Turret extends SubsystemBase {
   private boolean zeroed = false; // Has the turret been zeroed
 
   private double desiredAngle = 0.0; // rads
+
+  private static final double SNAP_AROUND_SPEED = 0.35;
+  public boolean snapDirection = true;
 
   static {
     // Current limit configuration for the turret motor
@@ -144,12 +147,7 @@ public class Turret extends SubsystemBase {
       return;
     }
 
-    if (Math.abs(TURRET_FORWARD_LIMIT - getAngle())
-        >= Math.abs(TURRET_REVERSE_LIMIT - getAngle())) {
-      snapTo(TURRET_FORWARD_LIMIT);
-    } else {
-      snapTo(TURRET_REVERSE_LIMIT);
-    }
+    setOpenLoop(snapDirection ? SNAP_AROUND_SPEED : -SNAP_AROUND_SPEED);
   }
 
   /** Enables snap around functionality */
@@ -180,6 +178,14 @@ public class Turret extends SubsystemBase {
 
     // PID the turret motor to the desired position
     turretMotor.set(ControlMode.MotionMagic, Units.radsToFalcon(rads, TURRET_GEAR_RATIO));
+  }
+
+  private void setOpenLoop(double percent) {
+    if (!zeroed) {
+      return;
+    }
+
+    turretMotor.set(ControlMode.PercentOutput, percent);
   }
 
   /**

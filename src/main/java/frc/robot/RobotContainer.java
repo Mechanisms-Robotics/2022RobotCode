@@ -66,6 +66,7 @@ public class RobotContainer {
   private final Button retractIntake = new Button(driverController::getSquareButton);
   private final Button backupButton = new Button(driverController::getTriangleButton);
   private final Button ejectButton = new Button(driverController::getCircleButton);
+  private final Button fenderShotButton = new Button(driverController::getRightBumperButton);
 
   private final Button climberButtonUp =
       new Button(
@@ -134,14 +135,16 @@ public class RobotContainer {
         new HoodAimCommand(
             hood,
             () -> limelight.getCurrentTarget().hasTarget,
-            () -> limelight.getCurrentTarget().range));
+            () -> limelight.getCurrentTarget().range,
+            fenderShotButton::get));
 
     // Set the turret default command to a TurretAimCommand
     turret.setDefaultCommand(
         new TurretAimCommand(
             turret,
             () -> limelight.getCurrentTarget().hasTarget,
-            () -> limelight.getCurrentTarget().targetAngle));
+            () -> limelight.getCurrentTarget().targetAngle,
+            fenderShotButton::get));
   }
 
   /** Configures all button bindings */
@@ -159,7 +162,8 @@ public class RobotContainer {
             new ShooterShootCommand(
                 shooter,
                 () -> limelight.getCurrentTarget().hasTarget,
-                () -> limelight.getCurrentTarget().range),
+                () -> limelight.getCurrentTarget().range,
+                fenderShotButton::get),
             new AcceleratorShootCommand(accelerator, shooter::getRPM),
             new FeederShootCommand(feeder, shooter::atSpeed)));
 
@@ -178,6 +182,17 @@ public class RobotContainer {
                 () -> limelight.getCurrentTarget().hasTarget,
                 () -> limelight.getCurrentTarget().targetAngle),
             new ShooterEjectCommand(shooter),
+            new AcceleratorShootCommand(accelerator, shooter::getRPM),
+            new FeederShootCommand(feeder, shooter::atSpeed)));
+
+    // While the fender shot button is held fender shoot
+    fenderShotButton.whileHeld(
+        new ParallelCommandGroup(
+            new ShooterShootCommand(
+                shooter,
+                () -> limelight.getCurrentTarget().hasTarget,
+                () -> limelight.getCurrentTarget().range,
+                fenderShotButton::get),
             new AcceleratorShootCommand(accelerator, shooter::getRPM),
             new FeederShootCommand(feeder, shooter::atSpeed)));
 

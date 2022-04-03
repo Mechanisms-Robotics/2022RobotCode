@@ -68,18 +68,19 @@ public class Shooter extends SubsystemBase {
     SHOOTER_MOTOR_CONFIG.slot0 = shooterPID;
 
     // Configure shooter range interpolating tree map (meters, RPM)
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1350.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1400.0));
 
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.25), new InterpolatingDouble(1350.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.4), new InterpolatingDouble(1375.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.48), new InterpolatingDouble(1375.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.25), new InterpolatingDouble(1400.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.25), new InterpolatingDouble(1400.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.4), new InterpolatingDouble(1400.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.48), new InterpolatingDouble(1400.0));
 
     RANGE_TO_RPM.put(new InterpolatingDouble(0.69), new InterpolatingDouble(1500.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(0.77), new InterpolatingDouble(1500.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(0.87), new InterpolatingDouble(1550.0));
     RANGE_TO_RPM.put(new InterpolatingDouble(1.0), new InterpolatingDouble(1650.0));
 
-    RANGE_TO_RPM.put(new InterpolatingDouble(1.15), new InterpolatingDouble(1750.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(1.15), new InterpolatingDouble(1835.0));
 
     RANGE_TO_RPM.put(new InterpolatingDouble(20.0), new InterpolatingDouble(3000.0));
 

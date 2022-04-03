@@ -24,11 +24,11 @@ public class Tarmac3Ball extends SequentialCommandGroup {
   private static final double MAX_VEL = 2.0; // m/s
   private static final double MAX_ACCEL = 4.0; // m/s^2
 
-  private static final double FIRST_SHOT_ANGLE = -1.83; // rads
-  private static final double FIRST_SHOT_RANGE = 0.25; // meters
+  private static final double FIRST_SHOT_ANGLE = -2.0; // rads
+  private static final double FIRST_SHOT_RANGE = 0.19; // meters
 
-  private static final double SECOND_SHOT_ANGLE = -0.14;
-  private static final double SECOND_SHOT_RANGE = 0.19; // meters
+  private static final double SECOND_SHOT_ANGLE = -0.29;
+  private static final double SECOND_SHOT_RANGE = 0.3; // meters
 
   // TODO: find maxVel and maxAccel
   private static final PathPlannerTrajectory trajectory =

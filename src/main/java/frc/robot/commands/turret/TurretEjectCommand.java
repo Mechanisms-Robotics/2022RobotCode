@@ -15,7 +15,7 @@ public class TurretEjectCommand extends CommandBase {
   private final Supplier<Double> targetAngleSupplier;
 
   // How much to aim away from the target
-  private static final double EJECT_OFFSET = 45.0; // degrees
+  private static final double EJECT_OFFSET = 0.0; // degrees
 
   /**
    * Constructs a TurretEjectCommand
@@ -50,5 +50,10 @@ public class TurretEjectCommand extends CommandBase {
       // Aim the turret away from it by offset
       turret.aim(targetAngleSupplier.get() + offset);
     }
+  }
+
+  /** Runs when the command ends */
+  public void end() {
+    turret.aim(targetAngleSupplier.get());
   }
 }
