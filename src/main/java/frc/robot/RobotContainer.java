@@ -221,18 +221,18 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     switch (autoChooser.getSelected()) {
       case TARMAC_2_BALL:
-        return new Tarmac2Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+        return new Tarmac2Ball(swerve, accelerator, feeder, intake);
       case TARMAC_2_BALL_HIDE:
         return new Tarmac2BallHide(
-            swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+            swerve, shooter, accelerator, feeder, intake, limelight);
       case TARMAC_3_BALL:
-        return new Tarmac3Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+        return new Tarmac3Ball(swerve, accelerator, feeder, intake);
       case TARMAC_5_BALL:
-        return new Tarmac5Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+        return new Tarmac5Ball(swerve, accelerator, feeder, intake);
       case TARMAC_6_BALL:
-        return new Tarmac6Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+        return new Tarmac6Ball(swerve, accelerator, feeder, intake);
       default:
-        return new Tarmac5Ball(swerve, shooter, turret, hood, accelerator, feeder, intake, climber);
+        return new Tarmac5Ball(swerve, accelerator, feeder, intake);
     }
   }
 }

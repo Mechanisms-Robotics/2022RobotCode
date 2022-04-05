@@ -64,6 +64,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_robotContainer.turret.disableSnapAround();
     m_robotContainer.turret.zero();
+    m_robotContainer.turret.snapTo(Math.toRadians(-90.0));
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
