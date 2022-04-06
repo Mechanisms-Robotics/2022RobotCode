@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.PrepFeederCommand;
 import frc.robot.commands.accelerator.AcceleratorBackupCommand;
 import frc.robot.commands.accelerator.AcceleratorShootCommand;
 import frc.robot.commands.auto.Tarmac2Ball;
@@ -15,6 +16,7 @@ import frc.robot.commands.auto.Tarmac2BallHide;
 import frc.robot.commands.auto.Tarmac3Ball;
 import frc.robot.commands.auto.Tarmac5Ball;
 import frc.robot.commands.auto.Tarmac6Ball;
+import frc.robot.commands.climber.ClimberEnableCommand;
 import frc.robot.commands.drivetrain.DriveTeleopCommand;
 import frc.robot.commands.feeder.FeederBackupCommand;
 import frc.robot.commands.feeder.FeederIntakeCommand;
@@ -79,6 +81,11 @@ public class RobotContainer {
               (driverController.getPOV() == ControllerWrapper.Direction.Down)
                   || (secondaryController.getPOV() == ControllerWrapper.Direction.Down));
 
+  private final Button climberEnableButton1 = new Button(secondaryController::getLeftBumperButton);
+  private final Button climberEnableButton2 = new Button(secondaryController::getRightBumperButton);
+  private final Button disableSnapAround = new Button(secondaryController::getTriangleButton);
+  private final Button overrideFeederButton = new Button(secondaryController::getXButton);
+
   private final Button gyroResetButton = new Button(driverController::getShareButton);
 
   // Swerve inputs
@@ -125,10 +132,7 @@ public class RobotContainer {
             () -> limelight.getCurrentTarget().range));
 
     // Set the accelerator default command to AcceleratorShootCommand
-    accelerator.setDefaultCommand(
-        new AcceleratorShootCommand(
-            accelerator,
-            shooter::getRPM));
+    accelerator.setDefaultCommand(new AcceleratorShootCommand(accelerator, shooter::getRPM));
 
     // Set the hood default command to a HoodAimCommand
     hood.setDefaultCommand(
@@ -199,13 +203,24 @@ public class RobotContainer {
     // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
     gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
 
+    // When both the climber enable buttons are pressed, enable climb mode
+    climberEnableButton1
+        .and(climberEnableButton2)
+        .whenActive(new ClimberEnableCommand(climber, turret));
+
+    // When the override feeder button is pressed override the default feeder command
+    overrideFeederButton.whenPressed(
+        new InstantCommand(
+            () -> feeder.setDefaultCommand(new PrepFeederCommand(feeder, accelerator))));
+
     // When the D-Pad is held up run the shooter up
     climberButtonUp.whenHeld(new StartEndCommand(climber::up, climber::stop));
-    // climberButtonUp.whenPressed(new ClimberDeployCommand(climber));
 
     // When the D-Pad is held down run the shooter down
     climberButtonDown.whenHeld(new StartEndCommand(climber::down, climber::stop));
-    // climberButtonDown.whenPressed(new ClimberClimbCommand(climber));
+
+    // If disable snap around is pressed disable snap around
+    disableSnapAround.whenPressed(new InstantCommand(turret::disableSnapAround));
   }
 
   public enum Autos {
@@ -223,8 +238,7 @@ public class RobotContainer {
       case TARMAC_2_BALL:
         return new Tarmac2Ball(swerve, accelerator, feeder, intake);
       case TARMAC_2_BALL_HIDE:
-        return new Tarmac2BallHide(
-            swerve, shooter, accelerator, feeder, intake, limelight);
+        return new Tarmac2BallHide(swerve, shooter, accelerator, feeder, intake, limelight);
       case TARMAC_3_BALL:
         return new Tarmac3Ball(swerve, accelerator, feeder, intake);
       case TARMAC_5_BALL:

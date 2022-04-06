@@ -41,6 +41,7 @@ public class IntakeDeployCommand extends CommandBase {
     // Check if the intake is stowed
     if (intake.isStowed()) {
       // If the intake is stowed start deploying it
+      intake.coast();
       intake.deploy();
 
       // Reset and start the stall timer

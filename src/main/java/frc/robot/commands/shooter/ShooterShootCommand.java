@@ -23,7 +23,10 @@ public class ShooterShootCommand extends CommandBase {
    * @param shooter An instance of Shooter
    */
   public ShooterShootCommand(
-      Shooter shooter, Supplier<Boolean> hasTargetSupplier, Supplier<Double> targetRangeSupplier, Supplier<Boolean> fenderShotButtonSupplier) {
+      Shooter shooter,
+      Supplier<Boolean> hasTargetSupplier,
+      Supplier<Double> targetRangeSupplier,
+      Supplier<Boolean> fenderShotButtonSupplier) {
     // Set shooter
     this.shooter = shooter;
 

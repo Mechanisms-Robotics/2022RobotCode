@@ -23,7 +23,10 @@ public class HoodAimCommand extends CommandBase {
    * @param hood Instance of Hood
    */
   public HoodAimCommand(
-      Hood hood, Supplier<Boolean> hasTargetSupplier, Supplier<Double> targetRangeSupplier, Supplier<Boolean> fenderShotButtonSupplier) {
+      Hood hood,
+      Supplier<Boolean> hasTargetSupplier,
+      Supplier<Double> targetRangeSupplier,
+      Supplier<Boolean> fenderShotButtonSupplier) {
     // Set hood
     this.hood = hood;
 

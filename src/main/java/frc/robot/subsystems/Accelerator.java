@@ -8,8 +8,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.Units;
@@ -77,7 +77,9 @@ public class Accelerator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Accelerator RPM", Units.falconToRPM(acceleratorMotor.getSelectedSensorVelocity(), GEAR_RATIO));
+    SmartDashboard.putNumber(
+        "Accelerator RPM",
+        Units.falconToRPM(acceleratorMotor.getSelectedSensorVelocity(), GEAR_RATIO));
   }
 
   /** Runs the accelerator at a specified rpm */

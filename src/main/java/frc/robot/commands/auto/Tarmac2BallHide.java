@@ -5,8 +5,6 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.LowGoalCommand;
-import frc.robot.commands.PreAimCommand;
 import frc.robot.commands.SetIntakeCommand;
 import frc.robot.commands.SetIntakeCommand.IntakeMode;
 import frc.robot.commands.accelerator.AcceleratorShootCommand;
@@ -14,14 +12,11 @@ import frc.robot.commands.feeder.FeederShootCommand;
 import frc.robot.commands.shooter.ShooterAimCommand;
 import frc.robot.commands.shooter.ShooterEjectCommand;
 import frc.robot.subsystems.Accelerator;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Feeder;
-import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.Turret;
 
 /** Basic 1 ball auto, fender shot, then taxi */
 public class Tarmac2BallHide extends SequentialCommandGroup {
@@ -54,22 +49,28 @@ public class Tarmac2BallHide extends SequentialCommandGroup {
         new AutoCommands.ResetPose(trajectory1, swerve),
         new SetIntakeCommand(intake, IntakeMode.DEPLOY),
         new ParallelRaceGroup(
-          new ShooterAimCommand(shooter, () -> limelight.getCurrentTarget().hasTarget, () -> limelight.getCurrentTarget().targetAngle),
-          new AutoCommands.IntakeWhileDriving(trajectory1, swerve, intake, feeder, accelerator)
-        ),
+            new ShooterAimCommand(
+                shooter,
+                () -> limelight.getCurrentTarget().hasTarget,
+                () -> limelight.getCurrentTarget().targetAngle),
+            new AutoCommands.IntakeWhileDriving(trajectory1, swerve, intake, feeder, accelerator)),
         new ParallelRaceGroup(
-            new ShooterAimCommand(shooter, () -> limelight.getCurrentTarget().hasTarget, () -> limelight.getCurrentTarget().targetAngle),
-            new AutoCommands.ShootWithPreAim(feeder, accelerator)
-        ),
+            new ShooterAimCommand(
+                shooter,
+                () -> limelight.getCurrentTarget().hasTarget,
+                () -> limelight.getCurrentTarget().targetAngle),
+            new AutoCommands.ShootWithPreAim(feeder, accelerator)),
         new ParallelRaceGroup(
-            new ShooterAimCommand(shooter, () -> limelight.getCurrentTarget().hasTarget, () -> limelight.getCurrentTarget().targetAngle),
-            new AutoCommands.IntakeWhileDriving(trajectory2, swerve, intake, feeder, accelerator)
-        ),
+            new ShooterAimCommand(
+                shooter,
+                () -> limelight.getCurrentTarget().hasTarget,
+                () -> limelight.getCurrentTarget().targetAngle),
+            new AutoCommands.IntakeWhileDriving(trajectory2, swerve, intake, feeder, accelerator)),
         new ParallelCommandGroup(
-            new ShooterEjectCommand(shooter),
-            new AcceleratorShootCommand(accelerator, shooter::getRPM),
-            new FeederShootCommand(feeder, shooter::atSpeed)
-        ).withTimeout(3.0),
+                new ShooterEjectCommand(shooter),
+                new AcceleratorShootCommand(accelerator, shooter::getRPM),
+                new FeederShootCommand(feeder, shooter::atSpeed))
+            .withTimeout(3.0),
         new AutoCommands.FollowPathCommand(trajectory3, swerve));
   }
 }

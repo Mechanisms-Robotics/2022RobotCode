@@ -239,6 +239,11 @@ public class Turret extends SubsystemBase {
     zeroed = true;
   }
 
+  /** Locks the turret */
+  public void lockTurret() {
+    this.zeroed = false;
+  }
+
   /** Stops the turret */
   public void stop() {
     turretMotor.set(ControlMode.PercentOutput, 0.0);

@@ -86,5 +86,6 @@ public class IntakeStowCommand extends CommandBase {
   public void end(boolean interrupted) {
     // Stop the intake retract motor
     intake.stopRetraction();
+    intake.brake();
   }
 }

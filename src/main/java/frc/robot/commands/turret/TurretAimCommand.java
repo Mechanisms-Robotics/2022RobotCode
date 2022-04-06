@@ -1,7 +1,7 @@
 package frc.robot.commands.turret;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Turret;
 import java.util.function.Supplier;
 
@@ -29,7 +29,10 @@ public class TurretAimCommand extends CommandBase {
    * @param turret An instance of Turret
    */
   public TurretAimCommand(
-      Turret turret, Supplier<Boolean> hasTargetSupplier, Supplier<Double> targetAngleSupplier, Supplier<Boolean> fenderShotButtonSupplier) {
+      Turret turret,
+      Supplier<Boolean> hasTargetSupplier,
+      Supplier<Double> targetAngleSupplier,
+      Supplier<Boolean> fenderShotButtonSupplier) {
     // Set turret
     this.turret = turret;
 
@@ -64,7 +67,8 @@ public class TurretAimCommand extends CommandBase {
       lastSeenTimer.reset();
       lastSeenTimer.start();
 
-      if (Math.abs(turret.getAngle() - Turret.TURRET_FORWARD_LIMIT) > Math.abs(turret.getAngle() - Turret.TURRET_REVERSE_LIMIT)) {
+      if (Math.abs(turret.getAngle() - Turret.TURRET_FORWARD_LIMIT)
+          > Math.abs(turret.getAngle() - Turret.TURRET_REVERSE_LIMIT)) {
         turret.snapDirection = false;
       } else {
         turret.snapDirection = true;
