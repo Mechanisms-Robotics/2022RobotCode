@@ -38,6 +38,7 @@ public class Shooter extends SubsystemBase {
   // Default shooter speed
   private static final double DEFAULT_SHOOTER_VEL = 1400.0; // RPM
   private static final double LOW_GOAL_SHOT_VEL = 650.0; // RPM
+  private static final double EJECT_VEL = 650.0; // RPM
   private static final double BACKUP_SPEED = -0.25; // percent
 
   private double desiredSpeed = 0; // RPM
@@ -67,16 +68,20 @@ public class Shooter extends SubsystemBase {
     SHOOTER_MOTOR_CONFIG.slot0 = shooterPID;
 
     // Configure shooter range interpolating tree map (meters, RPM)
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1350.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.3), new InterpolatingDouble(1350.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.48), new InterpolatingDouble(1350.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.6), new InterpolatingDouble(1450.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.8), new InterpolatingDouble(1450.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(0.95), new InterpolatingDouble(1550.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(1.25), new InterpolatingDouble(1750.0));
-    RANGE_TO_RPM.put(new InterpolatingDouble(1.5), new InterpolatingDouble(2000.0));
-    // RANGE_TO_RPM.put(new InterpolatingDouble(1.72), new InterpolatingDouble(2000.0));
-    // RANGE_TO_RPM.put(new InterpolatingDouble(2.82), new InterpolatingDouble(2000.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1400.0));
+
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.25), new InterpolatingDouble(1400.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.25), new InterpolatingDouble(1400.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.4), new InterpolatingDouble(1400.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.48), new InterpolatingDouble(1400.0));
+
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.69), new InterpolatingDouble(1500.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.77), new InterpolatingDouble(1500.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(0.87), new InterpolatingDouble(1550.0));
+    RANGE_TO_RPM.put(new InterpolatingDouble(1.0), new InterpolatingDouble(1650.0));
+
+    RANGE_TO_RPM.put(new InterpolatingDouble(1.15), new InterpolatingDouble(1835.0));
+
     RANGE_TO_RPM.put(new InterpolatingDouble(20.0), new InterpolatingDouble(3000.0));
 
     // Configure shooter velocity measurement
@@ -153,6 +158,13 @@ public class Shooter extends SubsystemBase {
     shooterFollowerMotor.set(TalonFXControlMode.Follower, 50);
   }
 
+  /** Runs the shooter at EJECT_VEL RPM */
+  public void eject() {
+    desiredSpeed = EJECT_VEL; // RPM
+    shooterMotor.set(ControlMode.Velocity, Units.RPMToFalcon(EJECT_VEL, GEAR_RATIO));
+    shooterFollowerMotor.set(TalonFXControlMode.Follower, 50);
+  }
+
   /** Backs up the shooter in case of a jam */
   public void backup() {
     shooterMotor.set(ControlMode.PercentOutput, BACKUP_SPEED);
@@ -172,5 +184,9 @@ public class Shooter extends SubsystemBase {
           <= SHOOTER_SPINUP_DEADBAND;
     }
     return false;
+  }
+
+  public double getRPM() {
+    return Units.falconToRPM(shooterMotor.getSelectedSensorVelocity(), GEAR_RATIO);
   }
 }

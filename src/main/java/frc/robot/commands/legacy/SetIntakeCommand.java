@@ -55,12 +55,12 @@ public class SetIntakeCommand extends CommandBase {
   @Override
   public void execute() {
     if (deployTimer.hasElapsed(DEPLOY_TIME)) {
-      intake.stopRetractMotor();
+      intake.stopRetraction();
     }
 
     if (retractTimer.hasElapsed(RETRACT_TIME)) {
-      if (intake.getVelocity() <= RETRACT_MIN_VELOCITY) {
-        intake.stopRetractMotor();
+      if (intake.getRetractVelocity() <= RETRACT_MIN_VELOCITY) {
+        intake.stopRetraction();
       }
     }
   }
@@ -68,12 +68,13 @@ public class SetIntakeCommand extends CommandBase {
   @Override
   public boolean isFinished() {
     return deployTimer.hasElapsed(DEPLOY_TIME)
-        || (retractTimer.hasElapsed(RETRACT_TIME) && intake.getVelocity() <= RETRACT_MIN_VELOCITY);
+        || (retractTimer.hasElapsed(RETRACT_TIME)
+            && intake.getRetractVelocity() <= RETRACT_MIN_VELOCITY);
   }
 
   @Override
   public void end(boolean interrupted) {
     intake.brake();
-    intake.stopRetractMotor();
+    intake.stopRetraction();
   }
 }

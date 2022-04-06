@@ -23,10 +23,10 @@ public class Turret extends SubsystemBase {
   private static final TalonFXConfiguration TURRET_MOTOR_CONFIG = new TalonFXConfiguration();
 
   private static final double TURRET_GEAR_RATIO = 50.0; // 50:1
-  public static final double TURRET_FORWARD_LIMIT = Math.toRadians(0.0); // 0 degrees
-  public static final double TURRET_REVERSE_LIMIT = Math.toRadians(-270.0); // -270 degrees
+  public static final double TURRET_FORWARD_LIMIT = 0.75; // 0.75 radians
+  public static final double TURRET_REVERSE_LIMIT = -5.5; // -5.5 radians
   private static final double TURRET_ALLOWABLE_ERROR = Math.toRadians(0.5); // 0.5 degrees
-  private static final double TURRET_AIM_ERROR = Math.toRadians(3.0); // 3 degrees
+  public static final double TURRET_AIM_ERROR = Math.toRadians(3.0); // 3 degrees
   private static final double TURRET_AIM_MOVEMENT_SCALAR = 0.125;
 
   private static final Transform2d ROBOT_TO_TURRET =
@@ -39,6 +39,9 @@ public class Turret extends SubsystemBase {
   private boolean zeroed = false; // Has the turret been zeroed
 
   private double desiredAngle = 0.0; // rads
+
+  private static final double SNAP_AROUND_SPEED = 0.35;
+  public boolean snapDirection = true;
 
   static {
     // Current limit configuration for the turret motor
@@ -97,12 +100,17 @@ public class Turret extends SubsystemBase {
     turretMotor.setStatusFramePeriod(StatusFrame.Status_1_General, 255);
   }
 
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Turret Angle", getAngle());
+  }
+
   /**
    * Aims the turret toward a target
    *
    * @param degrees The angle between the current turret angle and the desired turret angle
    */
-  public void aim(double degrees, ChassisSpeeds velocity, double range) {
+  public void aim(double degrees) {
     this.desiredAngle =
         MathUtil.clamp(
             Units.falconToRads(turretMotor.getSelectedSensorPosition(), TURRET_GEAR_RATIO)
@@ -139,12 +147,7 @@ public class Turret extends SubsystemBase {
       return;
     }
 
-    if (Math.abs(TURRET_FORWARD_LIMIT - getAngle())
-        >= Math.abs(TURRET_REVERSE_LIMIT - getAngle())) {
-      snapTo(TURRET_FORWARD_LIMIT);
-    } else {
-      snapTo(TURRET_REVERSE_LIMIT);
-    }
+    setOpenLoop(snapDirection ? SNAP_AROUND_SPEED : -SNAP_AROUND_SPEED);
   }
 
   /** Enables snap around functionality */
@@ -175,6 +178,14 @@ public class Turret extends SubsystemBase {
 
     // PID the turret motor to the desired position
     turretMotor.set(ControlMode.MotionMagic, Units.radsToFalcon(rads, TURRET_GEAR_RATIO));
+  }
+
+  private void setOpenLoop(double percent) {
+    if (!zeroed) {
+      return;
+    }
+
+    turretMotor.set(ControlMode.PercentOutput, percent);
   }
 
   /**
@@ -226,6 +237,11 @@ public class Turret extends SubsystemBase {
     }
     turretMotor.setSelectedSensorPosition(0.0);
     zeroed = true;
+  }
+
+  /** Locks the turret */
+  public void lockTurret() {
+    this.zeroed = false;
   }
 
   /** Stops the turret */

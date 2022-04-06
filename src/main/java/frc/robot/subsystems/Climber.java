@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 /** This class contains all the code responsible for the behaviour of the intake class */
 public class Climber extends SubsystemBase {
   // Climber speeds
-  private static final double UP_SPEED = 0.5; // percent
-  private static final double DOWN_SPEED = -0.25; // percent
+  private static final double UP_SPEED = 1.0; // percent
+  private static final double DOWN_SPEED = -1.0; // percent
 
   // Climber motor configuration
   private static final TalonFXConfiguration CLIMBER_MOTOR_CONFIG = new TalonFXConfiguration();
@@ -35,6 +35,8 @@ public class Climber extends SubsystemBase {
   // Climber motor
   private final WPI_TalonFX climberMotorLeft = new WPI_TalonFX(1);
   private final WPI_TalonFX climberMotorRight = new WPI_TalonFX(2);
+
+  private boolean climberEnabled = false;
 
   /** Constructs a Climber */
   public Climber() {
@@ -59,10 +61,18 @@ public class Climber extends SubsystemBase {
    * @param percentOutput The percentage to run the climber motors at
    */
   private void setOpenLoop(double percentOutput) {
+    if (!climberEnabled) {
+      return;
+    }
+
     setOpenLoop(percentOutput, percentOutput);
   }
 
   private void setOpenLoop(double leftClimberSpeed, double rightClimberSpeed) {
+    if (!climberEnabled) {
+      return;
+    }
+
     climberMotorLeft.set(ControlMode.PercentOutput, leftClimberSpeed);
     climberMotorRight.set(ControlMode.PercentOutput, rightClimberSpeed);
   }
@@ -75,6 +85,14 @@ public class Climber extends SubsystemBase {
   public boolean isAbove(int position) {
     return climberMotorLeft.getSelectedSensorPosition() >= position
         && climberMotorRight.getSelectedSensorPosition() >= position;
+  }
+
+  public void enableClimber() {
+    this.climberEnabled = true;
+  }
+
+  public void disableClimber() {
+    this.climberEnabled = false;
   }
 
   /** Runs the climber at UP_SPEED */
