@@ -36,6 +36,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Turret;
 import frc.robot.util.ControllerWrapper;
+import frc.robot.util.Units;
+
 import java.util.function.Supplier;
 
 public class RobotContainer {
@@ -94,6 +96,7 @@ public class RobotContainer {
 
     // Configure button bindings
     configureButtonBindings();
+    turret.zero();
 
     // Configure default commands
     configureDefaultCommands();
@@ -119,22 +122,23 @@ public class RobotContainer {
       @Override
       public void periodic() {
         // Scout mode
+        SmartDashboard.putBoolean("scout", scoutMode);
         if (scoutMode && !prevScoutMode) {
           System.out.println("****** SCOUT MODE ACTIVATED *******");
-          feeder.setDefaultCommand(new FeederIntakeCommand(feeder));
-
-          intakeButton.toggleWhenPressed(
-                  new SequentialCommandGroup(new IntakeDeployCommand(intake), new IntakeCommand(intake)));
-
-          retractIntake.whenPressed(new IntakeStowCommand(intake));
-
+//          feeder.setDefaultCommand(new FeederIntakeCommand(feeder));
+//
+//          intakeButton.toggleWhenPressed(
+//                  new SequentialCommandGroup(new IntakeDeployCommand(intake), new IntakeCommand(intake)));
+//
+//          retractIntake.whenPressed(new IntakeStowCommand(intake));
+//
           shootButton = new Button(driverController::getRightTriggerButton);
           shootButton.whileHeld(
                   new ParallelCommandGroup(
                           new ShooterShootCommand(
                                   shooter,
                                   () -> true,
-                                  () -> 10.0,
+                                  () -> 1.0,
                                   swerve.poseEstimator::getEstimatedPosition),
                           new AcceleratorShootCommand(accelerator),
                           new FeederShootCommand(feeder, shooter::atSpeed)));
@@ -142,13 +146,16 @@ public class RobotContainer {
           turret.setDefaultCommand(new TurretAimCommand(
                   turret,
                   () -> true,
-                  () -> turret.getAngle() + driverController.getLeftJoystickY() * 2.0,
+                  () -> turret.getAngle() + Math.toRadians(driverController.getLeftJoystickX()),
                   swerve.poseEstimator::getEstimatedPosition
           ));
 
-
+        prevScoutMode = !prevScoutMode;
         } else if (!scoutMode && prevScoutMode) { // Not scout mode
           System.out.println("****** SCOUT MODE DISABLED *******");
+
+
+          shootButton.whileHeld(new InstantCommand());
 
           // Set the swerve default command to a DriveTeleopCommand
           swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, inputRotation, true, swerve));
@@ -237,6 +244,8 @@ public class RobotContainer {
           // When the D-Pad is held down run the shooter down
           climberButtonDown.whenHeld(new StartEndCommand(climber::down, climber::stop));
           // climberButtonDown.whenPressed(new ClimberClimbCommand(climber));
+
+          prevScoutMode = !prevScoutMode;
         }
       }
     };
