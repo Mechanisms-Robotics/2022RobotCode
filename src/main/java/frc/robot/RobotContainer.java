@@ -2,11 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.accelerator.AcceleratorBackupCommand;
 import frc.robot.commands.accelerator.AcceleratorShootCommand;
@@ -63,10 +59,11 @@ public class RobotContainer {
 
   // Buttons
   private final Button intakeButton = new Button(driverController::getLeftTriggerButton);
-  private final Button shootButton = new Button(driverController::getRightTriggerButton);
+  private Button shootButton = new Button(driverController::getRightTriggerButton);
   private final Button retractIntake = new Button(driverController::getSquareButton);
   private final Button backupButton = new Button(driverController::getTriangleButton);
   private final Button ejectButton = new Button(driverController::getCircleButton);
+  private final Button scoutModeButton = new Button(driverController::getOptionsButton);
 
   private final Button climberButtonUp =
       new Button(
@@ -85,6 +82,10 @@ public class RobotContainer {
   Supplier<Double> inputX = () -> -driverController.getLeftJoystickX();
   Supplier<Double> inputY = driverController::getLeftJoystickY;
   Supplier<Double> inputRotation = () -> -driverController.getRightJoystickX();
+
+  // Scout-mode specific
+  private boolean scoutMode = true;
+  private boolean prevScoutMode = true;
 
   /** Constructs a RobotContainer */
   public RobotContainer() {
@@ -109,95 +110,146 @@ public class RobotContainer {
     SmartDashboard.putData(autoChooser);
   }
 
+  static class ScoutSubsystem extends SubsystemBase {}
+
   /** Configures all default commands */
   private void configureDefaultCommands() {
-    // Set the swerve default command to a DriveTeleopCommand
-    swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, inputRotation, true, swerve));
 
-    // Set the feeder default command to a FeederIntakeCommand
-    feeder.setDefaultCommand(new FeederIntakeCommand(feeder));
+    new ScoutSubsystem() {
+      @Override
+      public void periodic() {
+        // Scout mode
+        if (scoutMode && !prevScoutMode) {
+          System.out.println("****** SCOUT MODE ACTIVATED *******");
+          feeder.setDefaultCommand(new FeederIntakeCommand(feeder));
 
-    // Set the shooter default command to ShooterAimCommand
-    shooter.setDefaultCommand(
-        new ShooterAimCommand(
-            shooter,
-            () -> limelight.getCurrentTarget().hasTarget,
-            () -> limelight.getCurrentTarget().range,
-            swerve.poseEstimator::getEstimatedPosition));
+          intakeButton.toggleWhenPressed(
+                  new SequentialCommandGroup(new IntakeDeployCommand(intake), new IntakeCommand(intake)));
 
-    // Set the hood default command to a HoodAimCommand
-    hood.setDefaultCommand(
-        new HoodAimCommand(
-            hood,
-            () -> limelight.getCurrentTarget().hasTarget,
-            () -> limelight.getCurrentTarget().range,
-            swerve.poseEstimator::getEstimatedPosition));
+          retractIntake.whenPressed(new IntakeStowCommand(intake));
 
-    // Set the turret default command to a TurretAimCommand
-    turret.setDefaultCommand(
-        new TurretAimCommand(
-            turret,
-            () -> limelight.getCurrentTarget().hasTarget,
-            () -> limelight.getCurrentTarget().targetAngle,
-            swerve.poseEstimator::getEstimatedPosition));
+          shootButton = new Button(driverController::getRightTriggerButton);
+          shootButton.whileHeld(
+                  new ParallelCommandGroup(
+                          new ShooterShootCommand(
+                                  shooter,
+                                  () -> true,
+                                  () -> 10.0,
+                                  swerve.poseEstimator::getEstimatedPosition),
+                          new AcceleratorShootCommand(accelerator),
+                          new FeederShootCommand(feeder, shooter::atSpeed)));
 
-    // Set the default limelight command to a PoseEstimateCommand
-    limelight.setDefaultCommand(
-        new PoseEstimateCommand(
-            limelight,
-            swerve.poseEstimator,
-            turret::getAngle,
-            () -> swerve.getHeading().getDegrees()));
+          turret.setDefaultCommand(new TurretAimCommand(
+                  turret,
+                  () -> true,
+                  () -> turret.getAngle() + driverController.getLeftJoystickY() * 2.0,
+                  swerve.poseEstimator::getEstimatedPosition
+          ));
+
+
+        } else if (!scoutMode && prevScoutMode) { // Not scout mode
+          System.out.println("****** SCOUT MODE DISABLED *******");
+
+          // Set the swerve default command to a DriveTeleopCommand
+          swerve.setDefaultCommand(new DriveTeleopCommand(inputX, inputY, inputRotation, true, swerve));
+
+          // Set the feeder default command to a FeederIntakeCommand
+          feeder.setDefaultCommand(new FeederIntakeCommand(feeder));
+
+          // Set the shooter default command to ShooterAimCommand
+          shooter.setDefaultCommand(
+                  new ShooterAimCommand(
+                          shooter,
+                          () -> limelight.getCurrentTarget().hasTarget,
+                          () -> limelight.getCurrentTarget().range,
+                          swerve.poseEstimator::getEstimatedPosition));
+
+          // Set the hood default command to a HoodAimCommand
+          hood.setDefaultCommand(
+                  new HoodAimCommand(
+                          hood,
+                          () -> limelight.getCurrentTarget().hasTarget,
+                          () -> limelight.getCurrentTarget().range,
+                          swerve.poseEstimator::getEstimatedPosition));
+
+          // Set the turret default command to a TurretAimCommand
+          turret.setDefaultCommand(
+                  new TurretAimCommand(
+                          turret,
+                          () -> limelight.getCurrentTarget().hasTarget,
+                          () -> limelight.getCurrentTarget().targetAngle,
+                          swerve.poseEstimator::getEstimatedPosition));
+
+          // Set the default limelight command to a PoseEstimateCommand
+          limelight.setDefaultCommand(
+                  new PoseEstimateCommand(
+                          limelight,
+                          swerve.poseEstimator,
+                          turret::getAngle,
+                          () -> swerve.getHeading().getDegrees()));
+
+          /*
+            Button bindings
+           */
+          // When the intake button is start intaking
+          intakeButton.toggleWhenPressed(
+                  new SequentialCommandGroup(new IntakeDeployCommand(intake), new IntakeCommand(intake)));
+
+          // When the retract button is pressed stow the intake
+          retractIntake.whenPressed(new IntakeStowCommand(intake));
+
+          // While the shoot button is held shoot
+          shootButton.whileHeld(
+                  new ParallelCommandGroup(
+                          new ShooterShootCommand(
+                                  shooter,
+                                  () -> limelight.getCurrentTarget().hasTarget,
+                                  () -> limelight.getCurrentTarget().range,
+                                  swerve.poseEstimator::getEstimatedPosition),
+                          new AcceleratorShootCommand(accelerator),
+                          new FeederShootCommand(feeder, shooter::atSpeed)));
+
+          // While the backup button is held backup the shooter, accelerator, and feeder
+          backupButton.whileHeld(
+                  new ParallelCommandGroup(
+                          new ShooterBackupCommand(shooter),
+                          new AcceleratorBackupCommand(accelerator),
+                          new FeederBackupCommand(feeder)));
+
+          // While the eject button is held run eject on the turret and shooter
+          ejectButton.whileHeld(
+                  new ParallelCommandGroup(
+                          new TurretEjectCommand(
+                                  turret,
+                                  () -> limelight.getCurrentTarget().hasTarget,
+                                  () -> limelight.getCurrentTarget().targetAngle),
+                          new ShooterEjectCommand(shooter),
+                          new AcceleratorShootCommand(accelerator),
+                          new FeederShootCommand(feeder, shooter::atSpeed)));
+
+          // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
+          gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
+
+          // When the D-Pad is held up run the shooter up
+          climberButtonUp.whenHeld(new StartEndCommand(climber::up, climber::stop));
+          // climberButtonUp.whenPressed(new ClimberDeployCommand(climber));
+
+          // When the D-Pad is held down run the shooter down
+          climberButtonDown.whenHeld(new StartEndCommand(climber::down, climber::stop));
+          // climberButtonDown.whenPressed(new ClimberClimbCommand(climber));
+        }
+      }
+    };
+
   }
 
   /** Configures all button bindings */
   private void configureButtonBindings() {
-    // When the intake button is start intaking
-    intakeButton.toggleWhenPressed(
-        new SequentialCommandGroup(new IntakeDeployCommand(intake), new IntakeCommand(intake)));
-
-    // When the retract button is pressed stow the intake
-    retractIntake.whenPressed(new IntakeStowCommand(intake));
-
-    // While the shoot button is held shoot
-    shootButton.whileHeld(
-        new ParallelCommandGroup(
-            new ShooterShootCommand(
-                shooter,
-                () -> limelight.getCurrentTarget().hasTarget,
-                () -> limelight.getCurrentTarget().range,
-                swerve.poseEstimator::getEstimatedPosition),
-            new AcceleratorShootCommand(accelerator),
-            new FeederShootCommand(feeder, shooter::atSpeed)));
-
-    // While the backup button is held backup the shooter, accelerator, and feeder
-    backupButton.whileHeld(
-        new ParallelCommandGroup(
-            new ShooterBackupCommand(shooter),
-            new AcceleratorBackupCommand(accelerator),
-            new FeederBackupCommand(feeder)));
-
-    // While the eject button is held run eject on the turret and shooter
-    ejectButton.whileHeld(
-        new ParallelCommandGroup(
-            new TurretEjectCommand(
-                turret,
-                () -> limelight.getCurrentTarget().hasTarget,
-                () -> limelight.getCurrentTarget().targetAngle),
-            new ShooterEjectCommand(shooter),
-            new AcceleratorShootCommand(accelerator),
-            new FeederShootCommand(feeder, shooter::atSpeed)));
-
-    // When the gyro reset button is pressed run an InstantCommand that zeroes the swerve heading
-    gyroResetButton.whenPressed(new InstantCommand(swerve::zeroHeading));
-
-    // When the D-Pad is held up run the shooter up
-    climberButtonUp.whenHeld(new StartEndCommand(climber::up, climber::stop));
-    // climberButtonUp.whenPressed(new ClimberDeployCommand(climber));
-
-    // When the D-Pad is held down run the shooter down
-    climberButtonDown.whenHeld(new StartEndCommand(climber::down, climber::stop));
-    // climberButtonDown.whenPressed(new ClimberClimbCommand(climber));
+    // Scout-mode toggle button binding
+    scoutModeButton.toggleWhenPressed(new InstantCommand(() -> {
+      prevScoutMode = scoutMode;
+      scoutMode = !scoutMode;
+    }));
   }
 
   public enum Autos {
