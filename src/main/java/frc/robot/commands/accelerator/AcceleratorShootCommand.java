@@ -13,6 +13,8 @@ public class AcceleratorShootCommand extends CommandBase {
   // Supplier of shooterRPM
   private final Supplier<Double> shooterRPMSupplier;
 
+  private Supplier<Boolean> hasTargetSupplier;
+
   // Percent of shooter RPM to run accelerator at
   private static final double ACCELERATOR_RPM_SCALAR = 0.4;
 
@@ -32,11 +34,24 @@ public class AcceleratorShootCommand extends CommandBase {
     addRequirements(accelerator);
   }
 
+  /**
+   * Constructs an AcceleratorShootCommand to not shoot until target is found
+   * @param accelerator Instance of accelerator
+   * @param shooterRPMSupplier RPM of the shooter
+   * @param hasTargetSupplier Whether the robot has an active target
+   */
+  public AcceleratorShootCommand(Accelerator accelerator, Supplier<Double> shooterRPMSupplier, Supplier<Boolean> hasTargetSupplier) {
+    this(accelerator, shooterRPMSupplier);
+    this.hasTargetSupplier = hasTargetSupplier;
+  }
+
   /** Runs periodically while the command is running */
   @Override
   public void execute() {
     // Run the accelerator
-    accelerator.shoot(shooterRPMSupplier.get() * ACCELERATOR_RPM_SCALAR);
+    if (hasTargetSupplier.get() || hasTargetSupplier == null) {
+      accelerator.shoot(shooterRPMSupplier.get() * ACCELERATOR_RPM_SCALAR);
+    }
   }
 
   /**

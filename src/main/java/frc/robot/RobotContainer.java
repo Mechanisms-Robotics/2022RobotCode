@@ -2,11 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.PrepFeederCommand;
 import frc.robot.commands.accelerator.AcceleratorBackupCommand;
@@ -168,7 +164,10 @@ public class RobotContainer {
                 () -> limelight.getCurrentTarget().hasTarget,
                 () -> limelight.getCurrentTarget().range,
                 fenderShotButton::get),
-            new AcceleratorShootCommand(accelerator, shooter::getRPM),
+            new AcceleratorShootCommand(
+                accelerator,
+                shooter::getRPM,
+                () -> limelight.getCurrentTarget().hasTarget),
             new FeederShootCommand(feeder, shooter::atSpeed)));
 
     // While the backup button is held backup the shooter, accelerator, and feeder
